@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.nhl.launcher</groupId>
+		<artifactId>launcher-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.nhl.launcher.jetty</groupId>
+	<artifactId>launcher-jetty</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Jetty Integration With Command Launcher Framework</name>
+	<description>
+		Integrates Jetty container with the Launcher Framework.
+	</description>
+
+	<properties>
+		<jetty-version>9.3.6.v20151106</jetty-version>
+		<launcher-core-version>1.0-SNAPSHOT</launcher-core-version>
+	</properties>
+
+	<scm>
+		<developerConnection>scm:git:ssh://git.nhl.com/repos/launcher/launcher-jetty</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>launcher-libs</id>
+			<name>Launcher Integration Libraries Deployment Repository</name>
+			<url>http://maven.nhl.com/content/repositories/launcher</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+			    <groupId>org.eclipse.jetty</groupId>
+			    <artifactId>jetty-server</artifactId>
+			    <version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.nhl.launcher.core</groupId>
+				<artifactId>launcher-core</artifactId>
+				<version>${launcher-core-version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>nhl2upstream</id>
+			<name>NHL Artifacts</name>
+			<url>http://maven.nhl.com/content/groups/nhl2upstream</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nhl2upstream</id>
+			<name>NHL Artifacts</name>
+			<url>http://maven.nhl.com/content/groups/nhl2upstream/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<!-- Unit test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Compile dependencies -->
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-server</artifactId>
+		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.nhl.launcher.core</groupId>
+			<artifactId>launcher-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>
