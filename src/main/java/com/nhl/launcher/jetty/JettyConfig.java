@@ -25,6 +25,24 @@ public class JettyConfig {
 		this.idleThreadTimeout = 60000;
 	}
 
+	public Server createServer() {
+		ThreadPool tp = createThreadPool();
+		Server server = new Server(tp);
+
+		// TODO: GZIP filter, request loggers, metrics, etc.
+
+		return server;
+	}
+
+	protected ThreadPool createThreadPool() {
+
+		BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
+		QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
+		threadPool.setName("bq");
+
+		return threadPool;
+	}
+
 	public int getPort() {
 		return port;
 	}
@@ -57,21 +75,19 @@ public class JettyConfig {
 		this.minThreads = minThreads;
 	}
 
-	public Server createServer() {
-		ThreadPool tp = createThreadPool();
-		Server server = new Server(tp);
-
-		// TODO: GZIP filter, request loggers, metrics, etc.
-		
-		return server;
+	public int getMaxQueuedRequests() {
+		return maxQueuedRequests;
 	}
 
-	protected ThreadPool createThreadPool() {
+	public void setMaxQueuedRequests(int maxQueuedRequests) {
+		this.maxQueuedRequests = maxQueuedRequests;
+	}
 
-		BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-		QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
-		threadPool.setName("bq");
+	public int getIdleThreadTimeout() {
+		return idleThreadTimeout;
+	}
 
-		return threadPool;
+	public void setIdleThreadTimeout(int idleThreadTimeout) {
+		this.idleThreadTimeout = idleThreadTimeout;
 	}
 }

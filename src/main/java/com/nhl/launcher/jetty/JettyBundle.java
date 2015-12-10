@@ -5,7 +5,10 @@ import org.eclipse.jetty.server.Server;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.Multibinder;
+import com.nhl.launcher.command.Command;
 import com.nhl.launcher.config.ConfigurationFactory;
+import com.nhl.launcher.jetty.command.ServerCommand;
 
 public class JettyBundle {
 
@@ -33,8 +36,7 @@ public class JettyBundle {
 
 		@Override
 		public void configure(Binder binder) {
-			// TODO Auto-generated method stub
-
+			Multibinder.newSetBinder(binder, Command.class).addBinding().to(ServerCommand.class);
 		}
 
 		@Provides
