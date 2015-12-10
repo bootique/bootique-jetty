@@ -1,9 +1,6 @@
-package com.nhl.launcher.jetty;
+package com.nhl.launcher.jetty.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
-import java.util.stream.Stream;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -13,26 +10,23 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-import com.nhl.launcher.jetty.server.HttpConnectorFactory;
-
-public class JettyFactory {
+public class ServerFactory {
 
 	private String context;
 	private int maxThreads;
 	private int minThreads;
 	private int maxQueuedRequests;
 	private int idleThreadTimeout;
-	private Collection<HttpConnectorFactory> connectors;
+	private HttpConnectorFactory connector;
 
-	public JettyFactory() {
+	public ServerFactory() {
 		this.context = "/";
 		this.minThreads = 4;
 		this.maxThreads = 1024;
 		this.maxQueuedRequests = 1024;
 		this.idleThreadTimeout = 60000;
-		
-		this.connectors = new ArrayList<>();
-		this.connectors.add(new HttpConnectorFactory());
+
+		this.connector = new HttpConnectorFactory();
 	}
 
 	public Server createServer() {
@@ -41,7 +35,7 @@ public class JettyFactory {
 		server.setStopAtShutdown(true);
 		server.setHandler(createHandler());
 
-		createConnectors(server, threadPool).forEach(c -> server.addConnector(c));
+		createConnectors(server, threadPool);
 
 		// TODO: GZIP filter, request loggers, metrics, etc.
 
@@ -55,8 +49,9 @@ public class JettyFactory {
 		return handler;
 	}
 
-	protected Stream<Connector> createConnectors(Server server, ThreadPool threadPool) {
-		return connectors.stream().map(cf -> cf.createConnector(server, threadPool));
+	protected void createConnectors(Server server, ThreadPool threadPool) {
+		Connector c = connector.createConnector(server, threadPool);
+		server.addConnector(c);
 	}
 
 	protected ThreadPool createThreadPool() {
@@ -68,8 +63,8 @@ public class JettyFactory {
 		return threadPool;
 	}
 
-	public void setConnectors(Collection<HttpConnectorFactory> connectors) {
-		this.connectors = connectors;
+	public void setConnector(HttpConnectorFactory connector) {
+		this.connector = connector;
 	}
 
 	public void setContext(String context) {
