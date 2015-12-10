@@ -7,7 +7,7 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.nhl.launcher.command.Command;
-import com.nhl.launcher.config.ConfigurationFactory;
+import com.nhl.launcher.config.FactoryConfigurationService;
 import com.nhl.launcher.jetty.command.ServerCommand;
 
 public class JettyBundle {
@@ -40,9 +40,8 @@ public class JettyBundle {
 		}
 
 		@Provides
-		public Server createServer(ConfigurationFactory configFactory) {
-			return configFactory.subconfig(configPrefix, JettyConfig.class).createServer();
+		public Server createServer(FactoryConfigurationService factoryService) {
+			return factoryService.factory(JettyFactory.class, configPrefix).createServer();
 		}
-
 	}
 }
