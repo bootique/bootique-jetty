@@ -1,4 +1,4 @@
-package com.nhl.launcher.jetty.server;
+package com.nhl.bootique.jetty.server;
 
 import java.util.concurrent.BlockingQueue;
 

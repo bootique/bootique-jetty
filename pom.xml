@@ -4,39 +4,51 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.nhl.launcher</groupId>
-		<artifactId>launcher-parent</artifactId>
+		<groupId>com.nhl.bootique.parent</groupId>
+		<artifactId>bootique-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.nhl.launcher.jetty</groupId>
-	<artifactId>launcher-jetty</artifactId>
+	<groupId>com.nhl.bootique.jetty</groupId>
+	<artifactId>bootique-jetty</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Jetty Integration With Command Launcher Framework</name>
+	<name>Jetty Integration Bundle for Bootique</name>
 	<description>
-		Integrates Jetty container with the Launcher Framework.
+		Provides Jetty integration with Bootique.
 	</description>
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
-		<launcher-core-version>1.0-SNAPSHOT</launcher-core-version>
+		<bootique-version>1.0-SNAPSHOT</bootique-version>
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:ssh://git.nhl.com/repos/launcher/launcher-jetty</developerConnection>
+		<developerConnection>scm:git:ssh://git@github.com/nhl/bootique-jetty</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
-	<distributionManagement>
+	<repositories>
 		<repository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>launcher-libs</id>
-			<name>Launcher Integration Libraries Deployment Repository</name>
-			<url>http://maven.nhl.com/content/repositories/launcher</url>
+			<id>bootique-dependencies</id>
+			<name>Bootique Dependencies Repo</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/linkrest</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
-	</distributionManagement>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bootique-dependencies</id>
+			<name>Bootique Dependencies Repo</name>
+			<url>http://maven.objectstyle.org/nexus/content/groups/linkrest</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencyManagement>
 		<dependencies>
@@ -51,34 +63,12 @@
 			    <version>${jetty-version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhl.launcher.core</groupId>
-				<artifactId>launcher-core</artifactId>
-				<version>${launcher-core-version}</version>
+				<groupId>com.nhl.bootique</groupId>
+				<artifactId>bootique</artifactId>
+				<version>${bootique-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<repositories>
-		<repository>
-			<id>nhl2upstream</id>
-			<name>NHL Artifacts</name>
-			<url>http://maven.nhl.com/content/groups/nhl2upstream</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>nhl2upstream</id>
-			<name>NHL Artifacts</name>
-			<url>http://maven.nhl.com/content/groups/nhl2upstream/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		<!-- Unit test dependencies -->
@@ -105,8 +95,8 @@
 		    <scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nhl.launcher.core</groupId>
-			<artifactId>launcher-core</artifactId>
+			<groupId>com.nhl.bootique</groupId>
+			<artifactId>bootique</artifactId>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

@@ -1,4 +1,4 @@
-package com.nhl.launcher.jetty.command;
+package com.nhl.bootique.jetty.command;
 
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.nhl.launcher.command.CommandOutcome;
-import com.nhl.launcher.command.OptionTriggeredCommand;
-import com.nhl.launcher.jopt.Options;
+import com.nhl.bootique.command.CommandOutcome;
+import com.nhl.bootique.command.OptionTriggeredCommand;
+import com.nhl.bootique.jopt.Options;
 
 import joptsimple.OptionParser;
 

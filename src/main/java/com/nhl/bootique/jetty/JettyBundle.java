@@ -1,4 +1,4 @@
-package com.nhl.launcher.jetty;
+package com.nhl.bootique.jetty;
 
 import org.eclipse.jetty.server.Server;
 
@@ -6,12 +6,12 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
-import com.nhl.launcher.BootstrapModule;
-import com.nhl.launcher.command.Command;
-import com.nhl.launcher.config.FactoryConfigurationService;
-import com.nhl.launcher.env.DefaultEnvironment;
-import com.nhl.launcher.jetty.command.ServerCommand;
-import com.nhl.launcher.jetty.server.ServerFactory;
+import com.nhl.bootique.BQModule;
+import com.nhl.bootique.command.Command;
+import com.nhl.bootique.env.DefaultEnvironment;
+import com.nhl.bootique.factory.FactoryConfigurationService;
+import com.nhl.bootique.jetty.command.ServerCommand;
+import com.nhl.bootique.jetty.server.ServerFactory;
 
 public class JettyBundle {
 
@@ -54,13 +54,13 @@ public class JettyBundle {
 			Multibinder.newSetBinder(binder, Command.class).addBinding().to(ServerCommand.class);
 
 			if (context != null) {
-				BootstrapModule.propertiesBinder(binder)
+				BQModule.propertiesBinder(binder)
 						.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
 						.toInstance(context);
 			}
 
 			if (port > 0) {
-				BootstrapModule.propertiesBinder(binder)
+				BQModule.propertiesBinder(binder)
 						.addBinding(
 								DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
 						.toInstance(String.valueOf(port));

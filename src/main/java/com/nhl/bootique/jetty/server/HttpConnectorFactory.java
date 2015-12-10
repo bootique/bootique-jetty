@@ -1,4 +1,4 @@
-package com.nhl.launcher.jetty.server;
+package com.nhl.bootique.jetty.server;
 
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
