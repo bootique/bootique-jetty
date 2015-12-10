@@ -46,6 +46,11 @@
 			    <version>${jetty-version}</version>
 			</dependency>
 			<dependency>
+			    <groupId>org.eclipse.jetty</groupId>
+			    <artifactId>jetty-servlet</artifactId>
+			    <version>${jetty-version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.nhl.launcher.core</groupId>
 				<artifactId>launcher-core</artifactId>
 				<version>${launcher-core-version}</version>
@@ -92,6 +97,11 @@
 		<dependency>
 		    <groupId>org.eclipse.jetty</groupId>
 		    <artifactId>jetty-server</artifactId>
+		    <scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-servlet</artifactId>
 		    <scope>compile</scope>
 		</dependency>
 		<dependency>

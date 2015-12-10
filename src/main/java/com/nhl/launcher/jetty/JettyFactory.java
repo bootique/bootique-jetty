@@ -1,38 +1,62 @@
 package com.nhl.launcher.jetty;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Stream;
 
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
+import com.nhl.launcher.jetty.server.HttpConnectorFactory;
+
 public class JettyFactory {
 
-	private int port;
 	private String context;
 	private int maxThreads;
 	private int minThreads;
 	private int maxQueuedRequests;
 	private int idleThreadTimeout;
+	private Collection<HttpConnectorFactory> connectors;
 
 	public JettyFactory() {
-		this.port = 8080;
 		this.context = "/";
 		this.minThreads = 4;
 		this.maxThreads = 1024;
 		this.maxQueuedRequests = 1024;
 		this.idleThreadTimeout = 60000;
+		
+		this.connectors = new ArrayList<>();
+		this.connectors.add(new HttpConnectorFactory());
 	}
 
 	public Server createServer() {
-		ThreadPool tp = createThreadPool();
-		Server server = new Server(tp);
+		ThreadPool threadPool = createThreadPool();
+		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
+		server.setHandler(createHandler());
+
+		createConnectors(server, threadPool).forEach(c -> server.addConnector(c));
 
 		// TODO: GZIP filter, request loggers, metrics, etc.
 
 		return server;
+	}
+
+	protected Handler createHandler() {
+
+		ServletContextHandler handler = new ServletContextHandler();
+		handler.setContextPath(context);
+		return handler;
+	}
+
+	protected Stream<Connector> createConnectors(Server server, ThreadPool threadPool) {
+		return connectors.stream().map(cf -> cf.createConnector(server, threadPool));
 	}
 
 	protected ThreadPool createThreadPool() {
@@ -44,8 +68,8 @@ public class JettyFactory {
 		return threadPool;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setConnectors(Collection<HttpConnectorFactory> connectors) {
+		this.connectors = connectors;
 	}
 
 	public void setContext(String context) {
