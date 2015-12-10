@@ -19,6 +19,7 @@ public class JettyBundle {
 
 	private String configPrefix;
 	private String context;
+	private int port;
 
 	public static JettyBundle create() {
 		return create(CONFIG_PREFIX);
@@ -37,6 +38,11 @@ public class JettyBundle {
 		return this;
 	}
 
+	public JettyBundle port(int port) {
+		this.port = port;
+		return this;
+	}
+
 	public Module module() {
 		return new JettyModule();
 	}
@@ -51,6 +57,13 @@ public class JettyBundle {
 				BootstrapModule.propertiesBinder(binder)
 						.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
 						.toInstance(context);
+			}
+
+			if (port > 0) {
+				BootstrapModule.propertiesBinder(binder)
+						.addBinding(
+								DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
+						.toInstance(String.valueOf(port));
 			}
 		}
 
