@@ -1,16 +1,24 @@
 package com.nhl.bootique.jetty.server;
 
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+
+import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerFactory {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
 	private String context;
 	private int maxThreads;
@@ -29,11 +37,11 @@ public class ServerFactory {
 		this.connector = new HttpConnectorFactory();
 	}
 
-	public Server createServer() {
+	public Server createServer(Map<String, Servlet> servlets) {
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
-		server.setHandler(createHandler());
+		server.setHandler(createHandler(servlets));
 
 		createConnectors(server, threadPool);
 
@@ -42,10 +50,17 @@ public class ServerFactory {
 		return server;
 	}
 
-	protected Handler createHandler() {
+	protected Handler createHandler(Map<String, Servlet> servlets) {
 
 		ServletContextHandler handler = new ServletContextHandler();
 		handler.setContextPath(context);
+
+		servlets.forEach((path, servlet) -> {
+
+			LOGGER.info("Adding servlet mapped to {}", path);
+			handler.addServlet(new ServletHolder(servlet), path);
+		});
+
 		return handler;
 	}
 
