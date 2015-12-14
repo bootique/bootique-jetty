@@ -53,19 +53,24 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-			    <groupId>org.eclipse.jetty</groupId>
-			    <artifactId>jetty-server</artifactId>
-			    <version>${jetty-version}</version>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty-version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.eclipse.jetty</groupId>
-			    <artifactId>jetty-servlet</artifactId>
-			    <version>${jetty-version}</version>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-servlet</artifactId>
+				<version>${jetty-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.nhl.bootique</groupId>
 				<artifactId>bootique</artifactId>
 				<version>${bootique-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.13</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -85,18 +90,23 @@
 
 		<!-- Compile dependencies -->
 		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-server</artifactId>
-		    <scope>compile</scope>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.eclipse.jetty</groupId>
-		    <artifactId>jetty-servlet</artifactId>
-		    <scope>compile</scope>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.nhl.bootique</groupId>
 			<artifactId>bootique</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
