@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>com.nhl.bootique.parent</groupId>
 		<artifactId>bootique-parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>0.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.nhl.bootique.jetty</groupId>
 	<artifactId>bootique-jetty</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Jetty Integration Bundle for Bootique</name>
@@ -21,7 +21,7 @@
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
-		<bootique-version>1.0-SNAPSHOT</bootique-version>
+		<bootique-version>0.5-SNAPSHOT</bootique-version>
 	</properties>
 
 	<scm>
