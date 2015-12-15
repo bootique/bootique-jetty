@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.nhl.bootique.parent</groupId>
 		<artifactId>bootique-parent</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.5</version>
 	</parent>
 
 	<groupId>com.nhl.bootique.jetty</groupId>
@@ -21,7 +21,7 @@
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
-		<bootique-version>0.5-SNAPSHOT</bootique-version>
+		<bootique-version>0.5</bootique-version>
 	</properties>
 
 	<scm>
@@ -33,7 +33,7 @@
 		<repository>
 			<id>bootique-dependencies</id>
 			<name>Bootique Dependencies Repo</name>
-			<url>http://maven.objectstyle.org/nexus/content/groups/linkrest</url>
+			<url>http://maven.objectstyle.org/nexus/content/groups/bootique-upstream</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -43,7 +43,7 @@
 		<pluginRepository>
 			<id>bootique-dependencies</id>
 			<name>Bootique Dependencies Repo</name>
-			<url>http://maven.objectstyle.org/nexus/content/groups/linkrest</url>
+			<url>http://maven.objectstyle.org/nexus/content/groups/bootique-upstream</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
