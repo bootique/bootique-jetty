@@ -10,9 +10,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
-import com.google.inject.multibindings.Multibinder;
 import com.nhl.bootique.BQModule;
-import com.nhl.bootique.command.Command;
 import com.nhl.bootique.env.DefaultEnvironment;
 import com.nhl.bootique.factory.FactoryConfigurationService;
 import com.nhl.bootique.jetty.command.ServerCommand;
@@ -63,19 +61,18 @@ public class JettyBundle {
 
 		@Override
 		public void configure(Binder binder) {
-			Multibinder.newSetBinder(binder, Command.class).addBinding().to(ServerCommand.class);
+
+			BQModule.bindCommands(binder, ServerCommand.class);
 
 			if (context != null) {
-				BQModule.propertiesBinder(binder)
-						.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
-						.toInstance(context);
+				BQModule.bindProperty(binder,
+						DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context", context);
 			}
 
 			if (port > 0) {
-				BQModule.propertiesBinder(binder)
-						.addBinding(
-								DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
-						.toInstance(String.valueOf(port));
+				BQModule.bindProperty(binder,
+						DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port",
+						String.valueOf(port));
 			}
 
 			// don't bind any servlets yet, but declare the binding for users to
