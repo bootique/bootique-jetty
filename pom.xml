@@ -20,7 +20,7 @@
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
-		<bootique-version>0.5</bootique-version>
+		<bootique-version>0.8-SNAPSHOT</bootique-version>
 	</properties>
 
 	<scm>
