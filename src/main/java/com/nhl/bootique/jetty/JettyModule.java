@@ -25,7 +25,6 @@ public class JettyModule extends ConfigModule {
 		return MapBinder.newMapBinder(binder, String.class, Servlet.class);
 	}
 
-	private String configPrefix;
 	private String context;
 	private int port;
 
