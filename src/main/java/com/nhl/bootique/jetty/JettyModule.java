@@ -10,13 +10,13 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.nhl.bootique.BQBinder;
-import com.nhl.bootique.FactoryModule;
+import com.nhl.bootique.ConfigModule;
+import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
-import com.nhl.bootique.factory.FactoryConfigurationService;
 import com.nhl.bootique.jetty.command.ServerCommand;
 import com.nhl.bootique.jetty.server.ServerFactory;
 
-public class JettyModule extends FactoryModule<ServerFactory> {
+public class JettyModule extends ConfigModule {
 
 	/**
 	 * Utility method for other modules to contribute servlets to Jetty.
@@ -30,11 +30,10 @@ public class JettyModule extends FactoryModule<ServerFactory> {
 	private int port;
 
 	public JettyModule(String configPrefix) {
-		super(ServerFactory.class, configPrefix);
+		super(configPrefix);
 	}
 
 	public JettyModule() {
-		super(ServerFactory.class);
 	}
 
 	public JettyModule context(String context) {
@@ -69,8 +68,8 @@ public class JettyModule extends FactoryModule<ServerFactory> {
 	}
 
 	@Provides
-	public Server createServer(FactoryConfigurationService factoryService, Map<String, Servlet> servlets) {
-		return createFactory(factoryService).createServer(servlets);
+	public Server createServer(ConfigurationFactory configFactory, Map<String, Servlet> servlets) {
+		return configFactory.config(ServerFactory.class, configPrefix).createServer(servlets);
 	}
 
 }
