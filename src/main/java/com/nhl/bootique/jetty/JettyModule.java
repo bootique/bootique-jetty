@@ -15,6 +15,8 @@ import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
 import com.nhl.bootique.jetty.command.ServerCommand;
 import com.nhl.bootique.jetty.server.ServerFactory;
+import com.nhl.bootique.log.BootLogger;
+import com.nhl.bootique.shutdown.ShutdownManager;
 
 public class JettyModule extends ConfigModule {
 
@@ -67,8 +69,17 @@ public class JettyModule extends ConfigModule {
 	}
 
 	@Provides
-	public Server createServer(ConfigurationFactory configFactory, Map<String, Servlet> servlets) {
-		return configFactory.config(ServerFactory.class, configPrefix).createServer(servlets);
+	public Server createServer(ConfigurationFactory configFactory, Map<String, Servlet> servlets, BootLogger bootLogger,
+			ShutdownManager shutdownManager) {
+
+		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(servlets);
+
+		shutdownManager.addShutdownHook(() -> {
+			bootLogger.trace(() -> "stopping Jetty...");
+			server.stop();
+		});
+
+		return server;
 	}
 
 }
