@@ -1,9 +1,7 @@
 package com.nhl.bootique.jetty.server;
 
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-
-import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -15,6 +13,8 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.nhl.bootique.jetty.MappedServlet;
 
 public class ServerFactory {
 
@@ -37,7 +37,7 @@ public class ServerFactory {
 		this.connector = new HttpConnectorFactory();
 	}
 
-	public Server createServer(Map<String, Servlet> servlets) {
+	public Server createServer(Set<MappedServlet> servlets) {
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
@@ -50,15 +50,15 @@ public class ServerFactory {
 		return server;
 	}
 
-	protected Handler createHandler(Map<String, Servlet> servlets) {
+	protected Handler createHandler(Set<MappedServlet> servlets) {
 
 		ServletContextHandler handler = new ServletContextHandler();
 		handler.setContextPath(context);
 
-		servlets.forEach((path, servlet) -> {
+		servlets.forEach((servlet) -> {
 
-			LOGGER.info("Adding servlet mapped to {}", path);
-			handler.addServlet(new ServletHolder(servlet), path);
+			LOGGER.info("Adding servlet mapped to {}", servlet.getPath());
+			handler.addServlet(new ServletHolder(servlet.getServlet()), servlet.getPath());
 		});
 
 		return handler;

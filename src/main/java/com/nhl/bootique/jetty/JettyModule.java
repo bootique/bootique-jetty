@@ -1,6 +1,8 @@
 package com.nhl.bootique.jetty;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Servlet;
 
@@ -22,7 +24,11 @@ public class JettyModule extends ConfigModule {
 
 	/**
 	 * Utility method for other modules to contribute servlets to Jetty.
+	 * 
+	 * @deprecated since 0.10, as servlets should be bound as
+	 *             {@link MappedServlet} instances.
 	 */
+	@Deprecated
 	public static MapBinder<String, Servlet> servletBinder(Binder binder) {
 		return MapBinder.newMapBinder(binder, String.class, Servlet.class);
 	}
@@ -66,13 +72,18 @@ public class JettyModule extends ConfigModule {
 		// don't bind any servlets yet, but declare the binding for users to
 		// contribute to
 		servletBinder(binder);
+		JettyBinder.contributeTo(binder).servletsBinder();
 	}
 
 	@Provides
-	public Server createServer(ConfigurationFactory configFactory, Map<String, Servlet> servlets, BootLogger bootLogger,
-			ShutdownManager shutdownManager) {
+	public Server createServer(ConfigurationFactory configFactory, Set<MappedServlet> servlets,
+			Map<String, Servlet> deprecatedServletMap, BootLogger bootLogger, ShutdownManager shutdownManager) {
 
-		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(servlets);
+		Set<MappedServlet> localServlets = new HashSet<>(servlets);
+
+		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, p)));
+
+		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(localServlets);
 
 		shutdownManager.addShutdownHook(() -> {
 			bootLogger.trace(() -> "stopping Jetty...");
