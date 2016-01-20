@@ -63,5 +63,32 @@ public class JettyModuleIT {
 			verify(mockServlet).destroy();
 		}
 	}
+	
+	@Test
+	public void testFilters() throws Exception {
+		Server server = createServer(binder -> {
+			JettyBinder.contributeTo(binder).servlet(mockServlet, "/a/*", "/b/*");
+		});
+
+		try {
+			server.start();
+			verify(mockServlet).init(any());
+
+			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+			Response r1 = base.path("/a").request().get();
+			assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+
+			Response r2 = base.path("/b").request().get();
+			assertEquals(Status.OK.getStatusCode(), r2.getStatus());
+
+			Response r3 = base.path("/c").request().get();
+			assertEquals(Status.NOT_FOUND.getStatusCode(), r3.getStatus());
+
+		} finally {
+			server.stop();
+			verify(mockServlet).destroy();
+		}
+	}
 
 }

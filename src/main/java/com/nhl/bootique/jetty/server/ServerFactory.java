@@ -1,6 +1,10 @@
 package com.nhl.bootique.jetty.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -79,7 +83,7 @@ public class ServerFactory {
 
 		});
 
-		filters.forEach(filter -> {
+		sortedFilters(filters).forEach(filter -> {
 
 			Objects.requireNonNull(filter.getFilter());
 
@@ -98,6 +102,13 @@ public class ServerFactory {
 		});
 
 		return handler;
+	}
+
+	private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
+		List<MappedFilter> sorted = new ArrayList<>(unsorted);
+
+		Collections.sort(sorted, Comparator.comparing(MappedFilter::getOrder));
+		return sorted;
 	}
 
 	protected void createConnectors(Server server, ThreadPool threadPool) {

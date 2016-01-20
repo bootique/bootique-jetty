@@ -11,10 +11,12 @@ public class MappedFilter {
 
 	private Filter filter;
 	private Set<String> urlPatterns;
+	private int order;
 
-	public MappedFilter(Filter filter, Set<String> urlPatterns) {
+	public MappedFilter(Filter filter, Set<String> urlPatterns, int order) {
 		this.filter = filter;
 		this.urlPatterns = urlPatterns;
+		this.order = order;
 	}
 	
 	public Filter getFilter() {
@@ -23,5 +25,9 @@ public class MappedFilter {
 
 	public Set<String> getUrlPatterns() {
 		return urlPatterns;
+	}
+	
+	public int getOrder() {
+		return order;
 	}
 }

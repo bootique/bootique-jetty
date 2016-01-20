@@ -54,9 +54,9 @@ public class JettyBinder {
 	/**
 	 * @since 0.11
 	 */
-	public void filter(Filter filter, String... urlPatterns) {
+	public void filter(Filter filter, int order, String... urlPatterns) {
 		Set<String> urlSet = new HashSet<>(Arrays.asList(urlPatterns));
-		filtersBinder().addBinding().toInstance(new MappedFilter(filter, urlSet));
+		filtersBinder().addBinding().toInstance(new MappedFilter(filter, urlSet, order));
 	}
 
 	/**
