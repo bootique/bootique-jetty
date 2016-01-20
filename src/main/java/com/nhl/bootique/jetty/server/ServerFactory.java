@@ -63,8 +63,20 @@ public class ServerFactory {
 
 		servlets.forEach((servlet) -> {
 
-			LOGGER.info("Adding servlet mapped to {}", servlet.getUrlPattern());
-			handler.addServlet(new ServletHolder(servlet.getServlet()), servlet.getUrlPattern());
+			Objects.requireNonNull(servlet.getServlet());
+
+			if (servlet.getUrlPatterns().isEmpty()) {
+				LOGGER.info("Skipping unmapped servlet {}", servlet.getServlet().getClass().getName());
+			} else {
+
+				ServletHolder holder = new ServletHolder(servlet.getServlet());
+
+				servlet.getUrlPatterns().forEach(urlPattern -> {
+					LOGGER.info("Adding servlet mapped to {}", urlPattern);
+					handler.addServlet(holder, urlPattern);
+				});
+			}
+
 		});
 
 		filters.forEach(filter -> {

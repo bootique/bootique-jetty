@@ -35,8 +35,9 @@ public class JettyBinder {
 		return Multibinder.newSetBinder(binder, MappedFilter.class);
 	}
 
-	public void servlet(Servlet servlet, String path) {
-		servletsBinder().addBinding().toInstance(new MappedServlet(servlet, path));
+	public void servlet(Servlet servlet, String... urlPatterns) {
+		Set<String> urlSet = new HashSet<>(Arrays.asList(urlPatterns));
+		servletsBinder().addBinding().toInstance(new MappedServlet(servlet, urlSet));
 	}
 
 	/**

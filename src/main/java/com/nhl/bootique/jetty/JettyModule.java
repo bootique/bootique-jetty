@@ -1,5 +1,6 @@
 package com.nhl.bootique.jetty;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +84,7 @@ public class JettyModule extends ConfigModule {
 
 		Set<MappedServlet> localServlets = new HashSet<>(servlets);
 
-		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, p)));
+		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, Collections.singleton(p))));
 
 		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(localServlets, filters);
 

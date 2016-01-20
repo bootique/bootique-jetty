@@ -1,5 +1,7 @@
 package com.nhl.bootique.jetty;
 
+import java.util.Set;
+
 import javax.servlet.Servlet;
 
 /**
@@ -8,11 +10,11 @@ import javax.servlet.Servlet;
 public class MappedServlet {
 
 	private Servlet servlet;
-	private String urlPattern;
+	private Set<String> urlPatterns;
 
-	public MappedServlet(Servlet servlet, String urlPattern) {
+	public MappedServlet(Servlet servlet, Set<String> urlPatterns) {
 		this.servlet = servlet;
-		this.urlPattern = urlPattern;
+		this.urlPatterns = urlPatterns;
 	}
 
 	public Servlet getServlet() {
@@ -22,14 +24,24 @@ public class MappedServlet {
 	/**
 	 * @since 0.11
 	 */
-	public String getUrlPattern() {
-		return urlPattern;
+	public Set<String> getUrlPatterns() {
+		return urlPatterns;
 	}
-	
+
 	/**
 	 * @deprecated since 0.11 use {@link #getUrlPattern()}.
 	 */
 	public String getPath() {
-		return getUrlPattern();
+		
+		if (getUrlPatterns().size() == 0) {
+			return null;
+		}
+		
+		if (getUrlPatterns().size() == 1) {
+			return getUrlPatterns().iterator().next();
+		}
+
+		throw new UnsupportedOperationException(
+				"This operation is deprecated and is not supported for servlets with multiple URL mappings");
 	}
 }

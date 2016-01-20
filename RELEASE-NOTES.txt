@@ -1,7 +1,8 @@
 0.11:
 
 #2 Support for contributing filters
-
+#3 Support for multiple URL patterns for servlets
+ 
 0.10:
 
 #1 New API for contributing Servlets
