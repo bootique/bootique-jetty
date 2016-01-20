@@ -78,15 +78,13 @@ public class JettyModule extends ConfigModule {
 	}
 
 	@Provides
-	public Server createServer(ConfigurationFactory configFactory, Set<MappedServlet> servlets,
-			Map<String, Servlet> deprecatedServletMap, Set<MappedFilter> filters, BootLogger bootLogger,
-			ShutdownManager shutdownManager) {
+	public Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
+			BootLogger bootLogger, ShutdownManager shutdownManager, Map<String, Servlet> deprecatedServletMap) {
 
 		Set<MappedServlet> localServlets = new HashSet<>(servlets);
-
 		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, Collections.singleton(p))));
 
-		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(localServlets, filters);
+		Server server = factory.createServer(localServlets, filters);
 
 		shutdownManager.addShutdownHook(() -> {
 			bootLogger.trace(() -> "stopping Jetty...");
@@ -96,4 +94,8 @@ public class JettyModule extends ConfigModule {
 		return server;
 	}
 
+	@Provides
+	public ServerFactory createServerFactory(ConfigurationFactory configFactory) {
+		return configFactory.config(ServerFactory.class, configPrefix);
+	}
 }

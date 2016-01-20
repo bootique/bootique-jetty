@@ -30,12 +30,12 @@ public class ServerFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
-	private String context;
-	private int maxThreads;
-	private int minThreads;
-	private int maxQueuedRequests;
-	private int idleThreadTimeout;
-	private HttpConnectorFactory connector;
+	protected String context;
+	protected int maxThreads;
+	protected int minThreads;
+	protected int maxQueuedRequests;
+	protected int idleThreadTimeout;
+	protected HttpConnectorFactory connector;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -116,13 +116,16 @@ public class ServerFactory {
 		server.addConnector(c);
 	}
 
-	protected ThreadPool createThreadPool() {
-
+	protected QueuedThreadPool createThreadPool() {
 		BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-		QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
+		QueuedThreadPool threadPool = createThreadPool(queue);
 		threadPool.setName("bootique-http");
 
 		return threadPool;
+	}
+
+	protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
+		return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
 	}
 
 	public void setConnector(HttpConnectorFactory connector) {
