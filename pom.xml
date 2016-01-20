@@ -10,18 +10,24 @@
 	</parent>
 
 	<groupId>com.nhl.bootique.jetty</groupId>
-	<artifactId>bootique-jetty</artifactId>
+	<artifactId>bootique-jetty-parent</artifactId>
 	<version>0.11-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
-	<name>Jetty Integration Bundle for Bootique</name>
+	<name>Parent of Jetty Integration Bundle for Bootique</name>
 	<description>
-		Provides Jetty integration with Bootique.
+		Parent POM of Jetty and instrumented Jetty Bootique modules.
 	</description>
+
+	<modules>
+		<module>bootique-jetty</module>
+		<module>bootique-jetty-instrumented</module>
+	</modules>
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
 		<bootique-version>0.11</bootique-version>
+		<bootique-metrics-version>0.5</bootique-metrics-version>
 	</properties>
 
 	<scm>
@@ -48,6 +54,11 @@
 				<version>${bootique-version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.nhl.bootique.metrics</groupId>
+				<artifactId>bootique-metrics</artifactId>
+				<version>${bootique-metrics-version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>1.7.13</version>
@@ -64,52 +75,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<dependencies>
-		<!-- Unit test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Compile dependencies -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.nhl.bootique</groupId>
-			<artifactId>bootique</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
