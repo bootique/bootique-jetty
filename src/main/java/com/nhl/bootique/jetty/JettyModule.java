@@ -69,21 +69,23 @@ public class JettyModule extends ConfigModule {
 					String.valueOf(port));
 		}
 
-		// don't bind any servlets yet, but declare the binding for users to
-		// contribute to
+		// don't bind any servlets or filters, but declare the binding for users
+		// to contribute to
 		servletBinder(binder);
 		JettyBinder.contributeTo(binder).servletsBinder();
+		JettyBinder.contributeTo(binder).filtersBinder();
 	}
 
 	@Provides
 	public Server createServer(ConfigurationFactory configFactory, Set<MappedServlet> servlets,
-			Map<String, Servlet> deprecatedServletMap, BootLogger bootLogger, ShutdownManager shutdownManager) {
+			Map<String, Servlet> deprecatedServletMap, Set<MappedFilter> filters, BootLogger bootLogger,
+			ShutdownManager shutdownManager) {
 
 		Set<MappedServlet> localServlets = new HashSet<>(servlets);
 
 		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, p)));
 
-		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(localServlets);
+		Server server = configFactory.config(ServerFactory.class, configPrefix).createServer(localServlets, filters);
 
 		shutdownManager.addShutdownHook(() -> {
 			bootLogger.trace(() -> "stopping Jetty...");

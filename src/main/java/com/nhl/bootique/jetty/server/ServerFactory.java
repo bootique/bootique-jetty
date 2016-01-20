@@ -1,11 +1,16 @@
 package com.nhl.bootique.jetty.server;
 
+import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+
+import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.BlockingArrayQueue;
@@ -14,6 +19,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.nhl.bootique.jetty.MappedFilter;
 import com.nhl.bootique.jetty.MappedServlet;
 
 public class ServerFactory {
@@ -37,11 +43,11 @@ public class ServerFactory {
 		this.connector = new HttpConnectorFactory();
 	}
 
-	public Server createServer(Set<MappedServlet> servlets) {
+	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters) {
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
-		server.setHandler(createHandler(servlets));
+		server.setHandler(createHandler(servlets, filters));
 
 		createConnectors(server, threadPool);
 
@@ -50,15 +56,33 @@ public class ServerFactory {
 		return server;
 	}
 
-	protected Handler createHandler(Set<MappedServlet> servlets) {
+	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters) {
 
 		ServletContextHandler handler = new ServletContextHandler();
 		handler.setContextPath(context);
 
 		servlets.forEach((servlet) -> {
 
-			LOGGER.info("Adding servlet mapped to {}", servlet.getPath());
-			handler.addServlet(new ServletHolder(servlet.getServlet()), servlet.getPath());
+			LOGGER.info("Adding servlet mapped to {}", servlet.getUrlPattern());
+			handler.addServlet(new ServletHolder(servlet.getServlet()), servlet.getUrlPattern());
+		});
+
+		filters.forEach(filter -> {
+
+			Objects.requireNonNull(filter.getFilter());
+
+			if (filter.getUrlPatterns().isEmpty()) {
+				LOGGER.info("Skipping unmapped filter {}", filter.getFilter().getClass().getName());
+			} else {
+
+				FilterHolder holder = new FilterHolder(filter.getFilter());
+				EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);
+
+				filter.getUrlPatterns().forEach(urlPattern -> {
+					LOGGER.info("Adding filter mapped to {}", urlPattern);
+					handler.addFilter(holder, urlPattern, dispatches);
+				});
+			}
 		});
 
 		return handler;

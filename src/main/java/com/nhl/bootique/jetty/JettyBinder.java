@@ -1,7 +1,11 @@
 package com.nhl.bootique.jetty;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
 import com.google.inject.Binder;
@@ -27,11 +31,43 @@ public class JettyBinder {
 		return Multibinder.newSetBinder(binder, MappedServlet.class);
 	}
 
+	Multibinder<MappedFilter> filtersBinder() {
+		return Multibinder.newSetBinder(binder, MappedFilter.class);
+	}
+
 	public void servlet(Servlet servlet, String path) {
 		servletsBinder().addBinding().toInstance(new MappedServlet(servlet, path));
 	}
 
+	/**
+	 * Adds a {@link MappedServlet} defined elsewhere in the DI container to the
+	 * DI servlets collection.
+	 * 
+	 * @param mappedServletAnnotation
+	 *            an annotation type for the MappedServlet DI key.
+	 */
 	public void servlet(Class<? extends Annotation> mappedServletAnnotation) {
 		servletsBinder().addBinding().to(Key.get(MappedServlet.class, mappedServletAnnotation));
 	}
+
+	/**
+	 * @since 0.11
+	 */
+	public void filter(Filter filter, String... urlPatterns) {
+		Set<String> urlSet = new HashSet<>(Arrays.asList(urlPatterns));
+		filtersBinder().addBinding().toInstance(new MappedFilter(filter, urlSet));
+	}
+
+	/**
+	 * Adds a {@link MappedFilter} defined elsewhere in the DI container to the
+	 * DI filters collection.
+	 * 
+	 * @param mappedServletAnnotation
+	 *            an annotation type for the MappedServlet DI key.
+	 * @since 0.11
+	 */
+	public void filter(Class<? extends Annotation> mappedFilterAnnotation) {
+		filtersBinder().addBinding().to(Key.get(MappedFilter.class, mappedFilterAnnotation));
+	}
+
 }

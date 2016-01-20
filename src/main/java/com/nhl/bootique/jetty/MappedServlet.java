@@ -8,19 +8,28 @@ import javax.servlet.Servlet;
 public class MappedServlet {
 
 	private Servlet servlet;
-	private String path;
+	private String urlPattern;
 
-	public MappedServlet(Servlet servlet, String path) {
+	public MappedServlet(Servlet servlet, String urlPattern) {
 		this.servlet = servlet;
-		this.path = path;
+		this.urlPattern = urlPattern;
 	}
 
 	public Servlet getServlet() {
 		return servlet;
 	}
 
-	public String getPath() {
-		return path;
+	/**
+	 * @since 0.11
+	 */
+	public String getUrlPattern() {
+		return urlPattern;
 	}
-
+	
+	/**
+	 * @deprecated since 0.11 use {@link #getUrlPattern()}.
+	 */
+	public String getPath() {
+		return getUrlPattern();
+	}
 }
