@@ -6,26 +6,30 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.nhl.bootique.cli.Cli;
+import com.nhl.bootique.command.CommandMetadata;
 import com.nhl.bootique.command.CommandOutcome;
-import com.nhl.bootique.command.OptionTriggeredCommand;
-import com.nhl.bootique.jopt.Options;
+import com.nhl.bootique.command.CommandWithMetadata;
 
-import joptsimple.OptionParser;
-
-public class ServerCommand extends OptionTriggeredCommand {
+public class ServerCommand extends CommandWithMetadata {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerCommand.class);
-	private static final String SERVER_OPTION = "server";
-
+	
 	private Provider<Server> serverProvider;
+
+	private static CommandMetadata createMetadata() {
+		return CommandMetadata.builder(ServerCommand.class).description("Starts Jetty server").build();
+	}
 
 	@Inject
 	public ServerCommand(Provider<Server> serverProvider) {
+		super(createMetadata());
 		this.serverProvider = serverProvider;
 	}
 
 	@Override
-	protected CommandOutcome doRun(Options options) {
+	public CommandOutcome run(Cli cli) {
+
 		LOGGER.info("Starting jetty...");
 
 		Server server = serverProvider.get();
@@ -44,13 +48,4 @@ public class ServerCommand extends OptionTriggeredCommand {
 		return CommandOutcome.succeeded();
 	}
 
-	@Override
-	protected String getOption() {
-		return SERVER_OPTION;
-	}
-
-	@Override
-	public void configOptions(OptionParser parser) {
-		parser.accepts(getOption(), "Starts Jetty server");
-	}
 }

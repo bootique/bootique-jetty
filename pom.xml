@@ -26,7 +26,7 @@
 
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
-		<bootique-version>0.11</bootique-version>
+		<bootique-version>0.12-SNAPSHOT</bootique-version>
 		<bootique-metrics-version>0.5</bootique-metrics-version>
 	</properties>
 
