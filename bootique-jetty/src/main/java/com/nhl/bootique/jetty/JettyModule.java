@@ -11,8 +11,10 @@ import org.eclipse.jetty.server.Server;
 
 import com.google.inject.Binder;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
-import com.nhl.bootique.BQBinder;
+import com.google.inject.multibindings.Multibinder;
+import com.nhl.bootique.BQCoreModule;
 import com.nhl.bootique.ConfigModule;
 import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
@@ -32,6 +34,26 @@ public class JettyModule extends ConfigModule {
 	@Deprecated
 	public static MapBinder<String, Servlet> servletBinder(Binder binder) {
 		return MapBinder.newMapBinder(binder, String.class, Servlet.class);
+	}
+
+	/**
+	 * @param binder
+	 *            DI binder passed to the Module that invokes this method.
+	 * @since 0.11
+	 * @return returns a {@link Multibinder} for container servlets.
+	 */
+	public static Multibinder<MappedServlet> contributeServlets(Binder binder) {
+		return Multibinder.newSetBinder(binder, MappedServlet.class);
+	}
+
+	/**
+	 * @param binder
+	 *            DI binder passed to the Module that invokes this method.
+	 * @since 0.11
+	 * @return returns a {@link Multibinder} for container servlets.
+	 */
+	public static Multibinder<MappedFilter> contributeFilters(Binder binder) {
+		return Multibinder.newSetBinder(binder, MappedFilter.class);
 	}
 
 	private String context;
@@ -57,24 +79,27 @@ public class JettyModule extends ConfigModule {
 	@Override
 	public void configure(Binder binder) {
 
-		BQBinder bqContribs = BQBinder.contributeTo(binder);
-		bqContribs.commandTypes(ServerCommand.class);
+		BQCoreModule.contributeCommands(binder).addBinding().to(ServerCommand.class).in(Singleton.class);
 
 		if (context != null) {
-			bqContribs.property(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context",
-					context);
+			BQCoreModule.contributeProperties(binder)
+					.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
+					.toInstance(context);
 		}
 
 		if (port > 0) {
-			bqContribs.property(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port",
-					String.valueOf(port));
+			BQCoreModule.contributeProperties(binder)
+					.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
+					.toInstance(String.valueOf(port));
 		}
 
-		// don't bind any servlets or filters, but declare the binding for users
-		// to contribute to
+		// trigger extension points creation and provide default contributions
+
+		// TODO: deprecated, keeping for backwards compatibility
 		servletBinder(binder);
-		JettyBinder.contributeTo(binder).servletsBinder();
-		JettyBinder.contributeTo(binder).filtersBinder();
+
+		JettyModule.contributeServlets(binder);
+		JettyModule.contributeFilters(binder);
 	}
 
 	@Provides

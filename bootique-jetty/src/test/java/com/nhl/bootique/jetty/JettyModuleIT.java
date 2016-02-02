@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,13 +33,21 @@ import com.nhl.bootique.log.DefaultBootLogger;
 public class JettyModuleIT {
 
 	private Servlet mockServlet;
+	private Filter mockFilter1;
+	private Filter mockFilter2;
+	private Filter mockFilter3;
 	private Module baseModule;
 	private Module jettyModule;
 
 	@Before
 	public void before() {
 		this.mockServlet = mock(Servlet.class);
-		this.baseModule = new BQCoreModule(new String[] { "a1", "a2" }, new DefaultBootLogger(false));
+		this.mockFilter1 = mock(Filter.class);
+		this.mockFilter2 = mock(Filter.class);
+		this.mockFilter3 = mock(Filter.class);
+
+		this.baseModule = BQCoreModule.builder().args(new String[] { "a1", "a2" })
+				.bootLogger(new DefaultBootLogger(false)).build();
 		this.jettyModule = new JettyModule();
 	}
 
@@ -46,10 +56,12 @@ public class JettyModuleIT {
 	}
 
 	@Test
-	public void testServlets() throws Exception {
+	public void testContributeServlets() throws Exception {
+
+		MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 
 		Server server = createServer(binder -> {
-			JettyBinder.contributeTo(binder).servlet(mockServlet, "/a/*", "/b/*");
+			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
 		try {
@@ -76,18 +88,21 @@ public class JettyModuleIT {
 	@Test
 	public void testFilters_InitDestroy() throws Exception {
 
-		Filter[] mockFilters = new Filter[] { mock(Filter.class), mock(Filter.class), mock(Filter.class) };
+		MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
+		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
+		MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
 		Server server = createServer(binder -> {
-			JettyBinder.contributeTo(binder).filter(mockFilters[0], 10, "/a/*");
-			JettyBinder.contributeTo(binder).filter(mockFilters[1], 0, "/a/*");
-			JettyBinder.contributeTo(binder).filter(mockFilters[2], 5, "/a/*");
+
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
 		});
 
 		try {
 			server.start();
 
-			Arrays.asList(mockFilters).forEach(f -> {
+			Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> {
 				try {
 					verify(f).init(any());
 				} catch (Exception e) {
@@ -97,14 +112,14 @@ public class JettyModuleIT {
 
 		} finally {
 			server.stop();
-			Arrays.asList(mockFilters).forEach(f -> verify(f).destroy());
+			Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> verify(f).destroy());
 		}
 	}
 
 	@Test
 	public void testFilters_Ordering() throws Exception {
 
-		Filter[] mockFilters = new Filter[] { mock(Filter.class), mock(Filter.class), mock(Filter.class) };
+		Filter[] mockFilters = new Filter[] { mockFilter1, mockFilter2, mockFilter3 };
 
 		for (int i = 0; i < mockFilters.length; i++) {
 
@@ -123,13 +138,20 @@ public class JettyModuleIT {
 			}).when(mockFilters[i]).doFilter(any(), any(), any());
 		}
 
+		MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
+		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
+		MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
+
+		MappedServlet mappedServlet = new MappedServlet(mockServlet, Collections.singleton("/a/*"));
+
 		Server server = createServer(binder -> {
-			JettyBinder.contributeTo(binder).filter(mockFilters[0], 10, "/a/*");
-			JettyBinder.contributeTo(binder).filter(mockFilters[1], 0, "/a/*");
-			JettyBinder.contributeTo(binder).filter(mockFilters[2], 5, "/a/*");
+
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
+			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
 
 			// must have a servlet behind the filter chain...
-			JettyBinder.contributeTo(binder).servlet(mockServlet, "/a/*");
+			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
 		try {

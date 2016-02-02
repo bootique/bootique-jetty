@@ -14,7 +14,12 @@ import com.google.inject.multibindings.Multibinder;
 
 /**
  * @since 0.10
+ * @deprecated since 0.11 in favor of static binding methods on
+ *             {@link JettyModule}:
+ *             {@link JettyModule#contributeServlets(Binder)},
+ *             {@link JettyModule#contributeFilters(Binder)}.
  */
+@Deprecated
 public class JettyBinder {
 
 	public static JettyBinder contributeTo(Binder binder) {
