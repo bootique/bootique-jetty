@@ -10,7 +10,7 @@
 
 	<groupId>com.nhl.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
-	<version>0.11</version>
+	<version>0.12-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Parent of Jetty Integration Bundle for Bootique</name>
@@ -32,7 +32,7 @@
 	<scm>
 		<developerConnection>scm:git:ssh://git@github.com/nhl/bootique-jetty</developerConnection>
 		<url>https://github.com/nhl/bootique-jetty</url>
-		<tag>bootique-jetty-parent-0.11</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<dependencyManagement>
