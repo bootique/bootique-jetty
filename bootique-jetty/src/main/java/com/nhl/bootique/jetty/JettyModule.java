@@ -1,11 +1,7 @@
 package com.nhl.bootique.jetty;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Server;
 
@@ -89,10 +85,9 @@ public class JettyModule extends ConfigModule {
 
 	@Provides
 	public Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
-			BootLogger bootLogger, ShutdownManager shutdownManager, Map<String, Servlet> deprecatedServletMap) {
+			BootLogger bootLogger, ShutdownManager shutdownManager) {
 
 		Set<MappedServlet> localServlets = new HashSet<>(servlets);
-		deprecatedServletMap.forEach((p, s) -> localServlets.add(new MappedServlet(s, Collections.singleton(p))));
 
 		Server server = factory.createServer(localServlets, filters);
 
