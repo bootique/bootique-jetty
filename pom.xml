@@ -10,7 +10,7 @@
 
 	<groupId>com.nhl.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
-	<version>0.12-SNAPSHOT</version>
+	<version>0.11-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Parent of Jetty Integration Bundle for Bootique</name>
