@@ -45,33 +45,15 @@ public class JettyBinder {
 		servletsBinder().addBinding().toInstance(new MappedServlet(servlet, urlSet));
 	}
 
-	/**
-	 * Adds a {@link MappedServlet} defined elsewhere in the DI container to the
-	 * DI servlets collection.
-	 * 
-	 * @param mappedServletAnnotation
-	 *            an annotation type for the MappedServlet DI key.
-	 */
 	public void servlet(Class<? extends Annotation> mappedServletAnnotation) {
 		servletsBinder().addBinding().to(Key.get(MappedServlet.class, mappedServletAnnotation));
 	}
 
-	/**
-	 * @since 0.11
-	 */
 	public void filter(Filter filter, int order, String... urlPatterns) {
 		Set<String> urlSet = new HashSet<>(Arrays.asList(urlPatterns));
 		filtersBinder().addBinding().toInstance(new MappedFilter(filter, urlSet, order));
 	}
 
-	/**
-	 * Adds a {@link MappedFilter} defined elsewhere in the DI container to the
-	 * DI filters collection.
-	 * 
-	 * @param mappedServletAnnotation
-	 *            an annotation type for the MappedServlet DI key.
-	 * @since 0.11
-	 */
 	public void filter(Class<? extends Annotation> mappedFilterAnnotation) {
 		filtersBinder().addBinding().to(Key.get(MappedFilter.class, mappedFilterAnnotation));
 	}

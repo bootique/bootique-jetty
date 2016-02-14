@@ -12,7 +12,6 @@ import org.eclipse.jetty.server.Server;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.Multibinder;
 import com.nhl.bootique.BQCoreModule;
 import com.nhl.bootique.ConfigModule;
@@ -24,17 +23,6 @@ import com.nhl.bootique.log.BootLogger;
 import com.nhl.bootique.shutdown.ShutdownManager;
 
 public class JettyModule extends ConfigModule {
-
-	/**
-	 * Utility method for other modules to contribute servlets to Jetty.
-	 * 
-	 * @deprecated since 0.10, as servlets should be bound as
-	 *             {@link MappedServlet} instances.
-	 */
-	@Deprecated
-	public static MapBinder<String, Servlet> servletBinder(Binder binder) {
-		return MapBinder.newMapBinder(binder, String.class, Servlet.class);
-	}
 
 	/**
 	 * @param binder
@@ -94,9 +82,6 @@ public class JettyModule extends ConfigModule {
 		}
 
 		// trigger extension points creation and provide default contributions
-
-		// TODO: deprecated, keeping for backwards compatibility
-		servletBinder(binder);
 
 		JettyModule.contributeServlets(binder);
 		JettyModule.contributeFilters(binder);

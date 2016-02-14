@@ -23,20 +23,22 @@ public class MappedServlet {
 
 	/**
 	 * @since 0.11
+	 * @return collection of URL patterns matching this servlet.
 	 */
 	public Set<String> getUrlPatterns() {
 		return urlPatterns;
 	}
 
 	/**
-	 * @deprecated since 0.11 use {@link #getUrlPattern()}.
+	 * @deprecated since 0.11 use {@link #getUrlPatterns()}.
+	 * @return a single URL pattern for this servlet.
 	 */
 	public String getPath() {
-		
+
 		if (getUrlPatterns().size() == 0) {
 			return null;
 		}
-		
+
 		if (getUrlPatterns().size() == 1) {
 			return getUrlPatterns().iterator().next();
 		}
