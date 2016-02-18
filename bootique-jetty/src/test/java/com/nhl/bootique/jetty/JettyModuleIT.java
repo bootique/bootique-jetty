@@ -220,15 +220,18 @@ public class JettyModuleIT {
 			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
 			base.path("/a").request().get();
+			Thread.sleep(100);
 			verify(srListener, times(1)).requestInitialized(any());
 			verify(srListener, times(1)).requestDestroyed(any());
 
 			base.path("/b").request().get();
+			Thread.sleep(100);
 			verify(srListener, times(2)).requestInitialized(any());
 			verify(srListener, times(2)).requestDestroyed(any());
 
 			// not_found request
 			base.path("/c").request().get();
+			Thread.sleep(100);
 			verify(srListener, times(3)).requestInitialized(any());
 			verify(srListener, times(3)).requestDestroyed(any());
 
