@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import java.util.HashSet;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
@@ -86,7 +89,7 @@ public class JettyModuleIT {
 	}
 
 	@Test
-	public void testFilters_InitDestroy() throws Exception {
+	public void testContributeFilters_InitDestroy() throws Exception {
 
 		MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
 		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
@@ -117,7 +120,7 @@ public class JettyModuleIT {
 	}
 
 	@Test
-	public void testFilters_Ordering() throws Exception {
+	public void testConfitributeFilters_Ordering() throws Exception {
 
 		Filter[] mockFilters = new Filter[] { mockFilter1, mockFilter2, mockFilter3 };
 
@@ -168,5 +171,72 @@ public class JettyModuleIT {
 			server.stop();
 		}
 	}
+
+	@Test
+	public void testContributeListeners_ServletContextListener() throws Exception {
+
+		ServletContextListener scListener = mock(ServletContextListener.class);
+
+		Server server = createServer(binder -> {
+			JettyModule.contributeListeners(binder).addBinding().toInstance(scListener);
+		});
+
+		try {
+
+			verify(scListener, times(0)).contextInitialized(any());
+			verify(scListener, times(0)).contextDestroyed(any());
+
+			server.start();
+
+			verify(scListener).contextInitialized(any());
+			verify(scListener, times(0)).contextDestroyed(any());
+
+		} finally {
+			server.stop();
+			verify(scListener).contextInitialized(any());
+			verify(scListener).contextDestroyed(any());
+		}
+	}
+
+	@Test
+	public void testContributeListeners_ServletRequestListener() throws Exception {
+
+		ServletRequestListener srListener = mock(ServletRequestListener.class);
+
+		Server server = createServer(binder -> {
+			JettyModule.contributeListeners(binder).addBinding().toInstance(srListener);
+		});
+
+		try {
+
+			verify(srListener, times(0)).requestInitialized(any());
+			verify(srListener, times(0)).requestDestroyed(any());
+
+			server.start();
+
+			verify(srListener, times(0)).requestInitialized(any());
+			verify(srListener, times(0)).requestDestroyed(any());
+
+			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+			base.path("/a").request().get();
+			verify(srListener, times(1)).requestInitialized(any());
+			verify(srListener, times(1)).requestDestroyed(any());
+
+			base.path("/b").request().get();
+			verify(srListener, times(2)).requestInitialized(any());
+			verify(srListener, times(2)).requestDestroyed(any());
+
+			// not_found request
+			base.path("/c").request().get();
+			verify(srListener, times(3)).requestInitialized(any());
+			verify(srListener, times(3)).requestDestroyed(any());
+
+		} finally {
+			server.stop();
+		}
+	}
+
+	// TODO: tests for Attribute listeners, session listeners
 
 }

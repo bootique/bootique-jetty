@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -47,11 +48,11 @@ public class ServerFactory {
 		this.connector = new HttpConnectorFactory();
 	}
 
-	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters) {
+	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
-		server.setHandler(createHandler(servlets, filters));
+		server.setHandler(createHandler(servlets, filters, listeners));
 
 		createConnectors(server, threadPool);
 
@@ -60,10 +61,17 @@ public class ServerFactory {
 		return server;
 	}
 
-	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters) {
+	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
+			Set<EventListener> listeners) {
 
 		ServletContextHandler handler = new ServletContextHandler();
 		handler.setContextPath(context);
+
+		listeners.forEach(listener -> {
+
+			LOGGER.info("Adding listener {}", listener.getClass().getName());
+			handler.addEventListener(listener);
+		});
 
 		servlets.forEach((servlet) -> {
 

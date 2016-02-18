@@ -1,6 +1,6 @@
 package com.nhl.bootique.jetty;
 
-import java.util.HashSet;
+import java.util.EventListener;
 import java.util.Set;
 
 import org.eclipse.jetty.server.Server;
@@ -38,6 +38,16 @@ public class JettyModule extends ConfigModule {
 	 */
 	public static Multibinder<MappedFilter> contributeFilters(Binder binder) {
 		return Multibinder.newSetBinder(binder, MappedFilter.class);
+	}
+
+	/**
+	 * @param binder
+	 *            DI binder passed to the Module that invokes this method.
+	 * @since 0.12
+	 * @return returns a {@link Multibinder} for container listeners.
+	 */
+	public static Multibinder<EventListener> contributeListeners(Binder binder) {
+		return Multibinder.newSetBinder(binder, EventListener.class);
 	}
 
 	private String context;
@@ -81,15 +91,14 @@ public class JettyModule extends ConfigModule {
 
 		JettyModule.contributeServlets(binder);
 		JettyModule.contributeFilters(binder);
+		JettyModule.contributeListeners(binder);
 	}
 
 	@Provides
 	public Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
-			BootLogger bootLogger, ShutdownManager shutdownManager) {
+			Set<EventListener> listeners, BootLogger bootLogger, ShutdownManager shutdownManager) {
 
-		Set<MappedServlet> localServlets = new HashSet<>(servlets);
-
-		Server server = factory.createServer(localServlets, filters);
+		Server server = factory.createServer(servlets, filters, listeners);
 
 		shutdownManager.addShutdownHook(() -> {
 			bootLogger.trace(() -> "stopping Jetty...");
