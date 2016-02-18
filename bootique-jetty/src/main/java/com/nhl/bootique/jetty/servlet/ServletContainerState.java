@@ -6,9 +6,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Provides access to servlet spec objects active at any particular moment. Take
- * extra care to avoid inadvertently caching returned objects as they should not
- * be retained once they go out of scope of Jetty. threads.
+ * Provides access to servlet spec objects active at any particular moment.
+ * Normally used by the services that operate in a context of a web request.
+ * <p>
+ * Take extra care to avoid inadvertently caching returned objects as they
+ * should not be retained once they go out of scope of Jetty threads.
  * 
  * @since 0.12
  */
