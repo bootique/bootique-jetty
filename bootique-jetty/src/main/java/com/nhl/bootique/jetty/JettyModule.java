@@ -89,7 +89,7 @@ public class JettyModule extends ConfigModule {
 					.toInstance(String.valueOf(port));
 		}
 
-		// trigger extension points creation and provide default contributions
+		// trigger extension points creation
 
 		JettyModule.contributeServlets(binder);
 		JettyModule.contributeFilters(binder);
