@@ -1,6 +1,7 @@
 0.12:
 
 #7 Support for contributing servlet listeners
+#8 Injectable object to provide access to ServletContext and ServletRequest
 
 0.11:
 

@@ -28,34 +28,21 @@ import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.inject.Guice;
-import com.google.inject.Module;
-import com.nhl.bootique.BQCoreModule;
-import com.nhl.bootique.log.DefaultBootLogger;
-
-public class JettyModuleIT {
+public class JettyModuleIT extends BaseITCase {
 
 	private Servlet mockServlet;
 	private Filter mockFilter1;
 	private Filter mockFilter2;
 	private Filter mockFilter3;
-	private Module baseModule;
-	private Module jettyModule;
 
+	@Override
 	@Before
 	public void before() {
+		super.before();
 		this.mockServlet = mock(Servlet.class);
 		this.mockFilter1 = mock(Filter.class);
 		this.mockFilter2 = mock(Filter.class);
 		this.mockFilter3 = mock(Filter.class);
-
-		this.baseModule = BQCoreModule.builder().args(new String[] { "a1", "a2" })
-				.bootLogger(new DefaultBootLogger(false)).build();
-		this.jettyModule = new JettyModule();
-	}
-
-	protected Server createServer(Module extModule) {
-		return Guice.createInjector(baseModule, jettyModule, extModule).getInstance(Server.class);
 	}
 
 	@Test

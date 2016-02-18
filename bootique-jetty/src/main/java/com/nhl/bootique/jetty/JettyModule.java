@@ -15,6 +15,8 @@ import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
 import com.nhl.bootique.jetty.command.ServerCommand;
 import com.nhl.bootique.jetty.server.ServerFactory;
+import com.nhl.bootique.jetty.servlet.DefaultServletContainerState;
+import com.nhl.bootique.jetty.servlet.ServletContainerState;
 import com.nhl.bootique.log.BootLogger;
 import com.nhl.bootique.shutdown.ShutdownManager;
 
@@ -92,10 +94,26 @@ public class JettyModule extends ConfigModule {
 		JettyModule.contributeServlets(binder);
 		JettyModule.contributeFilters(binder);
 		JettyModule.contributeListeners(binder);
+
+		// register default listeners
+		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletContainerState.class);
 	}
 
+	@Singleton
 	@Provides
-	public Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
+	ServletContainerState createStateTracker(DefaultServletContainerState stateImpl) {
+		return stateImpl;
+	}
+
+	@Singleton
+	@Provides
+	DefaultServletContainerState createStateTrackerImpl() {
+		return new DefaultServletContainerState();
+	}
+
+	@Singleton
+	@Provides
+	Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
 			Set<EventListener> listeners, BootLogger bootLogger, ShutdownManager shutdownManager) {
 
 		Server server = factory.createServer(servlets, filters, listeners);
@@ -108,8 +126,9 @@ public class JettyModule extends ConfigModule {
 		return server;
 	}
 
+	@Singleton
 	@Provides
-	public ServerFactory createServerFactory(ConfigurationFactory configFactory) {
+	ServerFactory createServerFactory(ConfigurationFactory configFactory) {
 		return configFactory.config(ServerFactory.class, configPrefix);
 	}
 }
