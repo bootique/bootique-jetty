@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @since 0.12
  */
-public interface ServletContainerState {
+public interface ServletEnvironment {
 
 	Optional<ServletContext> context();
 

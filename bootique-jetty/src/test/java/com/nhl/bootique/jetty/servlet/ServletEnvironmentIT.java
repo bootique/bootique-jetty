@@ -27,7 +27,7 @@ import com.nhl.bootique.jetty.BaseITCase;
 import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.jetty.MappedServlet;
 
-public class ServletContainerStateIT extends BaseITCase {
+public class ServletEnvironmentIT extends BaseITCase {
 
 	private Runnable assertion;
 
@@ -76,16 +76,16 @@ public class ServletContainerStateIT extends BaseITCase {
 		}
 
 		@Provides
-		ServletCheckingState createServlet(ServletContainerState state) {
+		ServletCheckingState createServlet(ServletEnvironment state) {
 			return new ServletCheckingState(state);
 		}
 
 		class ServletCheckingState extends HttpServlet {
 
 			private static final long serialVersionUID = -1713490500665580905L;
-			private ServletContainerState state;
+			private ServletEnvironment state;
 
-			public ServletCheckingState(ServletContainerState state) {
+			public ServletCheckingState(ServletEnvironment state) {
 				this.state = state;
 			}
 

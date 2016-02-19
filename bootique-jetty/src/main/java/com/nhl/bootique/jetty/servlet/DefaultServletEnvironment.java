@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @since 0.12
  */
-public class DefaultServletContainerState
-		implements ServletContextListener, ServletRequestListener, ServletContainerState {
+public class DefaultServletEnvironment
+		implements ServletContextListener, ServletRequestListener, ServletEnvironment {
 
 	private ServletContext context;
 	private ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();

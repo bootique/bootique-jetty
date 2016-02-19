@@ -15,8 +15,8 @@ import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
 import com.nhl.bootique.jetty.command.ServerCommand;
 import com.nhl.bootique.jetty.server.ServerFactory;
-import com.nhl.bootique.jetty.servlet.DefaultServletContainerState;
-import com.nhl.bootique.jetty.servlet.ServletContainerState;
+import com.nhl.bootique.jetty.servlet.DefaultServletEnvironment;
+import com.nhl.bootique.jetty.servlet.ServletEnvironment;
 import com.nhl.bootique.log.BootLogger;
 import com.nhl.bootique.shutdown.ShutdownManager;
 
@@ -96,19 +96,19 @@ public class JettyModule extends ConfigModule {
 		JettyModule.contributeListeners(binder);
 
 		// register default listeners
-		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletContainerState.class);
+		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
 	}
 
 	@Singleton
 	@Provides
-	ServletContainerState createStateTracker(DefaultServletContainerState stateImpl) {
+	ServletEnvironment createStateTracker(DefaultServletEnvironment stateImpl) {
 		return stateImpl;
 	}
 
 	@Singleton
 	@Provides
-	DefaultServletContainerState createStateTrackerImpl() {
-		return new DefaultServletContainerState();
+	DefaultServletEnvironment createStateTrackerImpl() {
+		return new DefaultServletEnvironment();
 	}
 
 	@Singleton

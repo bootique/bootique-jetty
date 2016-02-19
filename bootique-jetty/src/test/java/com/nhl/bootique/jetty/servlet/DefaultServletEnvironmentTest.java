@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 
-public class DefaultServletContainerStateTest {
+public class DefaultServletEnvironmentTest {
 
 	@Test
 	public void testContext() {
-		DefaultServletContainerState o = new DefaultServletContainerState();
+		DefaultServletEnvironment o = new DefaultServletEnvironment();
 
 		assertFalse(o.context().isPresent());
 
@@ -30,7 +30,7 @@ public class DefaultServletContainerStateTest {
 
 	@Test
 	public void testRequest() {
-		DefaultServletContainerState o = new DefaultServletContainerState();
+		DefaultServletEnvironment o = new DefaultServletEnvironment();
 
 		assertFalse(o.request().isPresent());
 
