@@ -1,3 +1,7 @@
+0.13
+
+#11 Upgrade to Bootique 0.13
+
 0.12:
 
 #7 Support for contributing servlet listeners
