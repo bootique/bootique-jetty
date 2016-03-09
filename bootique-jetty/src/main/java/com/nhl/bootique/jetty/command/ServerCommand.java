@@ -18,7 +18,7 @@ public class ServerCommand extends CommandWithMetadata {
 	private Provider<Server> serverProvider;
 
 	private static CommandMetadata createMetadata() {
-		return CommandMetadata.builder(ServerCommand.class).description("Starts Jetty server").build();
+		return CommandMetadata.builder(ServerCommand.class).description("Starts Jetty server.").build();
 	}
 
 	@Inject
