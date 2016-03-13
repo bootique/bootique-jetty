@@ -24,21 +24,25 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.jetty.server.Server;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class JettyModuleIT extends BaseITCase {
+import com.nhl.bootique.jetty.unit.JettyApp;
+
+public class JettyModuleIT {
 
 	private Servlet mockServlet;
 	private Filter mockFilter1;
 	private Filter mockFilter2;
 	private Filter mockFilter3;
 
-	@Override
+	@Rule
+	public JettyApp app = new JettyApp();
+
 	@Before
 	public void before() {
-		super.before();
+
 		this.mockServlet = mock(Servlet.class);
 		this.mockFilter1 = mock(Filter.class);
 		this.mockFilter2 = mock(Filter.class);
@@ -50,29 +54,25 @@ public class JettyModuleIT extends BaseITCase {
 
 		MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 
-		Server server = createServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
-		try {
-			server.start();
-			verify(mockServlet).init(any());
+		verify(mockServlet).init(any());
 
-			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-			Response r1 = base.path("/a").request().get();
-			assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+		Response r1 = base.path("/a").request().get();
+		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-			Response r2 = base.path("/b").request().get();
-			assertEquals(Status.OK.getStatusCode(), r2.getStatus());
+		Response r2 = base.path("/b").request().get();
+		assertEquals(Status.OK.getStatusCode(), r2.getStatus());
 
-			Response r3 = base.path("/c").request().get();
-			assertEquals(Status.NOT_FOUND.getStatusCode(), r3.getStatus());
+		Response r3 = base.path("/c").request().get();
+		assertEquals(Status.NOT_FOUND.getStatusCode(), r3.getStatus());
 
-		} finally {
-			server.stop();
-			verify(mockServlet).destroy();
-		}
+		app.stop();
+		verify(mockServlet).destroy();
 	}
 
 	@Test
@@ -82,28 +82,23 @@ public class JettyModuleIT extends BaseITCase {
 		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
 		MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
-		Server server = createServer(binder -> {
+		app.start(binder -> {
 
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
 		});
 
-		try {
-			server.start();
+		Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> {
+			try {
+				verify(f).init(any());
+			} catch (Exception e) {
+				fail("init failed");
+			}
+		});
 
-			Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> {
-				try {
-					verify(f).init(any());
-				} catch (Exception e) {
-					fail("init failed");
-				}
-			});
-
-		} finally {
-			server.stop();
-			Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> verify(f).destroy());
-		}
+		app.stop();
+		Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> verify(f).destroy());
 	}
 
 	@Test
@@ -134,7 +129,7 @@ public class JettyModuleIT extends BaseITCase {
 
 		MappedServlet mappedServlet = new MappedServlet(mockServlet, Collections.singleton("/a/*"));
 
-		Server server = createServer(binder -> {
+		app.start(binder -> {
 
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
@@ -144,45 +139,31 @@ public class JettyModuleIT extends BaseITCase {
 			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
-		try {
-			server.start();
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+		Response response = base.path("/a").request().get();
+		assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
-			Response response = base.path("/a").request().get();
-			assertEquals(Status.OK.getStatusCode(), response.getStatus());
-
-			assertEquals("120", response.readEntity(String.class));
-
-		} finally {
-			server.stop();
-		}
+		assertEquals("120", response.readEntity(String.class));
 	}
 
 	@Test
 	public void testContributeListeners_ServletContextListener() throws Exception {
 
 		ServletContextListener scListener = mock(ServletContextListener.class);
+		verify(scListener, times(0)).contextInitialized(any());
+		verify(scListener, times(0)).contextDestroyed(any());
 
-		Server server = createServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(scListener);
 		});
 
-		try {
+		verify(scListener).contextInitialized(any());
+		verify(scListener, times(0)).contextDestroyed(any());
 
-			verify(scListener, times(0)).contextInitialized(any());
-			verify(scListener, times(0)).contextDestroyed(any());
-
-			server.start();
-
-			verify(scListener).contextInitialized(any());
-			verify(scListener, times(0)).contextDestroyed(any());
-
-		} finally {
-			server.stop();
-			verify(scListener).contextInitialized(any());
-			verify(scListener).contextDestroyed(any());
-		}
+		app.stop();
+		verify(scListener).contextInitialized(any());
+		verify(scListener).contextDestroyed(any());
 	}
 
 	@Test
@@ -190,41 +171,33 @@ public class JettyModuleIT extends BaseITCase {
 
 		ServletRequestListener srListener = mock(ServletRequestListener.class);
 
-		Server server = createServer(binder -> {
+		verify(srListener, times(0)).requestInitialized(any());
+		verify(srListener, times(0)).requestDestroyed(any());
+
+		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(srListener);
 		});
 
-		try {
+		verify(srListener, times(0)).requestInitialized(any());
+		verify(srListener, times(0)).requestDestroyed(any());
 
-			verify(srListener, times(0)).requestInitialized(any());
-			verify(srListener, times(0)).requestDestroyed(any());
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-			server.start();
+		base.path("/a").request().get();
+		Thread.sleep(100);
+		verify(srListener, times(1)).requestInitialized(any());
+		verify(srListener, times(1)).requestDestroyed(any());
 
-			verify(srListener, times(0)).requestInitialized(any());
-			verify(srListener, times(0)).requestDestroyed(any());
+		base.path("/b").request().get();
+		Thread.sleep(100);
+		verify(srListener, times(2)).requestInitialized(any());
+		verify(srListener, times(2)).requestDestroyed(any());
 
-			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-
-			base.path("/a").request().get();
-			Thread.sleep(100);
-			verify(srListener, times(1)).requestInitialized(any());
-			verify(srListener, times(1)).requestDestroyed(any());
-
-			base.path("/b").request().get();
-			Thread.sleep(100);
-			verify(srListener, times(2)).requestInitialized(any());
-			verify(srListener, times(2)).requestDestroyed(any());
-
-			// not_found request
-			base.path("/c").request().get();
-			Thread.sleep(100);
-			verify(srListener, times(3)).requestInitialized(any());
-			verify(srListener, times(3)).requestDestroyed(any());
-
-		} finally {
-			server.stop();
-		}
+		// not_found request
+		base.path("/c").request().get();
+		Thread.sleep(100);
+		verify(srListener, times(3)).requestInitialized(any());
+		verify(srListener, times(3)).requestDestroyed(any());
 	}
 
 	// TODO: tests for Attribute listeners, session listeners

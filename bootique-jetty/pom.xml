@@ -38,6 +38,11 @@
 			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.nhl.bootique</groupId>
+			<artifactId>bootique-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<!-- Compile dependencies -->
 		<dependency>

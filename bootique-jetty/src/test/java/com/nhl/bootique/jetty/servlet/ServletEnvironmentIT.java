@@ -16,51 +16,47 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.eclipse.jetty.server.Server;
-import org.junit.Before;
+import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
-import com.nhl.bootique.jetty.BaseITCase;
 import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.jetty.MappedServlet;
+import com.nhl.bootique.jetty.unit.JettyApp;
 
-public class ServletEnvironmentIT extends BaseITCase {
+public class ServletEnvironmentIT {
 
 	private Runnable assertion;
 
-	@Before
-	public void before() {
-		super.before();
-		this.assertion = null;
+	@Rule
+	public JettyApp app = new JettyApp();
+
+	@After
+	public void after() {
+		assertion = null;
 	}
 
 	@Test
 	public void testServletContatinerState() throws Exception {
-		Server server = createServer(new ServletCheckingModule());
-		try {
-			server.start();
+		app.start(new ServletCheckingModule());
 
-			WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-			assertNull(assertion);
+		assertNull(assertion);
 
-			base.path("/a").request().get();
-			Objects.requireNonNull(assertion).run();
-			assertion = null;
+		base.path("/a").request().get();
+		Objects.requireNonNull(assertion).run();
+		assertion = null;
 
-			base.path("/a/1").request().get();
-			Objects.requireNonNull(assertion).run();
-			assertion = null;
+		base.path("/a/1").request().get();
+		Objects.requireNonNull(assertion).run();
+		assertion = null;
 
-			base.path("/a/2").request().get();
-			Objects.requireNonNull(assertion).run();
-
-		} finally {
-			server.stop();
-		}
+		base.path("/a/2").request().get();
+		Objects.requireNonNull(assertion).run();
 	}
 
 	class ServletCheckingModule implements Module {
