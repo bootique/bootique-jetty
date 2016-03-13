@@ -32,7 +32,8 @@ import com.nhl.bootique.jetty.unit.JettyApp;
 
 public class JettyModuleIT {
 
-	private Servlet mockServlet;
+	private Servlet mockServlet1;
+	private Servlet mockServlet2;
 	private Filter mockFilter1;
 	private Filter mockFilter2;
 	private Filter mockFilter3;
@@ -43,7 +44,9 @@ public class JettyModuleIT {
 	@Before
 	public void before() {
 
-		this.mockServlet = mock(Servlet.class);
+		this.mockServlet1 = mock(Servlet.class);
+		this.mockServlet2 = mock(Servlet.class);
+
 		this.mockFilter1 = mock(Filter.class);
 		this.mockFilter2 = mock(Filter.class);
 		this.mockFilter3 = mock(Filter.class);
@@ -52,13 +55,16 @@ public class JettyModuleIT {
 	@Test
 	public void testContributeServlets() throws Exception {
 
-		MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
+		MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
+		MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
 
 		app.start(binder -> {
-			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
+			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet1);
+			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet2);
 		});
 
-		verify(mockServlet).init(any());
+		verify(mockServlet1).init(any());
+		verify(mockServlet2).init(any());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -67,12 +73,19 @@ public class JettyModuleIT {
 
 		Response r2 = base.path("/b").request().get();
 		assertEquals(Status.OK.getStatusCode(), r2.getStatus());
-
+		
 		Response r3 = base.path("/c").request().get();
-		assertEquals(Status.NOT_FOUND.getStatusCode(), r3.getStatus());
+		assertEquals(Status.OK.getStatusCode(), r3.getStatus());
+
+		Response r4 = base.path("/d").request().get();
+		assertEquals(Status.NOT_FOUND.getStatusCode(), r4.getStatus());
+		
+		verify(mockServlet1, times(2)).service(any(), any());
+		verify(mockServlet2).service(any(), any());
 
 		app.stop();
-		verify(mockServlet).destroy();
+		verify(mockServlet1).destroy();
+		verify(mockServlet2).destroy();
 	}
 
 	@Test
@@ -127,7 +140,7 @@ public class JettyModuleIT {
 		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
 		MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
-		MappedServlet mappedServlet = new MappedServlet(mockServlet, Collections.singleton("/a/*"));
+		MappedServlet mappedServlet = new MappedServlet(mockServlet1, Collections.singleton("/a/*"));
 
 		app.start(binder -> {
 
