@@ -16,8 +16,6 @@ import com.nhl.bootique.test.BQDaemonTestRuntime;
 public class JettyApp extends ExternalResource {
 
 	private BQDaemonTestRuntime app;
-	
-	
 
 	@Override
 	protected void after() {
@@ -27,7 +25,7 @@ public class JettyApp extends ExternalResource {
 			localApp.stop();
 		}
 	}
-	
+
 	public void stop() {
 		after();
 	}
