@@ -28,7 +28,7 @@ public class MappedFilter {
 	 * @param urlPatterns
 	 *            URL patterns that this filter will respond to.
 	 * @param name
-	 *            filter name.
+	 *            filter name. If null, Jetty will assign its own name.
 	 * @param initParams
 	 *            parameters passed to the filter in
 	 *            {@link Filter#init(javax.servlet.FilterConfig)}.

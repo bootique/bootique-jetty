@@ -27,7 +27,7 @@ public class MappedServlet {
 	 * @param urlPatterns
 	 *            URL patterns that this servlet will respond to.
 	 * @param name
-	 *            servlet name.
+	 *            servlet name. If null, Jetty will assign its own name.
 	 * @param initParams
 	 *            parameters passed to the servlet in
 	 *            {@link Servlet#init(javax.servlet.ServletConfig)}.
