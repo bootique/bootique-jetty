@@ -34,6 +34,7 @@ public class ServerFactory {
 	protected HttpConnectorFactory connector;
 	protected Map<String, ServletFactory> servlets;
 	protected Map<String, FilterFactory> filters;
+	protected boolean sessions;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -41,6 +42,7 @@ public class ServerFactory {
 		this.maxThreads = 1024;
 		this.maxQueuedRequests = 1024;
 		this.idleThreadTimeout = 60000;
+		this.sessions = true;
 
 		this.connector = new HttpConnectorFactory();
 	}
@@ -53,7 +55,7 @@ public class ServerFactory {
 
 		createConnectors(server, threadPool);
 
-		// TODO: GZIP filter, request loggers, metrics, etc.
+		// TODO: GZIP filter, request loggers, etc.
 
 		return server;
 	}
@@ -61,7 +63,13 @@ public class ServerFactory {
 	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
 			Set<EventListener> listeners) {
 
-		ServletContextHandler handler = new ServletContextHandler();
+		int options = 0;
+
+		if (sessions) {
+			options |= ServletContextHandler.SESSIONS;
+		}
+
+		ServletContextHandler handler = new ServletContextHandler(options);
 		handler.setContextPath(context);
 
 		installListeners(handler, listeners);
@@ -161,5 +169,9 @@ public class ServerFactory {
 
 	public void setFilters(Map<String, FilterFactory> filters) {
 		this.filters = filters;
+	}
+
+	public void setSessions(boolean sessions) {
+		this.sessions = sessions;
 	}
 }
