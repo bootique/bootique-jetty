@@ -34,19 +34,17 @@ public class ServletInitParametersIT {
 		Map<String, String> params = new HashMap<>();
 		params.put("a", "a1");
 		params.put("b", "b2");
-		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "nn",
-				params);
+		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		app.start(binder -> {
-			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
-		});
+		app.startWithArgs(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
+				"--server", "--config=src/test/resources/com/nhl/bootique/jetty/ServletInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
 		Response r1 = base.path("/").request().get();
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-		assertEquals("nn_a1_b2", r1.readEntity(String.class));
+		assertEquals("s1_a1_b2", r1.readEntity(String.class));
 	}
 
 	static class TestServlet extends HttpServlet {

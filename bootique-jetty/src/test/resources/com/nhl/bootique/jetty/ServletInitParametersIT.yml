@@ -1,0 +1,6 @@
+jetty:
+  servlets:
+    s1:
+      params:
+        a: a1
+        b: b2

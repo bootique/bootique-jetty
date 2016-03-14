@@ -1,7 +1,5 @@
 package com.nhl.bootique.jetty;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Servlet;
@@ -14,10 +12,9 @@ public class MappedServlet {
 	private Servlet servlet;
 	private Set<String> urlPatterns;
 	private String name;
-	private Map<String, String> initParams;
 
 	public MappedServlet(Servlet servlet, Set<String> urlPatterns) {
-		this(servlet, urlPatterns, null, Collections.emptyMap());
+		this(servlet, urlPatterns, null);
 	}
 
 	/**
@@ -28,15 +25,11 @@ public class MappedServlet {
 	 *            URL patterns that this servlet will respond to.
 	 * @param name
 	 *            servlet name. If null, Jetty will assign its own name.
-	 * @param initParams
-	 *            parameters passed to the servlet in
-	 *            {@link Servlet#init(javax.servlet.ServletConfig)}.
 	 */
-	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name, Map<String, String> initParams) {
+	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name) {
 		this.servlet = servlet;
 		this.name = name;
 		this.urlPatterns = urlPatterns;
-		this.initParams = initParams;
 	}
 
 	public Servlet getServlet() {
@@ -67,14 +60,6 @@ public class MappedServlet {
 
 		throw new UnsupportedOperationException(
 				"This operation is deprecated and is not supported for servlets with multiple URL mappings");
-	}
-
-	/**
-	 * @since 0.13
-	 * @return a potentially empty map of servlet initialization parameters.
-	 */
-	public Map<String, String> getInitParams() {
-		return initParams;
 	}
 
 	/**

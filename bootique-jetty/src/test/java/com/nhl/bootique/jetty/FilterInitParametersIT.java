@@ -49,19 +49,19 @@ public class FilterInitParametersIT {
 		params.put("a", "af1");
 		params.put("b", "bf2");
 
-		MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "ff", params, 5);
+		MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5);
 
-		app.start(binder -> {
+		app.startWithArgs(binder -> {
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf);
 			JettyModule.contributeServlets(binder).addBinding().toInstance(endOfChainServlet);
-		});
+		} , "--server", "--config=src/test/resources/com/nhl/bootique/jetty/FilterInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
 		Response r1 = base.path("/").request().get();
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-		assertEquals("ff_af1_bf2", r1.readEntity(String.class));
+		assertEquals("f1_af1_bf2", r1.readEntity(String.class));
 	}
 
 	static class TestFilter implements Filter {

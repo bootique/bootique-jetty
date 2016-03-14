@@ -1,7 +1,5 @@
 package com.nhl.bootique.jetty;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Filter;
@@ -14,11 +12,10 @@ public class MappedFilter {
 	private Filter filter;
 	private Set<String> urlPatterns;
 	private String name;
-	private Map<String, String> initParams;
 	private int order;
 
 	public MappedFilter(Filter filter, Set<String> urlPatterns, int order) {
-		this(filter, urlPatterns, null, Collections.emptyMap(), order);
+		this(filter, urlPatterns, null, order);
 	}
 
 	/**
@@ -29,19 +26,14 @@ public class MappedFilter {
 	 *            URL patterns that this filter will respond to.
 	 * @param name
 	 *            filter name. If null, Jetty will assign its own name.
-	 * @param initParams
-	 *            parameters passed to the filter in
-	 *            {@link Filter#init(javax.servlet.FilterConfig)}.
 	 * @param order
 	 *            an order of the filter among all the filters in a given app.
 	 */
-	public MappedFilter(Filter filter, Set<String> urlPatterns, String name, Map<String, String> initParams,
-			int order) {
+	public MappedFilter(Filter filter, Set<String> urlPatterns, String name, int order) {
 		this.filter = filter;
 		this.urlPatterns = urlPatterns;
 		this.order = order;
 		this.name = name;
-		this.initParams = initParams;
 	}
 
 	public Filter getFilter() {
@@ -54,14 +46,6 @@ public class MappedFilter {
 
 	public int getOrder() {
 		return order;
-	}
-
-	/**
-	 * @since 0.13
-	 * @return a potentially empty map of filter initialization parameters.
-	 */
-	public Map<String, String> getInitParams() {
-		return initParams;
 	}
 
 	/**

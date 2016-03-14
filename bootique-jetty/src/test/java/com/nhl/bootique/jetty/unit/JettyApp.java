@@ -29,8 +29,12 @@ public class JettyApp extends ExternalResource {
 	public void stop() {
 		after();
 	}
-
+	
 	public void start(Module config) {
+		startWithArgs(config, "--server");
+	}
+
+	public void startWithArgs(Module config, String... args) {
 
 		Consumer<Bootique> configurator = bq -> {
 			bq.modules(JettyModule.class).module(config);
@@ -38,6 +42,6 @@ public class JettyApp extends ExternalResource {
 		Function<BQRuntime, Boolean> startupCheck = r -> r.getInstance(Server.class).isStarted();
 
 		this.app = new BQDaemonTestRuntime(configurator, startupCheck);
-		this.app.start(5, TimeUnit.SECONDS, "--server");
+		this.app.start(5, TimeUnit.SECONDS, args);
 	}
 }

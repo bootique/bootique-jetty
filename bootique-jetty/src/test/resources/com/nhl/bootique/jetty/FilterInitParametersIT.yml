@@ -1,0 +1,6 @@
+jetty:
+  filters:
+    f1:
+      params:
+        a: af1
+        b: bf2

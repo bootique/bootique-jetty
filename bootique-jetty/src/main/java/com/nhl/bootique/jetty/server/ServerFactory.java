@@ -3,21 +3,16 @@ package com.nhl.bootique.jetty.server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.EventListener;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-
-import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -37,6 +32,8 @@ public class ServerFactory {
 	protected int maxQueuedRequests;
 	protected int idleThreadTimeout;
 	protected HttpConnectorFactory connector;
+	protected Map<String, ServletFactory> servlets;
+	protected Map<String, FilterFactory> filters;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -75,56 +72,31 @@ public class ServerFactory {
 	}
 
 	protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
-		servlets.forEach((servlet) -> {
+		servlets.forEach(mappedServlet -> getServletFactory(mappedServlet.getName()).createAndAddJettyServlet(handler,
+				mappedServlet));
+	}
 
-			Objects.requireNonNull(servlet.getServlet());
+	protected ServletFactory getServletFactory(String name) {
+		ServletFactory factory = null;
+		if (servlets != null && name != null) {
+			factory = servlets.get(name);
+		}
 
-			if (servlet.getUrlPatterns().isEmpty()) {
-				LOGGER.info("Skipping unmapped servlet {}", servlet.getServlet().getClass().getName());
-			} else {
-
-				ServletHolder holder = new ServletHolder(servlet.getServlet());
-
-				if (servlet.getName() != null) {
-					holder.setName(servlet.getName());
-				}
-
-				servlet.getInitParams().forEach((k, v) -> holder.setInitParameter(k, v));
-
-				servlet.getUrlPatterns().forEach(urlPattern -> {
-					LOGGER.info("Adding servlet mapped to {}", urlPattern);
-					handler.addServlet(holder, urlPattern);
-				});
-			}
-
-		});
+		return factory != null ? factory : new ServletFactory();
 	}
 
 	protected void installFilters(ServletContextHandler handler, Set<MappedFilter> filters) {
-		sortedFilters(filters).forEach(filter -> {
+		sortedFilters(filters).forEach(mappedFilter -> getFilterFactory(mappedFilter.getName())
+				.createAndAddJettyFilter(handler, mappedFilter));
+	}
 
-			Objects.requireNonNull(filter.getFilter());
+	protected FilterFactory getFilterFactory(String name) {
+		FilterFactory factory = null;
+		if (filters != null && name != null) {
+			factory = filters.get(name);
+		}
 
-			if (filter.getUrlPatterns().isEmpty()) {
-				LOGGER.info("Skipping unmapped filter {}", filter.getFilter().getClass().getName());
-			} else {
-
-				FilterHolder holder = new FilterHolder(filter.getFilter());
-
-				if (filter.getName() != null) {
-					holder.setName(filter.getName());
-				}
-
-				filter.getInitParams().forEach((k, v) -> holder.setInitParameter(k, v));
-
-				EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);
-
-				filter.getUrlPatterns().forEach(urlPattern -> {
-					LOGGER.info("Adding filter mapped to {}", urlPattern);
-					handler.addFilter(holder, urlPattern, dispatches);
-				});
-			}
-		});
+		return factory != null ? factory : new FilterFactory();
 	}
 
 	protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
@@ -181,5 +153,13 @@ public class ServerFactory {
 
 	public void setIdleThreadTimeout(int idleThreadTimeout) {
 		this.idleThreadTimeout = idleThreadTimeout;
+	}
+
+	public void setServlets(Map<String, ServletFactory> servlets) {
+		this.servlets = servlets;
+	}
+
+	public void setFilters(Map<String, FilterFactory> filters) {
+		this.filters = filters;
 	}
 }
