@@ -1,6 +1,7 @@
 ## 0.13
 
 * #11 Upgrade to Bootique 0.13
+* #12 Support for init parameters for servlets and filters
 
 ## 0.12:
 

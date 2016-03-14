@@ -82,6 +82,12 @@ public class ServerFactory {
 			} else {
 
 				ServletHolder holder = new ServletHolder(servlet.getServlet());
+				
+				if(servlet.getName() != null) {
+					holder.setName(servlet.getName());
+				}
+				
+				servlet.getInitParams().forEach((k, v) -> holder.setInitParameter(k, v));
 
 				servlet.getUrlPatterns().forEach(urlPattern -> {
 					LOGGER.info("Adding servlet mapped to {}", urlPattern);
