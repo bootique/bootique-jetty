@@ -67,12 +67,14 @@ public class ServerFactory {
 		ServletContextHandler handler = new ServletContextHandler();
 		handler.setContextPath(context);
 
-		listeners.forEach(listener -> {
+		installListeners(handler, listeners);
+		installServlets(handler, servlets);
+		installFilters(handler, filters);
 
-			LOGGER.info("Adding listener {}", listener.getClass().getName());
-			handler.addEventListener(listener);
-		});
+		return handler;
+	}
 
+	protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
 		servlets.forEach((servlet) -> {
 
 			Objects.requireNonNull(servlet.getServlet());
@@ -82,11 +84,11 @@ public class ServerFactory {
 			} else {
 
 				ServletHolder holder = new ServletHolder(servlet.getServlet());
-				
-				if(servlet.getName() != null) {
+
+				if (servlet.getName() != null) {
 					holder.setName(servlet.getName());
 				}
-				
+
 				servlet.getInitParams().forEach((k, v) -> holder.setInitParameter(k, v));
 
 				servlet.getUrlPatterns().forEach(urlPattern -> {
@@ -96,7 +98,9 @@ public class ServerFactory {
 			}
 
 		});
+	}
 
+	protected void installFilters(ServletContextHandler handler, Set<MappedFilter> filters) {
 		sortedFilters(filters).forEach(filter -> {
 
 			Objects.requireNonNull(filter.getFilter());
@@ -106,6 +110,13 @@ public class ServerFactory {
 			} else {
 
 				FilterHolder holder = new FilterHolder(filter.getFilter());
+
+				if (filter.getName() != null) {
+					holder.setName(filter.getName());
+				}
+
+				filter.getInitParams().forEach((k, v) -> holder.setInitParameter(k, v));
+
 				EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);
 
 				filter.getUrlPatterns().forEach(urlPattern -> {
@@ -114,8 +125,14 @@ public class ServerFactory {
 				});
 			}
 		});
+	}
 
-		return handler;
+	protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
+		listeners.forEach(listener -> {
+
+			LOGGER.info("Adding listener {}", listener.getClass().getName());
+			handler.addEventListener(listener);
+		});
 	}
 
 	private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
