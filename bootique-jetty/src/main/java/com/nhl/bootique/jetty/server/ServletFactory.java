@@ -48,7 +48,12 @@ public class ServletFactory {
 		}
 
 		mappedServlet.getUrlPatterns().forEach(urlPattern -> {
-			LOGGER.info("Adding servlet mapped to {}", urlPattern);
+			
+			if (LOGGER.isInfoEnabled()) {
+				String name = mappedServlet.getName() != null ? mappedServlet.getName() : "?";
+				LOGGER.info("Adding servlet '{}' mapped to {}", name, urlPattern);
+			}
+			
 			handler.addServlet(holder, urlPattern);
 		});
 

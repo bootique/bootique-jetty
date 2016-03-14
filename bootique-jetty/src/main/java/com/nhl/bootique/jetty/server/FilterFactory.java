@@ -52,7 +52,12 @@ public class FilterFactory {
 		EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);
 
 		mappedFilter.getUrlPatterns().forEach(urlPattern -> {
-			LOGGER.info("Adding filter mapped to {}", urlPattern);
+
+			if (LOGGER.isInfoEnabled()) {
+				String name = mappedFilter.getName() != null ? mappedFilter.getName() : "?";
+				LOGGER.info("Adding filter '{}' mapped to {}", name, urlPattern);
+			}
+			
 			handler.addFilter(holder, urlPattern, dispatches);
 		});
 
