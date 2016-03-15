@@ -35,6 +35,7 @@ public class ServerFactory {
 	protected Map<String, ServletFactory> servlets;
 	protected Map<String, FilterFactory> filters;
 	protected boolean sessions;
+	private Map<String, String> params;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -71,6 +72,9 @@ public class ServerFactory {
 
 		ServletContextHandler handler = new ServletContextHandler(options);
 		handler.setContextPath(context);
+		if (params != null) {
+			params.forEach((k, v) -> handler.setInitParameter(k, v));
+		}
 
 		installListeners(handler, listeners);
 		installServlets(handler, servlets);
@@ -174,4 +178,14 @@ public class ServerFactory {
 	public void setSessions(boolean sessions) {
 		this.sessions = sessions;
 	}
+
+	/**
+	 * @since 0.13
+	 * @param params
+	 *            a map of context init parameters.
+	 */
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+
 }
