@@ -13,7 +13,9 @@ import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
@@ -86,6 +88,7 @@ public class ServerFactory {
 		server.setStopAtShutdown(true);
 		server.setHandler(createHandler(servlets, filters, listeners));
 
+		createRequestLog(server);
 		createConnectors(server, threadPool);
 
 		// TODO: GZIP filter, request loggers, etc.
@@ -193,6 +196,16 @@ public class ServerFactory {
 
 	protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
 		return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
+	}
+
+	protected void createRequestLog(Server server) {
+
+		Logger logger = LoggerFactory.getLogger(RequestLog.class);
+		if (logger.isInfoEnabled()) {
+			Slf4jRequestLog requestLog = new Slf4jRequestLog();
+			requestLog.setExtended(true);
+			server.setRequestLog(requestLog);
+		}
 	}
 
 	public void setConnector(HttpConnectorFactory connector) {
