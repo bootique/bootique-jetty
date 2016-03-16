@@ -263,8 +263,9 @@ public class ServerFactory {
 	 * is "true". There's no default.
 	 * 
 	 * @since 0.13
-	 * @see http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/
-	 *      eclipse/jetty/servlet/DefaultServlet.html
+	 * @see <a href=
+	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+	 *      DefaultServlet</a>.
 	 * @param staticResourceBase
 	 *            A base location for resources of the Jetty context, that can
 	 *            be a file path or a URL, as well as a special URL starting
