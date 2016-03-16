@@ -1,0 +1,6 @@
+jetty:
+  staticResources: true
+  servlets:
+    default:
+      params:
+        resourceBase: src/test/resources/com/nhl/bootique/jetty/StaticResourcesIT_docroot/

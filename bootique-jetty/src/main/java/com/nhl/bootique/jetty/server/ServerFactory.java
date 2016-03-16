@@ -1,9 +1,11 @@
 package com.nhl.bootique.jetty.server;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -26,6 +29,29 @@ public class ServerFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
+	private static final String CLASSPATH_URL_PREFIX = "classpath:";
+
+	// handle custom URL protocols... TODO: this seems generally useful outside
+	// of Jetty module
+	protected static String preResolveResourceUrl(String resourceUrl) {
+
+		if (resourceUrl == null) {
+			return null;
+		} else if (resourceUrl.startsWith(CLASSPATH_URL_PREFIX)) {
+			URL url = ServerFactory.class.getClassLoader()
+					.getResource(resourceUrl.substring(CLASSPATH_URL_PREFIX.length()));
+
+			if (url == null) {
+				LOGGER.warn("Ignorning unresolvable classpath url: " + resourceUrl);
+				return resourceUrl;
+			}
+
+			return url.toString();
+		} else {
+			return resourceUrl;
+		}
+	}
+
 	protected String context;
 	protected int maxThreads;
 	protected int minThreads;
@@ -36,8 +62,11 @@ public class ServerFactory {
 	protected Map<String, FilterFactory> filters;
 	protected boolean sessions;
 	private Map<String, String> params;
+	private boolean staticResources;
+	private String staticResourceBase;
 
 	public ServerFactory() {
+		this.staticResources = false;
 		this.context = "/";
 		this.minThreads = 4;
 		this.maxThreads = 1024;
@@ -49,6 +78,9 @@ public class ServerFactory {
 	}
 
 	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
+
+		servlets = addDefaultServlets(servlets);
+
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
@@ -59,6 +91,22 @@ public class ServerFactory {
 		// TODO: GZIP filter, request loggers, etc.
 
 		return server;
+	}
+
+	protected Set<MappedServlet> addDefaultServlets(Set<MappedServlet> servlets) {
+		if (staticResources) {
+			servlets = new HashSet<>(servlets);
+			servlets.add(createDefaultServlet());
+		}
+
+		return servlets;
+	}
+
+	protected MappedServlet createDefaultServlet() {
+
+		DefaultServlet servlet = new DefaultServlet();
+
+		return new MappedServlet(servlet, Collections.singleton("/"), "default");
 	}
 
 	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
@@ -74,6 +122,10 @@ public class ServerFactory {
 		handler.setContextPath(context);
 		if (params != null) {
 			params.forEach((k, v) -> handler.setInitParameter(k, v));
+		}
+
+		if (staticResourceBase != null) {
+			handler.setResourceBase(preResolveResourceUrl(staticResourceBase));
 		}
 
 		installListeners(handler, listeners);
@@ -188,4 +240,37 @@ public class ServerFactory {
 		this.params = params;
 	}
 
+	/**
+	 * @since 0.13
+	 * @param staticResources
+	 *            If true, Jetty will install Jetty DefaultServlet that would
+	 *            serve static resources. The servlet is installed under the
+	 *            name "default" and can be further configured via init
+	 *            parameters passed from YAML. The value is "false" by default.
+	 */
+	public void setStaticResources(boolean staticResources) {
+		this.staticResources = staticResources;
+	}
+
+	/**
+	 * Sets a base location for resources of the Jetty context. The value can be
+	 * a file path or a URL, as well as a special URL starting with
+	 * "classpath:".
+	 * <p>
+	 * It can be optionally overridden by DefaultServlet configuration.
+	 * <p>
+	 * For security reasons this has to be set explicitly when "staticResources"
+	 * is "true". There's no default.
+	 * 
+	 * @since 0.13
+	 * @see http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/
+	 *      eclipse/jetty/servlet/DefaultServlet.html
+	 * @param staticResourceBase
+	 *            A base location for resources of the Jetty context, that can
+	 *            be a file path or a URL, as well as a special URL starting
+	 *            with "classpath:".
+	 */
+	public void setStaticResourceBase(String staticResourceBase) {
+		this.staticResourceBase = staticResourceBase;
+	}
 }

@@ -17,6 +17,11 @@ public class JettyApp extends BQDaemonTestFactory {
 		after();
 	}
 
+	public void startServer(String... args) {
+		startServer(b -> {
+		} , args);
+	}
+
 	public void startServer(Module config, String... args) {
 
 		int len = args != null ? args.length + 1 : 1;
