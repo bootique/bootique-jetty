@@ -41,7 +41,7 @@ public class ServletEnvironmentIT {
 
 	@Test
 	public void testServletContatinerState() throws Exception {
-		app.start(new ServletCheckingModule());
+		app.startServer(new ServletCheckingModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

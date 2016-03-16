@@ -38,8 +38,7 @@ public class SessionsIT {
 		params.put("b", "b2");
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		app.startWithArgs(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
-				"--server");
+		app.startServer(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -47,7 +46,7 @@ public class SessionsIT {
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 		assertEquals("count: 1", r1.readEntity(String.class));
 		NewCookie sessionId = r1.getCookies().get("JSESSIONID");
-		
+
 		assertNotNull(sessionId);
 
 		Response r2 = base.path("/").request().cookie(sessionId).get();
@@ -63,8 +62,8 @@ public class SessionsIT {
 		params.put("b", "b2");
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		app.startWithArgs(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
-				"--server", "--config=src/test/resources/com/nhl/bootique/jetty/nosessions.yml");
+		app.startServer(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
+				"--config=src/test/resources/com/nhl/bootique/jetty/nosessions.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

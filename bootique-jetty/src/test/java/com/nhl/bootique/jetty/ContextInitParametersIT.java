@@ -36,8 +36,8 @@ public class ContextInitParametersIT {
 		params.put("b", "b2");
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		app.startWithArgs(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
-				"--server", "--config=src/test/resources/com/nhl/bootique/jetty/ContextInitParametersIT.yml");
+		app.startServer(binder -> JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet),
+				"--config=src/test/resources/com/nhl/bootique/jetty/ContextInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -46,7 +46,7 @@ public class ContextInitParametersIT {
 
 		assertEquals("s1_a1_b2", r1.readEntity(String.class));
 	}
-	
+
 	static class TestServlet extends HttpServlet {
 		private static final long serialVersionUID = -3190255883516320766L;
 
