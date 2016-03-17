@@ -34,7 +34,8 @@
                 <tr>
                     <td><code>connector</code></td>
                     <td><code>HttpConnectorFactory</code></td>
-                    <td>An object specifying properties of the web connector. See below.</td>
+                    <td>An object specifying properties of the web connector. See
+                            <code>jetty.connector</code> below.</td>
                 </tr>
                 <tr>
                     <td><code>context</code></td>
@@ -50,7 +51,8 @@
                 <tr>
                     <td><code>filters</code></td>
                     <td>empty map</td>
-                    <td>A map of servlet filter configurations by filter name. See below.</td>
+                    <td>A map of servlet filter configurations by filter name. See
+                            <code>jetty.filters</code> below.</td>
                 </tr>
             <tr>
                 <td><code>maxThreads</code></td>
@@ -76,7 +78,8 @@
                 <tr>
                     <td><code>servlets</code></td>
                     <td>empty map</td>
-                    <td>A map of servlet configurations by servlet name. See below.</td>
+                    <td>A map of servlet configurations by servlet name. See
+                            <code>jetty.servlets</code> below.</td>
                 </tr>
                 <tr>
                     <td><code>sessions</code></td>
