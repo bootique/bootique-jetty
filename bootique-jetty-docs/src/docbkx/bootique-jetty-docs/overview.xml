@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.0" xml:id="overview">
-    <title>Overview</title>
+    <title>Bootique Integration with Jetty</title>
  
-    <chapter xml:id="overview-bootique-jetty">
-        <title>Bootique Jetty Integration</title>
-        <para>TODO</para>
-        </chapter>
-</part>
+   
+    <para><link xlink:href="https://github.com/nhl/bootique-jetty"
+            ><code>bootique-jetty</code></link> module helps to embed <link
+            xlink:href="http://www.eclipse.org/jetty/">Jetty web server</link> in your application,
+        allowing your to run servlets, or simply serve static files.</para>
+</chapter>

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.0" xml:id="programming">
-    <title>Programming</title>
-    <chapter>
-        <title>Programming with Jetty</title>
-        
-        <para>TODO</para>
-    </chapter>
-</part>
+    <title>Programming Jetty Applications</title>
+    
+    <para>TODO</para>
+</chapter>

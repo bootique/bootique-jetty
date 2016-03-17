@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.0" xml:id="configuration">
-    <title>Configuration</title>
-    <chapter>
-        <title>Configuration Reference</title>
-        
-        <para>TODO</para>
-    </chapter>
+    <title>bootique-jetty Configuration Reference</title>
+    
+    <para>TODO</para>
  
    
-</part>
+</chapter>
