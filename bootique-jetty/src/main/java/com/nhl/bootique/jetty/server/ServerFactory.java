@@ -54,16 +54,16 @@ public class ServerFactory {
 		}
 	}
 
+	protected HttpConnectorFactory connector;
 	protected String context;
+	protected int idleThreadTimeout;
+	protected Map<String, FilterFactory> filters;
 	protected int maxThreads;
 	protected int minThreads;
 	protected int maxQueuedRequests;
-	protected int idleThreadTimeout;
-	protected HttpConnectorFactory connector;
-	protected Map<String, ServletFactory> servlets;
-	protected Map<String, FilterFactory> filters;
-	protected boolean sessions;
 	private Map<String, String> params;
+	protected Map<String, ServletFactory> servlets;
+	protected boolean sessions;
 	private boolean staticResources;
 	private String staticResourceBase;
 
