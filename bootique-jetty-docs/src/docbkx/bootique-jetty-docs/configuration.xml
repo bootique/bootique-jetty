@@ -1,9 +1,177 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.0" xml:id="configuration">
-    <title>bootique-jetty Configuration Reference</title>
+    <title>Configuration Reference</title>
+    <section>
+        <title>jetty</title>
     
-    <para>TODO</para>
- 
-   
+    
+    <para>
+            <programlisting language="python">jetty:
+  context: "/myapp"
+  maxThreads: 100
+  params:
+    a: a1
+    b: b2</programlisting>
+        </para>
+        <para>"jetty" is a root element of the Jetty configuration and is bound to a <link
+                xlink:href="https://github.com/nhl/bootique-jetty/blob/master/bootique-jetty/src/main/java/com/nhl/bootique/jetty/server/ServerFactory.java"
+                    ><code>ServerFactory</code></link> object. It supports the following
+            properties:</para>
+    <table frame="void">
+        <caption>"jetty" Element Property Reference</caption>
+        <col width="20%"/>
+        <col width="15%"/>
+        <col width="65%"/>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td><code>connector</code></td>
+                    <td><code>HttpConnectorFactory</code></td>
+                    <td>An object specifying properties of the web connector. See below.</td>
+                </tr>
+                <tr>
+                    <td><code>context</code></td>
+                    <td><code>/</code></td>
+                    <td>Web application context path.</td>
+                </tr>
+                <tr>
+                    <td><code>idleThreadTimeout</code></td>
+                    <td><code>60000</code></td>
+                    <td>A period in milliseconds specifying how long until an idle thread is
+                        terminated. </td>
+                </tr>
+                <tr>
+                    <td><code>filters</code></td>
+                    <td>empty map</td>
+                    <td>A map of servlet filter configurations by filter name. See below.</td>
+                </tr>
+            <tr>
+                <td><code>maxThreads</code></td>
+                <td><code>1024</code></td>
+                <td>Maximum number of request processing threads in the pool.</td>
+            </tr>
+            <tr>
+                <td><code>minThreads</code></td>
+                <td><code>4</code></td>
+                <td>Initial number of request processing threads in the pool.</td>
+            </tr>
+                <tr>
+                    <td><code>maxQueuedRequests</code></td>
+                    <td><code>1024</code></td>
+                    <td>Maximum number of requests to queue if the thread pool is busy.</td>
+                </tr>
+                <tr>
+                    <td><code>params</code></td>
+                    <td>empty map</td>
+                    <td>A map of arbitrary key/value parameters that are used as "init" parameters
+                        of the ServletContext.</td>
+                </tr>
+                <tr>
+                    <td><code>servlets</code></td>
+                    <td>empty map</td>
+                    <td>A map of servlet configurations by servlet name. See below.</td>
+                </tr>
+                <tr>
+                    <td><code>sessions</code></td>
+                    <td><code>true</code></td>
+                    <td>A boolean specifying whether servlet sessions should be supported by
+                        Jetty.</td>
+                </tr>
+                <tr>
+                    <td><code>staticResources</code></td>
+                    <td><code>false</code></td>
+                    <td>If true, Jetty will install a "default" servlet that serves static resources
+                        from a specified root. This turns Jetty into something akin to a traditional
+                        webserver.</td>
+                </tr>
+                <tr>
+                    <td><code>staticResourceBase</code></td>
+                    <td>none</td>
+                    <td>
+                        <para>Only has effect if <code>staticResources</code> is true. Defines a
+                            base location for resources of the Jetty context. It can be a filesystem
+                            path, a URL or a special "<code>classpath:/</code>" URL (which gives the
+                            ability to bundle resources in the app, not unlike a JavaEE .war file). </para>
+                        <para>For security reasons this property has to be set explicitly. There's
+                            no default. </para>
+                        <para>Jetty DefaultServlet is responsible for serving the resources. It will
+                            use the path defined here, though it can be overridden. Just like other
+                            servlets in Bootique, DefaultServlet can be provided init parameters via
+                            YAML ("jetty.servlets.default.params"). Use the name "default" for this
+                            servlet. Supported parameters are <link
+                                xlink:href="http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html"
+                                >listed on the Jetty site</link>.</para>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    </section>
+    <section>
+        <title>jetty.connector</title>
+        <para>
+            <programlisting>jetty:
+  connector:
+    port: 9999</programlisting>
+        </para>
+        <para>"jetty.connector" element configures a web connector (i.e. an object that listens for
+            network requests for our Jetty-enabled app) and is bound to <link
+                xlink:href="https://github.com/nhl/bootique-jetty/blob/master/bootique-jetty/src/main/java/com/nhl/bootique/jetty/server/HttpConnectorFactory.java"
+                    ><code>HttpConnectorFactory</code></link>. It supports the following
+                properties:<table frame="void">
+                <caption>"jetty.connector" Element Property Reference</caption>
+                <col width="20%"/>
+                <col width="15%"/>
+                <col width="65%"/>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>port</code></td>
+                        <td><code>8080</code></td>
+                        <td>A port the connector listens on.</td>
+                    </tr>
+                </tbody>
+            </table></para>
+    </section>
+    <section>
+        <title>jetty.filters</title>
+        <para><programlisting language="python">jetty:
+  filters:
+    f1:
+      params:
+        p1: v1
+        p2: v2
+    f2:
+      params:
+        p3: v3
+        p4: v4</programlisting>TODO</para>
+    </section>
+    <section>
+        <title>jetty.servlets</title>
+        <para><programlisting language="python">jetty:
+  servlets:
+    s1:
+      params:
+        p1: v1
+        p2: v2
+    s2:
+      params:
+        p3: v3
+        p4: v4
+    default:
+      params:
+        resourceBase: /var/www/html</programlisting>TODO</para>
+    </section>
 </chapter>

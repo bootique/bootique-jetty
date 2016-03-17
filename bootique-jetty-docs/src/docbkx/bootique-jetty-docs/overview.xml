@@ -5,7 +5,7 @@
  
    
     <para><link xlink:href="https://github.com/nhl/bootique-jetty"
-            ><code>bootique-jetty</code></link> module helps to embed <link
+            ><code>bootique-jetty</code></link> module embeds a <link
             xlink:href="http://www.eclipse.org/jetty/">Jetty web server</link> in your application,
-        allowing your to run servlets, or simply serve static files.</para>
+        allowing you to run servlets, or serve static files.</para>
 </chapter>
