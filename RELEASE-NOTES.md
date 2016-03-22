@@ -2,6 +2,7 @@
 
 * #11 Upgrade to Bootique 0.13
 * #12 Support for init parameters for servlets and filters
+* #14 Jetty test module
 * #15 Support for sessions in Jetty
 * #19 Support for context init parameters
 * #20 Support for logging Jetty requests
