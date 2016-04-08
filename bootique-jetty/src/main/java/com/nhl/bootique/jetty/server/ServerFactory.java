@@ -1,6 +1,5 @@
 package com.nhl.bootique.jetty.server;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,33 +25,11 @@ import org.slf4j.LoggerFactory;
 
 import com.nhl.bootique.jetty.MappedFilter;
 import com.nhl.bootique.jetty.MappedServlet;
+import com.nhl.bootique.resource.ResourceFactory;
 
 public class ServerFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
-
-	private static final String CLASSPATH_URL_PREFIX = "classpath:";
-
-	// handle custom URL protocols... TODO: this seems generally useful outside
-	// of Jetty module
-	protected static String preResolveResourceUrl(String resourceUrl) {
-
-		if (resourceUrl == null) {
-			return null;
-		} else if (resourceUrl.startsWith(CLASSPATH_URL_PREFIX)) {
-			URL url = ServerFactory.class.getClassLoader()
-					.getResource(resourceUrl.substring(CLASSPATH_URL_PREFIX.length()));
-
-			if (url == null) {
-				LOGGER.warn("Ignorning unresolvable classpath url: " + resourceUrl);
-				return resourceUrl;
-			}
-
-			return url.toString();
-		} else {
-			return resourceUrl;
-		}
-	}
 
 	protected HttpConnectorFactory connector;
 	protected String context;
@@ -65,7 +42,7 @@ public class ServerFactory {
 	protected Map<String, ServletFactory> servlets;
 	protected boolean sessions;
 	private boolean staticResources;
-	private String staticResourceBase;
+	private ResourceFactory staticResourceBase;
 
 	public ServerFactory() {
 		this.staticResources = false;
@@ -128,7 +105,7 @@ public class ServerFactory {
 		}
 
 		if (staticResourceBase != null) {
-			handler.setResourceBase(preResolveResourceUrl(staticResourceBase));
+			handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
 		}
 
 		installListeners(handler, listeners);
@@ -284,7 +261,7 @@ public class ServerFactory {
 	 *            be a file path or a URL, as well as a special URL starting
 	 *            with "classpath:".
 	 */
-	public void setStaticResourceBase(String staticResourceBase) {
+	public void setStaticResourceBase(ResourceFactory staticResourceBase) {
 		this.staticResourceBase = staticResourceBase;
 	}
 }
