@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.nhl.bootique.jetty</groupId>
 		<artifactId>bootique-jetty-parent</artifactId>
-		<version>0.13</version>
+		<version>0.14-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bootique-jetty-test</artifactId>
