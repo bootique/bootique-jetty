@@ -100,7 +100,7 @@
                     <td>
                         <para>Only has effect if <code>staticResources</code> is true. Defines a
                             base location for resources of the Jetty context. It can be a filesystem
-                            path, a URL or a special "<code>classpath:/</code>" URL (which gives the
+                            path, a URL or a special "<code>classpath:</code>" URL (which gives the
                             ability to bundle resources in the app, not unlike a JavaEE .war file). </para>
                         <para>For security reasons this property has to be set explicitly. There's
                             no default. </para>
