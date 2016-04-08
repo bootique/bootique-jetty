@@ -7,7 +7,7 @@
 * #19 Support for context init parameters
 * #20 Support for logging Jetty requests
 * #21 Get rid of JettyBinder
-
+ 
 ## 0.12:
 
 * #7 Support for contributing servlet listeners
