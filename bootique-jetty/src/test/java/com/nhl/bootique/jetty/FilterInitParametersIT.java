@@ -53,7 +53,7 @@ public class FilterInitParametersIT {
 
 		app.startServer(binder -> {
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf);
-			JettyModule.contributeServlets(binder).addBinding().toInstance(endOfChainServlet);
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(endOfChainServlet);
 		} , "--config=src/test/resources/com/nhl/bootique/jetty/FilterInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

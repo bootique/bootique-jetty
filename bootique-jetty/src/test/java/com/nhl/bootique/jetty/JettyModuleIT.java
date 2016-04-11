@@ -59,8 +59,8 @@ public class JettyModuleIT {
 		MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
 
 		app.startServer(binder -> {
-			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet1);
-			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet2);
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet1);
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet2);
 		});
 
 		verify(mockServlet1).init(any());
@@ -149,7 +149,7 @@ public class JettyModuleIT {
 			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
 
 			// must have a servlet behind the filter chain...
-			JettyModule.contributeServlets(binder).addBinding().toInstance(mappedServlet);
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

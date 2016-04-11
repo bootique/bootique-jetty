@@ -1,7 +1,10 @@
 package com.nhl.bootique.jetty;
 
 import java.util.EventListener;
+import java.util.HashSet;
 import java.util.Set;
+
+import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Server;
 
@@ -14,6 +17,7 @@ import com.nhl.bootique.ConfigModule;
 import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.env.DefaultEnvironment;
 import com.nhl.bootique.jetty.command.ServerCommand;
+import com.nhl.bootique.jetty.server.MappedServletFactory;
 import com.nhl.bootique.jetty.server.ServerFactory;
 import com.nhl.bootique.jetty.servlet.DefaultServletEnvironment;
 import com.nhl.bootique.jetty.servlet.ServletEnvironment;
@@ -25,11 +29,25 @@ public class JettyModule extends ConfigModule {
 	/**
 	 * @param binder
 	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.11
+	 * @since 0.14
 	 * @return returns a {@link Multibinder} for container servlets.
 	 */
-	public static Multibinder<MappedServlet> contributeServlets(Binder binder) {
+	public static Multibinder<MappedServlet> contributeMappedServlets(Binder binder) {
 		return Multibinder.newSetBinder(binder, MappedServlet.class);
+	}
+
+	/**
+	 * Returns a {@link Multibinder} for container servlets. Servlets must be
+	 * annotated. Otherwise they should be mapped via
+	 * {@link #contributeMappedServlets(Binder)}.
+	 * 
+	 * @param binder
+	 *            DI binder passed to the Module that invokes this method.
+	 * @since 0.14
+	 * @return returns a {@link Multibinder} for container servlets.
+	 */
+	public static Multibinder<Servlet> contributeServlets(Binder binder) {
+		return Multibinder.newSetBinder(binder, Servlet.class);
 	}
 
 	/**
@@ -92,6 +110,7 @@ public class JettyModule extends ConfigModule {
 		// trigger extension points creation
 
 		JettyModule.contributeServlets(binder);
+		JettyModule.contributeMappedServlets(binder);
 		JettyModule.contributeFilters(binder);
 		JettyModule.contributeListeners(binder);
 
@@ -113,10 +132,11 @@ public class JettyModule extends ConfigModule {
 
 	@Singleton
 	@Provides
-	Server createServer(ServerFactory factory, Set<MappedServlet> servlets, Set<MappedFilter> filters,
-			Set<EventListener> listeners, BootLogger bootLogger, ShutdownManager shutdownManager) {
+	Server createServer(ServerFactory factory, Set<Servlet> servlets, Set<MappedServlet> mappedServlets,
+			Set<MappedFilter> mappedFilters, Set<EventListener> listeners, BootLogger bootLogger,
+			ShutdownManager shutdownManager) {
 
-		Server server = factory.createServer(servlets, filters, listeners);
+		Server server = factory.createServer(allServlets(servlets, mappedServlets), mappedFilters, listeners);
 
 		shutdownManager.addShutdownHook(() -> {
 			bootLogger.trace(() -> "stopping Jetty...");
@@ -124,6 +144,22 @@ public class JettyModule extends ConfigModule {
 		});
 
 		return server;
+	}
+
+	private Set<MappedServlet> allServlets(Set<Servlet> servlets, Set<MappedServlet> mappedServlets) {
+		if (!servlets.isEmpty()) {
+
+			Set<MappedServlet> mappedServletsClone = new HashSet<>(mappedServlets);
+
+			// TODO: this is very limited ... we need to enable annotation
+			// processors inside Jetty to get all annotations processed..
+			MappedServletFactory mappedServletFactory = new MappedServletFactory();
+			servlets.forEach(servlet -> mappedServletsClone.add(mappedServletFactory.toMappedServlet(servlet)));
+
+			mappedServlets = mappedServletsClone;
+		}
+
+		return mappedServlets;
 	}
 
 	@Singleton
