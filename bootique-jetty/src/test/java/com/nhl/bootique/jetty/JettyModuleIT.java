@@ -97,9 +97,9 @@ public class JettyModuleIT {
 
 		app.startServer(binder -> {
 
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf1);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf2);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf3);
 		});
 
 		Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> {
@@ -144,9 +144,9 @@ public class JettyModuleIT {
 
 		app.startServer(binder -> {
 
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf1);
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf2);
-			JettyModule.contributeFilters(binder).addBinding().toInstance(mf3);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf1);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf2);
+			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf3);
 
 			// must have a servlet behind the filter chain...
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);

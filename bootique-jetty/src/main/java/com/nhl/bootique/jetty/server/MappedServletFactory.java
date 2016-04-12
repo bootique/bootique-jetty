@@ -24,9 +24,9 @@ public class MappedServletFactory {
 
 		if (wsAnnotation == null) {
 			throw new IllegalArgumentException(
-					"Servlet contains no @WebServlet annotation and can not be mapped directly");
+					"Servlet contains no @WebServlet annotation and can not be mapped directly. Wrap it in a MappedServlet instead.");
 		}
-		
+
 		String name = wsAnnotation.name() != null && wsAnnotation.name().length() > 0 ? wsAnnotation.name() : null;
 		Set<String> urlPatterns = new HashSet<>(asList(wsAnnotation.urlPatterns()));
 		return new MappedServlet(servlet, urlPatterns, name);

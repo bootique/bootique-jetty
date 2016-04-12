@@ -1,3 +1,7 @@
+## 0.14:
+
+* #16 Support for servlet spec annotations
+
 ## 0.13
 
 * #11 Upgrade to Bootique 0.13
