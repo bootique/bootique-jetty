@@ -9,7 +9,6 @@ import org.eclipse.jetty.server.Server;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
-import com.nhl.bootique.BQRuntime;
 import com.nhl.bootique.Bootique;
 import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.test.BQDaemonTestRuntime;
@@ -36,7 +35,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 
 	@Override
 	public Builder newRuntime() {
-		Function<BQRuntime, Boolean> startupCheck = r -> r.getInstance(Server.class).isStarted();
+		Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
 		return new Builder(runtimes).startupCheck(startupCheck)
 				.configurator(bootique -> bootique.module(JettyModule.class));
 	}
@@ -48,7 +47,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 		}
 
 		@Override
-		public Builder startupCheck(Function<BQRuntime, Boolean> startupCheck) {
+		public Builder startupCheck(Function<BQDaemonTestRuntime, Boolean> startupCheck) {
 			super.startupCheck(startupCheck);
 			return this;
 		}
