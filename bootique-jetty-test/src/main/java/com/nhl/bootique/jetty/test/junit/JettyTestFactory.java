@@ -51,6 +51,12 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 			super.startupCheck(startupCheck);
 			return this;
 		}
+		
+		@Override
+		public Builder startupAndWaitCheck() {
+			 super.startupAndWaitCheck();
+			 return this;
+		}
 
 		@Override
 		public Builder configurator(Consumer<Bootique> configurator) {
