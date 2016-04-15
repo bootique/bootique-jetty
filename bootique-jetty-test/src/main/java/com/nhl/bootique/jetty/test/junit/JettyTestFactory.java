@@ -76,7 +76,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 			return this;
 		}
 
-		public void startServer(String... args) {
+		public BQDaemonTestRuntime startServer(String... args) {
 
 			int len = args != null ? args.length + 1 : 1;
 			String[] newArgs = new String[len];
@@ -86,7 +86,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 				System.arraycopy(args, 0, newArgs, 1, len - 1);
 			}
 
-			start(newArgs);
+			return start(newArgs);
 		}
 	}
 }
