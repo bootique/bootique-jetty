@@ -76,8 +76,6 @@ public class JettyModule extends ConfigModule {
 	 *            parameters.
 	 * @param urlPatterns
 	 *            url patterns
-	 * @see ServerFactory#setStaticResourceBase(com.nhl.bootique.resource.
-	 *      ResourceFactory).
 	 * @see <a href=
 	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
 	 *      DefaultServlet</a>.
