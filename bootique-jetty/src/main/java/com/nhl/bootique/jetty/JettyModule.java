@@ -1,5 +1,8 @@
 package com.nhl.bootique.jetty;
 
+import static java.util.Arrays.asList;
+
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +14,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebServlet;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
 
 import com.google.inject.Binder;
 import com.google.inject.Provides;
@@ -53,6 +57,50 @@ public class JettyModule extends ConfigModule {
 	 */
 	public static Multibinder<Servlet> contributeServlets(Binder binder) {
 		return Multibinder.newSetBinder(binder, Servlet.class);
+	}
+
+	/**
+	 * Adds a servlet for serving static resources for a given URL. The actual
+	 * servlet used is Jetty <a href=
+	 * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+	 * DefaultServlet</a>, and it can be configured further via servlet
+	 * parameters. Static resources will be resolved relative to ServerFactory's
+	 * "staticResourceBase" , with URL path used to locate a subfolder, unless
+	 * servlet-specific configuration is explicitly provided.
+	 * 
+	 * @since 0.15
+	 * @param binder
+	 *            DI binder.
+	 * @param name
+	 *            servlet name that can be referenced in YAML to pass
+	 *            parameters.
+	 * @param urlPatterns
+	 *            url patterns
+	 * @see ServerFactory#setStaticResourceBase(com.nhl.bootique.resource.
+	 *      ResourceFactory).
+	 * @see <a href=
+	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+	 *      DefaultServlet</a>.
+	 */
+	public static void contributeStaticServlet(Binder binder, String name, String... urlPatterns) {
+
+		Set<String> patternsSet = urlPatterns != null ? new HashSet<>(asList(urlPatterns)) : Collections.emptySet();
+
+		DefaultServlet servlet = new DefaultServlet();
+		MappedServlet mappedServlet = new MappedServlet(servlet, patternsSet, name);
+		contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
+	}
+
+	/**
+	 * Adds a default servlet to Jetty, as specified in servlet spec. Equivalent
+	 * to 'contributeStaticServlet(binder, "/", "default")'.
+	 * 
+	 * @since 0.15
+	 * @param binder
+	 *            DI binder.
+	 */
+	public static void contributeDefaultServlet(Binder binder) {
+		contributeStaticServlet(binder, "default", "/");
 	}
 
 	/**

@@ -1,5 +1,4 @@
 jetty:
-  staticResources: true
   servlets:
     default:
       params:

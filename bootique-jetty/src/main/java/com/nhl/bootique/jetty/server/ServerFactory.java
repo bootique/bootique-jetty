@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Slf4jRequestLog;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -23,6 +21,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.jetty.MappedFilter;
 import com.nhl.bootique.jetty.MappedServlet;
 import com.nhl.bootique.resource.ResourceFactory;
@@ -41,11 +40,9 @@ public class ServerFactory {
 	private Map<String, String> params;
 	protected Map<String, ServletFactory> servlets;
 	protected boolean sessions;
-	private boolean staticResources;
 	private ResourceFactory staticResourceBase;
 
 	public ServerFactory() {
-		this.staticResources = false;
 		this.context = "/";
 		this.minThreads = 4;
 		this.maxThreads = 1024;
@@ -58,8 +55,6 @@ public class ServerFactory {
 
 	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
 
-		servlets = addDefaultServlets(servlets);
-
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
@@ -71,22 +66,6 @@ public class ServerFactory {
 		// TODO: GZIP filter, request loggers, etc.
 
 		return server;
-	}
-
-	protected Set<MappedServlet> addDefaultServlets(Set<MappedServlet> servlets) {
-		if (staticResources) {
-			servlets = new HashSet<>(servlets);
-			servlets.add(createDefaultServlet());
-		}
-
-		return servlets;
-	}
-
-	protected MappedServlet createDefaultServlet() {
-
-		DefaultServlet servlet = new DefaultServlet();
-
-		return new MappedServlet(servlet, Collections.singleton("/"), "default");
 	}
 
 	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
@@ -231,21 +210,9 @@ public class ServerFactory {
 	}
 
 	/**
-	 * @since 0.13
-	 * @param staticResources
-	 *            If true, Jetty will install Jetty DefaultServlet that would
-	 *            serve static resources. The servlet is installed under the
-	 *            name "default" and can be further configured via init
-	 *            parameters passed from YAML. The value is "false" by default.
-	 */
-	public void setStaticResources(boolean staticResources) {
-		this.staticResources = staticResources;
-	}
-
-	/**
-	 * Sets a base location for resources of the Jetty context. The value can be
-	 * a file path or a URL, as well as a special URL starting with
-	 * "classpath:".
+	 * Sets a base location for resources of the Jetty context. Used by static
+	 * resource servlets, including the "default" servlet. The value can be a
+	 * file path or a URL, as well as a special URL starting with "classpath:".
 	 * <p>
 	 * It can be optionally overridden by DefaultServlet configuration.
 	 * <p>
@@ -253,6 +220,9 @@ public class ServerFactory {
 	 * is "true". There's no default.
 	 * 
 	 * @since 0.13
+	 * @see JettyModule#contributeDefaultServlet(com.google.inject.Binder)
+	 * @see JettyModule#contributeStaticServlet(com.google.inject.Binder,
+	 *      String, String...)
 	 * @see <a href=
 	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
 	 *      DefaultServlet</a>.

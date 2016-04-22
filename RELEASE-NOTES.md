@@ -1,3 +1,7 @@
+## 0.15:
+
+* #24 More flexible mapping of static folders.
+
 ## 0.14:
 
 * #16 Support for servlet spec annotations
