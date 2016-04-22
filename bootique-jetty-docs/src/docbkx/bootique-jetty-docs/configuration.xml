@@ -88,29 +88,23 @@
                         Jetty.</td>
                 </tr>
                 <tr>
-                    <td><code>staticResources</code></td>
-                    <td><code>false</code></td>
-                    <td>If true, Jetty will install a "default" servlet that serves static resources
-                        from a specified root. This turns Jetty into something akin to a traditional
-                        webserver.</td>
-                </tr>
-                <tr>
                     <td><code>staticResourceBase</code></td>
                     <td>none</td>
                     <td>
-                        <para>Only has effect if <code>staticResources</code> is true. Defines a
-                            base location for resources of the Jetty context. It can be a filesystem
-                            path, a URL or a special "<code>classpath:</code>" URL (which gives the
-                            ability to bundle resources in the app, not unlike a JavaEE .war file). </para>
+                        <para>Defines a base location for resources of the Jetty context. It can be
+                            a filesystem path, a URL or a special "<code>classpath:</code>" URL
+                            (which gives the ability to bundle resources in the app, not unlike a
+                            JavaEE .war file). </para>
                         <para>For security reasons this property has to be set explicitly. There's
                             no default. </para>
-                        <para>Jetty DefaultServlet is responsible for serving the resources. It will
-                            use the path defined here, though it can be overridden. Just like other
-                            servlets in Bootique, DefaultServlet can be provided init parameters via
-                            YAML ("jetty.servlets.default.params"). Use the name "default" for this
-                            servlet. Supported parameters are <link
+                        <para>This setting only makes sense when some form of "default" servlet is
+                            in use, that will be responsible for serving static resources. See
+                                <code>JettyModule.contributeStaticServlet(..)</code> or
+                                <code>JettyModule.contributeDefaultServlet(..)</code>. Such servlet
+                            will use the path defined here, unless overridden via servlet
+                            parameters. For the list fo servlet parameters see <link
                                 xlink:href="http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html"
-                                >listed on the Jetty site</link>.</para>
+                                >Jetty default servlet docs</link>.</para>
                     </td>
                 </tr>
         </tbody>
