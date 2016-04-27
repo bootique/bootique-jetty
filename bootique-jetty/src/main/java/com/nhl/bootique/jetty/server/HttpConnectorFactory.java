@@ -71,4 +71,12 @@ public class HttpConnectorFactory {
 	public void setPort(int port) {
 		this.port = port;
 	}
+
+	/**
+	 * @since 0.15
+	 * @return configured listen port.
+	 */
+	public int getPort() {
+		return port;
+	}
 }

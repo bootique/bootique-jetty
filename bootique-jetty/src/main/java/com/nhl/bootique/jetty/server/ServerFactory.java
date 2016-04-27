@@ -234,4 +234,80 @@ public class ServerFactory {
 	public void setStaticResourceBase(ResourceFactory staticResourceBase) {
 		this.staticResourceBase = staticResourceBase;
 	}
+
+	/**
+	 * @since 0.15
+	 * @return an object containing properties of the web connector and acting
+	 *         as connector factory.
+	 */
+	public HttpConnectorFactory getConnector() {
+		return connector;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return web application context path.
+	 */
+	public String getContext() {
+		return context;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a period in milliseconds specifying how long it takes until an
+	 *         idle thread is terminated.
+	 */
+	public int getIdleThreadTimeout() {
+		return idleThreadTimeout;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a maximum number of requests to queue if the thread pool is busy.
+	 */
+	public int getMaxQueuedRequests() {
+		return maxQueuedRequests;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a maximum number of request processing threads in the pool.
+	 */
+	public int getMaxThreads() {
+		return maxThreads;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return an initial number of request processing threads in the pool.
+	 */
+	public int getMinThreads() {
+		return minThreads;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a map of arbitrary key/value parameters that are used as "init"
+	 *         parameters of the ServletContext.
+	 */
+	public Map<String, String> getParams() {
+		return params != null ? Collections.unmodifiableMap(params) : Collections.emptyMap();
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a boolean specifying whether servlet sessions should be supported
+	 *         by Jetty.
+	 */
+	public boolean isSessions() {
+		return sessions;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return a base location for resources of the Jetty context.
+	 */
+	public ResourceFactory getStaticResourceBase() {
+		return staticResourceBase;
+	}
 }
