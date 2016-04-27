@@ -1,6 +1,7 @@
 ## 0.15:
 
 * #24 More flexible mapping of static folders.
+* #25 ServerFactory - add getters
 
 ## 0.14:
 
