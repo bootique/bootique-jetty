@@ -27,6 +27,7 @@
 
 * #2 Support for contributing filters
 * #3 Support for multiple URL patterns for servlets
+* #4 Support for request metrics
 * #5 Upgrade Bootique to 0.12
 * #6 Move contribution API from JettyBinder into static methods on JettyModule
  
