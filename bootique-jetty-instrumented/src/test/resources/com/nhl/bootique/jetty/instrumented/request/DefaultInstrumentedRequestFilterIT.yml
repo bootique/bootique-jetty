@@ -1,0 +1,4 @@
+log:
+  loggers:
+    com.nhl.bootique.jetty.instrumented:
+      level: DEBUG

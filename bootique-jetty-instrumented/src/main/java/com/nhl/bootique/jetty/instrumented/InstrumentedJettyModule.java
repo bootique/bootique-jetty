@@ -1,9 +1,17 @@
 package com.nhl.bootique.jetty.instrumented;
 
+import java.util.Collections;
+
 import com.codahale.metrics.MetricRegistry;
+import com.google.inject.Binder;
+import com.google.inject.Key;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.nhl.bootique.ConfigModule;
 import com.nhl.bootique.config.ConfigurationFactory;
+import com.nhl.bootique.jetty.JettyModule;
+import com.nhl.bootique.jetty.MappedFilter;
+import com.nhl.bootique.jetty.instrumented.request.DefaultInstrumentedRequestFilter;
 import com.nhl.bootique.jetty.instrumented.server.InstrumentedServerFactory;
 import com.nhl.bootique.jetty.server.ServerFactory;
 
@@ -21,8 +29,28 @@ public class InstrumentedJettyModule extends ConfigModule {
 		super(configPrefix);
 	}
 
+	@Override
+	public void configure(Binder binder) {
+		JettyModule.contributeMappedFilters(binder).addBinding()
+				.to(Key.get(MappedFilter.class, InstrumentedRequestFilter.class));
+	}
+
+	@InstrumentedRequestFilter
+	@Provides
+	@Singleton
+	private MappedFilter provideMappedRequestFilter(DefaultInstrumentedRequestFilter filter) {
+		return new MappedFilter(filter, Collections.singleton("/*"), DefaultInstrumentedRequestFilter.DEFAULT_ORDER);
+	}
+
+	@Provides
+	@Singleton
+	private DefaultInstrumentedRequestFilter provideInstrumentedRequestFilter(MetricRegistry metricRegistry) {
+		return new DefaultInstrumentedRequestFilter(metricRegistry);
+	}
+
 	@Provides
 	public ServerFactory createServerFactory(ConfigurationFactory configFactory, MetricRegistry metricRegistry) {
 		return configFactory.config(InstrumentedServerFactory.class, configPrefix).initMetricRegistry(metricRegistry);
 	}
+
 }
