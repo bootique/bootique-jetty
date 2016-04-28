@@ -33,7 +33,7 @@ public class FilterFactory {
 
 		if (mappedFilter.getUrlPatterns().isEmpty()) {
 			// TODO: old Java anti-pattern is to use filters for the sake
-			// of their "init" method, so perhaps we do need to add unampped
+			// of their "init" method, so perhaps we do need to add unmapped
 			// filter after all?
 			LOGGER.info("Skipping unmapped filter {}", mappedFilter.getFilter().getClass().getName());
 			return Optional.empty();
