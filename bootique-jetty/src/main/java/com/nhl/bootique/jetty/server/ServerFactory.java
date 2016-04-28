@@ -249,13 +249,13 @@ public class ServerFactory {
 	}
 
 	/**
-	 * Sets whether compression whether gzip/deflate compression should be
-	 * supported. When true, responses will be compressed if a client requests
-	 * it via "Accept-Encoding:" header. Default is true.
+	 * Sets whether compression whether gzip compression should be supported.
+	 * When true, responses will be compressed if a client requests it via
+	 * "Accept-Encoding:" header. Default is true.
 	 * 
 	 * @since 0.15
 	 * @param compression
-	 *            whether gzip/deflate compression should be supported.
+	 *            whether gzip compression should be supported.
 	 */
 	public void setCompression(boolean compression) {
 		this.compression = compression;
