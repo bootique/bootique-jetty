@@ -3,6 +3,7 @@
 * #24 More flexible mapping of static folders.
 * #25 ServerFactory - add getters
 * #27 change 'staticResourceBase' type of FolderResourceFactory
+* #28 InstrumentedRequestFilter : logging and metrics gathering filter 
 
 ## 0.14:
 
