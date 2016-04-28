@@ -28,6 +28,8 @@ public class MappedFilter {
 	 *            filter name. If null, Jetty will assign its own name.
 	 * @param order
 	 *            an order of the filter among all the filters in a given app.
+	 *            If two filters match the same request, filter with lower
+	 *            ordering will be an outer filter and will be called first.
 	 */
 	public MappedFilter(Filter filter, Set<String> urlPatterns, String name, int order) {
 		this.filter = filter;
@@ -44,6 +46,12 @@ public class MappedFilter {
 		return urlPatterns;
 	}
 
+	/**
+	 * Returns filter relative ordering. If two filters match the same request,
+	 * the filter with lower ordering will wrap the filter with higher ordering.
+	 * 
+	 * @return filter relative ordering.
+	 */
 	public int getOrder() {
 		return order;
 	}
