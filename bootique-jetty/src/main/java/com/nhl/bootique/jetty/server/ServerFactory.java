@@ -14,6 +14,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Slf4jRequestLog;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -41,6 +42,7 @@ public class ServerFactory {
 	protected Map<String, ServletFactory> servlets;
 	protected boolean sessions;
 	private FolderResourceFactory staticResourceBase;
+	private boolean compression;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -49,6 +51,7 @@ public class ServerFactory {
 		this.maxQueuedRequests = 1024;
 		this.idleThreadTimeout = 60000;
 		this.sessions = true;
+		this.compression = true;
 
 		this.connector = new HttpConnectorFactory();
 	}
@@ -87,11 +90,21 @@ public class ServerFactory {
 			handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
 		}
 
+		if (compression) {
+			handler.setGzipHandler(createGzipHandler());
+		}
+
 		installListeners(handler, listeners);
 		installServlets(handler, servlets);
 		installFilters(handler, filters);
 
 		return handler;
+	}
+
+	protected GzipHandler createGzipHandler() {
+		GzipHandler gzipHandler = new GzipHandler();
+		gzipHandler.setCheckGzExists(false);
+		return gzipHandler;
 	}
 
 	protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
@@ -236,6 +249,19 @@ public class ServerFactory {
 	}
 
 	/**
+	 * Sets whether compression whether gzip/deflate compression should be
+	 * supported. When true, responses will be compressed if a client requests
+	 * it via "Accept-Encoding:" header. Default is true.
+	 * 
+	 * @since 0.15
+	 * @param compression
+	 *            whether gzip/deflate compression should be supported.
+	 */
+	public void setCompression(boolean compression) {
+		this.compression = compression;
+	}
+
+	/**
 	 * @since 0.15
 	 * @return an object containing properties of the web connector and acting
 	 *         as connector factory.
@@ -309,5 +335,13 @@ public class ServerFactory {
 	 */
 	public FolderResourceFactory getStaticResourceBase() {
 		return staticResourceBase;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return whether content compression is supported.
+	 */
+	public boolean isCompression() {
+		return compression;
 	}
 }

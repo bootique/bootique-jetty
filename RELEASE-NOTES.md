@@ -1,5 +1,6 @@
 ## 0.15:
 
+*  #9 Support for gzip compression
 * #24 More flexible mapping of static folders.
 * #25 ServerFactory - add getters
 * #27 change 'staticResourceBase' type of FolderResourceFactory
