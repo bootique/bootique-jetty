@@ -59,11 +59,11 @@ public class DefaultInstrumentedRequestFilter implements Filter {
 			// note that we are skipping request parameter/URL/etc. logging...
 			// This is done by Jetty.
 
-			LOGGER.debug("request started");
+			LOGGER.info("request started");
 			chain.doFilter(request, response);
 		} finally {
 			long timeNanos = requestTimerContext.stop();
-			LOGGER.debug("request finished in {} ms", timeNanos / 1000);
+			LOGGER.info("request finished in {} ms", timeNanos / 1000);
 		}
 	}
 

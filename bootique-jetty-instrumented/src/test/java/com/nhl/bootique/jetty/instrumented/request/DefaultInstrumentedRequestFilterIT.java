@@ -37,8 +37,7 @@ public class DefaultInstrumentedRequestFilterIT {
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
 		BQDaemonTestRuntime runtime = app.startServer(
-				binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet),
-				"--config=src/test/resources/com/nhl/bootique/jetty/instrumented/request/DefaultInstrumentedRequestFilterIT.yml");
+				binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
