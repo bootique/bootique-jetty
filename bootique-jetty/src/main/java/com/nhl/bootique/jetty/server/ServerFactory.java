@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.jetty.MappedFilter;
 import com.nhl.bootique.jetty.MappedServlet;
-import com.nhl.bootique.resource.ResourceFactory;
+import com.nhl.bootique.resource.FolderResourceFactory;
 
 public class ServerFactory {
 
@@ -40,7 +40,7 @@ public class ServerFactory {
 	private Map<String, String> params;
 	protected Map<String, ServletFactory> servlets;
 	protected boolean sessions;
-	private ResourceFactory staticResourceBase;
+	private FolderResourceFactory staticResourceBase;
 
 	public ServerFactory() {
 		this.context = "/";
@@ -231,7 +231,7 @@ public class ServerFactory {
 	 *            be a file path or a URL, as well as a special URL starting
 	 *            with "classpath:".
 	 */
-	public void setStaticResourceBase(ResourceFactory staticResourceBase) {
+	public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
 		this.staticResourceBase = staticResourceBase;
 	}
 
@@ -307,7 +307,7 @@ public class ServerFactory {
 	 * @since 0.15
 	 * @return a base location for resources of the Jetty context.
 	 */
-	public ResourceFactory getStaticResourceBase() {
+	public FolderResourceFactory getStaticResourceBase() {
 		return staticResourceBase;
 	}
 }

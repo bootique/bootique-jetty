@@ -2,6 +2,7 @@
 
 * #24 More flexible mapping of static folders.
 * #25 ServerFactory - add getters
+* #27 change 'staticResourceBase' type of FolderResourceFactory
 
 ## 0.14:
 
