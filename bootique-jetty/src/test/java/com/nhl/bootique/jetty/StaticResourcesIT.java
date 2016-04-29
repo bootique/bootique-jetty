@@ -105,6 +105,21 @@ public class StaticResourcesIT {
 		assertEquals(Status.OK.getStatusCode(), r.getStatus());
 		assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
 	}
+	
+	@Test
+	public void testWithContextBase_FilePath_DotSlash() {
+		app.startServer(binder -> {
+			JettyModule.contributeDefaultServlet(binder);
+			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
+					.toInstance("./src/test/resources/com/nhl/bootique/jetty/StaticResourcesIT_docroot/");
+		});
+
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+		Response r = base.path("/").request().get();
+		assertEquals(Status.OK.getStatusCode(), r.getStatus());
+		assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+	}
 
 	@Test
 	public void testWithServletBase() {

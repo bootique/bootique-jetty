@@ -5,6 +5,7 @@
 * #25 ServerFactory - add getters
 * #27 change 'staticResourceBase' type of FolderResourceFactory
 * #28 InstrumentedRequestFilter : logging and metrics gathering filter 
+* #29 dot-slash paths do not work with default Jetty servlet
 
 ## 0.14:
 
