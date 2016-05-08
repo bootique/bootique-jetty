@@ -53,7 +53,7 @@ public class JettyModuleIT {
 	}
 
 	@Test
-	public void testContributeServlets() throws Exception {
+	public void testContributeMappedServlets() throws Exception {
 
 		MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 		MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
