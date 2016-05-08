@@ -1,0 +1,5 @@
+jetty:
+  servlets:
+    s1:
+      urlPatterns:
+        - "/c/*"

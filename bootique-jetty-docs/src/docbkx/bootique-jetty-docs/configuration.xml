@@ -155,6 +155,9 @@
         <para><programlisting language="python">jetty:
   filters:
     f1:
+      urlPatterns:
+        - '/a/*/'
+        - '/b/*'
       params:
         p1: v1
         p2: v2
@@ -168,6 +171,9 @@
         <para><programlisting language="python">jetty:
   servlets:
     s1:
+      urlPatterns:
+        - '/myservlet'
+        - '/someotherpath'
       params:
         p1: v1
         p2: v2

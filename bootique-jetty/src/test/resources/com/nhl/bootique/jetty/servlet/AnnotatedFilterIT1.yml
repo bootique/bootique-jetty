@@ -1,0 +1,5 @@
+jetty:
+  filters:
+    f1:
+      urlPatterns:
+        - "/c/*"

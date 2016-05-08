@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -57,6 +58,23 @@ public class AnnotatedFilterIT {
 		assertNotNull(assertion);
 	}
 
+	@Test
+	public void testConfig_Override() throws Exception {
+
+		app.startServer(new FilterModule(), "--config=classpath:com/nhl/bootique/jetty/servlet/AnnotatedFilterIT1.yml");
+
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+		assertNull(assertion);
+
+		base.path("/b").request().get();
+		assertNull(assertion);
+
+		base.path("/c").request().get();
+		Objects.requireNonNull(assertion).run();
+		assertion = null;
+	}
+
 	class FilterModule implements Module {
 
 		@Override
@@ -68,8 +86,8 @@ public class AnnotatedFilterIT {
 		private AnnotatedFilter provideFilter() {
 			return new AnnotatedFilter();
 		}
-		
-		@WebFilter(urlPatterns = "/b/*")
+
+		@WebFilter(filterName = "f1", urlPatterns = "/b/*")
 		class AnnotatedFilter implements Filter {
 
 			@Override

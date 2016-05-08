@@ -36,7 +36,7 @@ public class AnnotatedServletIT {
 	}
 
 	@Test
-	public void testServletContatinerState() throws Exception {
+	public void testServletContainerState() throws Exception {
 		app.startServer(new ServletModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -55,6 +55,24 @@ public class AnnotatedServletIT {
 		Objects.requireNonNull(assertion).run();
 	}
 
+	@Test
+	public void testConfig_Override() throws Exception {
+
+		app.startServer(new ServletModule(),
+				"--config=classpath:com/nhl/bootique/jetty/servlet/AnnotatedServletIT1.yml");
+
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+		assertNull(assertion);
+
+		base.path("/b").request().get();
+		assertNull(assertion);
+
+		base.path("/c").request().get();
+		Objects.requireNonNull(assertion).run();
+		assertion = null;
+	}
+
 	class ServletModule implements Module {
 
 		@Override
@@ -67,7 +85,7 @@ public class AnnotatedServletIT {
 			return new AnnotatedServlet();
 		}
 
-		@WebServlet(urlPatterns = "/b/*")
+		@WebServlet(name = "s1", urlPatterns = "/b/*")
 		class AnnotatedServlet extends HttpServlet {
 
 			private static final long serialVersionUID = -8896839263652092254L;

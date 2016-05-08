@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.DispatcherType;
 
@@ -17,21 +18,17 @@ import com.nhl.bootique.jetty.MappedFilter;
 /**
  * @since 0.13
  */
-public class FilterFactory {
+public class FilterFactory extends WebArtifactFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterFactory.class);
-
-	private Map<String, String> params;
-
-	public void setParams(Map<String, String> params) {
-		this.params = params;
-	}
 
 	public Optional<FilterHolder> createAndAddJettyFilter(ServletContextHandler handler, MappedFilter mappedFilter) {
 
 		Objects.requireNonNull(mappedFilter.getFilter());
 
-		if (mappedFilter.getUrlPatterns().isEmpty()) {
+		Set<String> urlPatterns = getUrlPatterns(mappedFilter.getUrlPatterns());
+
+		if (urlPatterns.isEmpty()) {
 			// TODO: old Java anti-pattern is to use filters for the sake
 			// of their "init" method, so perhaps we do need to add unmapped
 			// filter after all?
@@ -45,19 +42,20 @@ public class FilterFactory {
 			holder.setName(mappedFilter.getName());
 		}
 
+		Map<String, String> params = getParams();
 		if (params != null) {
 			params.forEach((k, v) -> holder.setInitParameter(k, v));
 		}
 
 		EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);
 
-		mappedFilter.getUrlPatterns().forEach(urlPattern -> {
+		urlPatterns.forEach(urlPattern -> {
 
 			if (LOGGER.isInfoEnabled()) {
 				String name = mappedFilter.getName() != null ? mappedFilter.getName() : "?";
 				LOGGER.info("Adding filter '{}' mapped to {}", name, urlPattern);
 			}
-			
+
 			handler.addFilter(holder, urlPattern, dispatches);
 		});
 
