@@ -24,7 +24,17 @@ public abstract class WebArtifactFactory {
 		this.params = params;
 	}
 
-	protected Map<String, String> getParams() {
+	protected Map<String, String> getParams(Map<String, String> mappedParams) {
+
+		Map<String, String> params = this.params;
+		if (params == null || params.isEmpty()) {
+			params = mappedParams;
+		}
+
+		if (params == null) {
+			params = Collections.emptyMap();
+		}
+		
 		return params;
 	}
 

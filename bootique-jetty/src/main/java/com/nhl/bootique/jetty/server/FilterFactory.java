@@ -42,7 +42,7 @@ public class FilterFactory extends WebArtifactFactory {
 			holder.setName(mappedFilter.getName());
 		}
 
-		Map<String, String> params = getParams();
+		Map<String, String> params = getParams(mappedFilter.getParams());
 		if (params != null) {
 			params.forEach((k, v) -> holder.setInitParameter(k, v));
 		}

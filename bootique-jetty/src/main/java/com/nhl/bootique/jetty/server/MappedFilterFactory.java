@@ -2,11 +2,14 @@ package com.nhl.bootique.jetty.server;
 
 import static java.util.Arrays.asList;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 
 import com.nhl.bootique.jetty.MappedFilter;
 
@@ -30,7 +33,15 @@ public class MappedFilterFactory {
 		String name = wfAnnotation.filterName() != null && wfAnnotation.filterName().length() > 0
 				? wfAnnotation.filterName() : null;
 		Set<String> urlPatterns = new HashSet<>(asList(wfAnnotation.urlPatterns()));
-		return new MappedFilter(filter, urlPatterns, name, order);
+
+		Map<String, String> initParams = new HashMap<>();
+
+		WebInitParam[] paramsArray = wfAnnotation.initParams();
+		if (paramsArray != null) {
+			asList(paramsArray).forEach(p -> initParams.put(p.name(), p.value()));
+		}
+
+		return new MappedFilter(filter, urlPatterns, name, initParams, order);
 	}
 
 }

@@ -7,6 +7,7 @@
 * #28 InstrumentedRequestFilter : logging and metrics gathering filter 
 * #29 dot-slash paths do not work with default Jetty servlet
 * #30 Servlets/Filters: Support for 'urlPatterns' mapping in YAML
+* #31 Support for servlet and filter parameters configured in annotations 
 
 ## 0.14:
 

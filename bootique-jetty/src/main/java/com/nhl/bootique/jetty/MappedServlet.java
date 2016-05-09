@@ -1,5 +1,7 @@
 package com.nhl.bootique.jetty;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Servlet;
@@ -7,11 +9,7 @@ import javax.servlet.Servlet;
 /**
  * @since 0.10
  */
-public class MappedServlet {
-
-	private Servlet servlet;
-	private Set<String> urlPatterns;
-	private String name;
+public class MappedServlet extends MappedWebArtifact<Servlet> {
 
 	public MappedServlet(Servlet servlet, Set<String> urlPatterns) {
 		this(servlet, urlPatterns, null);
@@ -27,21 +25,26 @@ public class MappedServlet {
 	 *            servlet name. If null, Jetty will assign its own name.
 	 */
 	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name) {
-		this.servlet = servlet;
-		this.name = name;
-		this.urlPatterns = urlPatterns;
-	}
-
-	public Servlet getServlet() {
-		return servlet;
+		this(servlet, urlPatterns, name, Collections.emptyMap());
 	}
 
 	/**
-	 * @since 0.11
-	 * @return collection of URL patterns matching this servlet.
+	 * @since 0.15
+	 * @param servlet
+	 *            underlying servlet instance.
+	 * @param urlPatterns
+	 *            URL patterns that this servlet will respond to.
+	 * @param name
+	 *            servlet name. If null, Jetty will assign its own name.
+	 * @param params
+	 *            servlet init parameters map.
 	 */
-	public Set<String> getUrlPatterns() {
-		return urlPatterns;
+	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name, Map<String, String> params) {
+		super(servlet, urlPatterns, name, params);
+	}
+
+	public Servlet getServlet() {
+		return getArtifact();
 	}
 
 	/**
@@ -60,13 +63,5 @@ public class MappedServlet {
 
 		throw new UnsupportedOperationException(
 				"This operation is deprecated and is not supported for servlets with multiple URL mappings");
-	}
-
-	/**
-	 * @since 0.13
-	 * @return an optional servlet name.
-	 */
-	public String getName() {
-		return name;
 	}
 }

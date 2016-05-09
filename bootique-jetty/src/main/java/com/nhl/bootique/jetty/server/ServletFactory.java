@@ -41,7 +41,7 @@ public class ServletFactory extends WebArtifactFactory {
 			holder.setName(mappedServlet.getName());
 		}
 
-		Map<String, String> params = getParams();
+		Map<String, String> params = getParams(mappedServlet.getParams());
 		if (params != null) {
 			params.forEach((k, v) -> holder.setInitParameter(k, v));
 		}
