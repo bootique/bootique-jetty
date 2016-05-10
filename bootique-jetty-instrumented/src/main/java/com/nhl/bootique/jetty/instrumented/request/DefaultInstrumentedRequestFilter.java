@@ -63,7 +63,7 @@ public class DefaultInstrumentedRequestFilter implements Filter {
 			chain.doFilter(request, response);
 		} finally {
 			long timeNanos = requestTimerContext.stop();
-			LOGGER.info("request finished in {} ms", timeNanos / 1000);
+			LOGGER.info("request finished in {} ms", timeNanos / 1000000);
 		}
 	}
 
