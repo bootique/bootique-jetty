@@ -22,18 +22,18 @@ import com.nhl.bootique.jetty.instrumented.InstrumentedRequestFilter;
  * 
  * @since 0.15
  */
-public class DefaultInstrumentedRequestFilter implements Filter {
+public class TimingFilter implements Filter {
 
 	/**
 	 * Ordering used by the default configuration of this filter.
 	 */
 	public static final int DEFAULT_ORDER = -100;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultInstrumentedRequestFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TimingFilter.class);
 
 	private Timer requestTimer;
 
-	public DefaultInstrumentedRequestFilter(MetricRegistry metricRegistry) {
+	public TimingFilter(MetricRegistry metricRegistry) {
 		super();
 		this.requestTimer = metricRegistry.timer(MetricRegistry.name(InstrumentedRequestFilter.class, "request-timer"));
 	}

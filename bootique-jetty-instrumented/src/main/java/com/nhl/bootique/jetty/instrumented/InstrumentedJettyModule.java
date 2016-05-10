@@ -11,7 +11,7 @@ import com.nhl.bootique.ConfigModule;
 import com.nhl.bootique.config.ConfigurationFactory;
 import com.nhl.bootique.jetty.JettyModule;
 import com.nhl.bootique.jetty.MappedFilter;
-import com.nhl.bootique.jetty.instrumented.request.DefaultInstrumentedRequestFilter;
+import com.nhl.bootique.jetty.instrumented.request.TimingFilter;
 import com.nhl.bootique.jetty.instrumented.server.InstrumentedServerFactory;
 import com.nhl.bootique.jetty.server.ServerFactory;
 
@@ -38,14 +38,14 @@ public class InstrumentedJettyModule extends ConfigModule {
 	@InstrumentedRequestFilter
 	@Provides
 	@Singleton
-	private MappedFilter provideMappedRequestFilter(DefaultInstrumentedRequestFilter filter) {
-		return new MappedFilter(filter, Collections.singleton("/*"), DefaultInstrumentedRequestFilter.DEFAULT_ORDER);
+	private MappedFilter provideMappedRequestFilter(TimingFilter filter) {
+		return new MappedFilter(filter, Collections.singleton("/*"), TimingFilter.DEFAULT_ORDER);
 	}
 
 	@Provides
 	@Singleton
-	private DefaultInstrumentedRequestFilter provideInstrumentedRequestFilter(MetricRegistry metricRegistry) {
-		return new DefaultInstrumentedRequestFilter(metricRegistry);
+	private TimingFilter provideInstrumentedRequestFilter(MetricRegistry metricRegistry) {
+		return new TimingFilter(metricRegistry);
 	}
 
 	@Provides
