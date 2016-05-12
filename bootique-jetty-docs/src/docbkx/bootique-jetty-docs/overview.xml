@@ -6,6 +6,29 @@
    
     <para><link xlink:href="https://github.com/nhl/bootique-jetty"
             ><code>bootique-jetty</code></link> module embeds a <link
-            xlink:href="http://www.eclipse.org/jetty/">Jetty web server</link> in your application,
-        allowing you to run servlets, or serve static files.</para>
+            xlink:href="http://www.eclipse.org/jetty/">Jetty web server</link> in your application.
+        This means you can write web applications based on servlet specification, and beyond. You
+        will be able to run servlets, servlet filters, use servlet listeners. Also you will be able
+        to serve static files that are either a part of the application jar or located outside of
+        it. As things go with Bootique, you will be able to centrally configure both Jetty (e.g. set
+        connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet
+        parameters).</para>
+    <para><link xlink:href="https://github.com/nhl/bootique-jetty"
+            ><code>bootique-jetty</code></link> is a "drag-and-drop" module. Just like any other
+        module, <code>bootique-logback</code> can be enabled by simply adding it to the
+            <code>pom.xml</code> dependencies, assuming <code>autoLoadModules()</code> is in effect:
+        <programlisting language="xml">&lt;dependency>
+	&lt;groupId>com.nhl.bootique.jetty&lt;/groupId>
+	&lt;artifactId>bootique-jetty&lt;/artifactId>
+&lt;/dependency></programlisting>
+        The module provides <code>--server</code> command, which starts your web server on
+        foreground:<programlisting>java -jar my.jar --server
+...
+c.n.b.j.s.ServerFactory - Adding listener c.n.b.j.s.DefaultServletEnvironment
+c.n.b.j.s.h.ContextHandler - Started o.e.j.s.ServletContextHandler@1e78c66e{/myapp,null,AVAILABLE}
+c.n.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+c.n.b.j.s.Server - Started @490ms</programlisting>Various
+        aspects of the Jetty container, such as listen port, thread pool size, etc. can be
+        configured in a normal Bootique way via YAML, as detailed below in the "Configuration
+        Reference" chapter.</para>
 </chapter>
