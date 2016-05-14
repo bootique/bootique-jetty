@@ -8,7 +8,7 @@
         should be mapped to request URLs. Let's start with servlets.</para>
     <section>
         <title>Servlets</title>
-        <para>The easiest way to add a servlet to a Bootique app is to first annotate it with
+        <para>The easiest way to add a servlet to a Bootique app is to annotate it with
                 <code>@WebServlet</code>, providing name and url
             patterns:<programlisting language="java">@WebServlet(
 	name = "myservlet", 
@@ -20,9 +20,10 @@
 )
 public class AnnotatedServlet extends HttpServlet { .. }</programlisting>The
             "name" property is kind of important as it would allow to override annotation values in
-            the YAML, as described in the "Configuration Reference" chapter. Servlet created this
-            way can inject any services it might need using normal Guice injection. Now it can be
-            added to Bootique via <code>JettyModule</code> contribution API inside your application
+            the YAML, as described in the "Configuration Reference" chapter. A servlet created this
+            way can inject any services it might need using normal Guice injection. </para>
+        <para>Next step is adding it to Bootique via <code>JettyModule</code> contribution API
+            called from your application
             Module:<programlisting language="java">@Override
 public void configure(Binder binder) {
 	JettyModule.contributeServlets(binder).addBinding().to(AnnotatedServlet.class);
