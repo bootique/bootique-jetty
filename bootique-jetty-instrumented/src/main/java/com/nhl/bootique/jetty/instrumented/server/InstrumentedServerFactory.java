@@ -10,7 +10,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import com.codahale.metrics.MetricRegistry;
 import com.nhl.bootique.jetty.MappedFilter;
 import com.nhl.bootique.jetty.MappedServlet;
-import com.nhl.bootique.jetty.instrumented.request.TimingHandler;
+import com.nhl.bootique.jetty.instrumented.request.RequestTimer;
 import com.nhl.bootique.jetty.server.ServerFactory;
 
 /**
@@ -35,6 +35,6 @@ public class InstrumentedServerFactory extends ServerFactory {
 			Set<EventListener> listeners) {
 
 		Handler delegate =  super.createHandler(servlets, filters, listeners);
-		return new TimingHandler(metricRegistry, delegate);
+		return new RequestTimer(metricRegistry, delegate);
 	}
 }

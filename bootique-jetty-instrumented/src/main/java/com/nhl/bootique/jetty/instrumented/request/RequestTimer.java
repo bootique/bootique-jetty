@@ -21,15 +21,15 @@ import com.codahale.metrics.Timer;
  * 
  * @since 0.15
  */
-public class TimingHandler implements Handler {
+public class RequestTimer implements Handler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TimingHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RequestTimer.class);
 
 	private Timer requestTimer;
 	private Handler delegate;
 
-	public TimingHandler(MetricRegistry metricRegistry, Handler delegate) {
-		this.requestTimer = metricRegistry.timer(MetricRegistry.name(TimingHandler.class, "request-timer"));
+	public RequestTimer(MetricRegistry metricRegistry, Handler delegate) {
+		this.requestTimer = metricRegistry.timer(MetricRegistry.name(RequestTimer.class, "request-timer"));
 		this.delegate = delegate;
 	}
 
@@ -54,11 +54,11 @@ public class TimingHandler implements Handler {
 			// note that we are skipping request parameter/URL/etc. logging...
 			// This is done by Slf4jRequestLog. Here we only log timing
 
-			LOGGER.info("request started");
+			LOGGER.info("started");
 			delegate.handle(target, baseRequest, request, response);
 		} finally {
 			long timeNanos = requestTimerContext.stop();
-			LOGGER.info("request finished in {} ms", timeNanos / 1000000);
+			LOGGER.info("finished in {} ms", timeNanos / 1000000);
 		}
 	}
 

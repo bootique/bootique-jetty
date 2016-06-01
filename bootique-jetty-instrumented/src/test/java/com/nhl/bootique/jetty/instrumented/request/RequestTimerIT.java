@@ -26,7 +26,7 @@ import com.nhl.bootique.jetty.MappedServlet;
 import com.nhl.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import com.nhl.bootique.test.BQDaemonTestRuntime;
 
-public class TimingHandlerIT {
+public class RequestTimerIT {
 
 	@Rule
 	public InstrumentedJettyApp app = new InstrumentedJettyApp();
