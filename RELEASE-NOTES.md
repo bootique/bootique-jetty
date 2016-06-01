@@ -9,7 +9,6 @@
 * #30 Servlets/Filters: Support for 'urlPatterns' mapping in YAML
 * #31 Support for servlet and filter parameters configured in annotations 
 * #34 Configurable request and response header size
-* #35 Under-reported request timing
 
 ## 0.14:
 
