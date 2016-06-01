@@ -16,9 +16,13 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 public class HttpConnectorFactory {
 
 	private int port;
+	private int responseHeaderSize;
+	private int requestHeaderSize;
 
 	public HttpConnectorFactory() {
 		this.port = 8080;
+		this.requestHeaderSize = 8 * 1024;
+		this.responseHeaderSize = 8 * 1024;
 	}
 
 	public Connector createConnector(Server server, ThreadPool threadPool) {
@@ -49,12 +53,13 @@ public class HttpConnectorFactory {
 
 		HttpConfiguration httpConfig = new HttpConfiguration();
 
-		// hardcoded for now... if needed we can turn these into properties
+		// most parameters are hardcoded for now... we should turn these
+		// into properties
 
 		httpConfig.setHeaderCacheSize(512);
 		httpConfig.setOutputBufferSize(32 * 1024);
-		httpConfig.setRequestHeaderSize(8 * 1024);
-		httpConfig.setResponseHeaderSize(8 * 1024);
+		httpConfig.setRequestHeaderSize(requestHeaderSize);
+		httpConfig.setResponseHeaderSize(responseHeaderSize);
 		httpConfig.setSendDateHeader(true);
 		httpConfig.setSendServerVersion(true);
 
@@ -78,5 +83,44 @@ public class HttpConnectorFactory {
 	 */
 	public int getPort() {
 		return port;
+	}
+
+	/**
+	 * Sets a max size in bytes of Jetty request headers (and GET URLs). By
+	 * default it is 8K.
+	 * 
+	 * @param requestHeaderSize
+	 *            request header size value in bytes.
+	 * @since 0.15
+	 */
+	public void setRequestHeaderSize(int requestHeaderSize) {
+		this.requestHeaderSize = requestHeaderSize;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return max size of Jetty request headers (and GET URLs).
+	 */
+	public int getRequestHeaderSize() {
+		return requestHeaderSize;
+	}
+
+	/**
+	 * Sets a max size in bytes of Jetty response headers. By default it is 8K.
+	 * 
+	 * @param responseHeaderSize
+	 *            response header size value in bytes.
+	 * @since 0.15
+	 */
+	public void setResponseHeaderSize(int responseHeaderSize) {
+		this.responseHeaderSize = responseHeaderSize;
+	}
+
+	/**
+	 * @since 0.15
+	 * @return max size of Jetty response headers.
+	 */
+	public int getResponseHeaderSize() {
+		return responseHeaderSize;
 	}
 }

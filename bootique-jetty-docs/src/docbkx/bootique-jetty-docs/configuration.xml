@@ -147,6 +147,16 @@
                         <td><code>8080</code></td>
                         <td>A port the connector listens on.</td>
                     </tr>
+                    <tr>
+                        <td><code>requestHeaderSize</code></td>
+                        <td><code>8192</code></td>
+                        <td>A max size in bytes of Jetty request headers and GET URLs. </td>
+                    </tr>
+                    <tr>
+                        <td><code>responseHeaderSize</code></td>
+                        <td><code>8192</code></td>
+                        <td>A max size in bytes of Jetty response headers.</td>
+                    </tr>
                 </tbody>
             </table></para>
     </section>
