@@ -11,7 +11,7 @@
 	<artifactId>bootique-jetty-docs</artifactId>
 	<packaging>pom</packaging>
 
-	<name>Bootique Jetty Module Documentation</name>
+	<name>bootique-jetty-docs: Bootique Jetty Module Documentation</name>
 	<description>
 		Documentation for Bootique Jetty Integration.
 	</description>

@@ -13,7 +13,7 @@
 	<version>0.16-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Parent of Jetty Integration Bundle for Bootique</name>
+	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
 	<description>
 		Parent POM of Jetty and instrumented Jetty Bootique modules.
 	</description>

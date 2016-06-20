@@ -11,7 +11,7 @@
 	<artifactId>bootique-jetty</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Jetty Integration Bundle for Bootique</name>
+	<name>bootique-jetty: a module to run Jetty on Bootique</name>
 	<description>
 		Provides Jetty integration with Bootique.
 	</description>

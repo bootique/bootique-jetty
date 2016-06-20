@@ -11,7 +11,7 @@
 	<artifactId>bootique-jetty-instrumented</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Jetty Integration Bundle for Bootique with metrics integration</name>
+	<name>bootique-jetty-instrumented: a module to run Jetty on Bootique with metrics</name>
 	<description>
 		Provides Jetty integration with Bootique, including metrics.
 	</description>
