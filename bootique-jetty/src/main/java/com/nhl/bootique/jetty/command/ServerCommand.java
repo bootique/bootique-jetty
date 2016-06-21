@@ -13,39 +13,45 @@ import com.nhl.bootique.command.CommandWithMetadata;
 
 public class ServerCommand extends CommandWithMetadata {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerCommand.class);
-	
-	private Provider<Server> serverProvider;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerCommand.class);
 
-	private static CommandMetadata createMetadata() {
-		return CommandMetadata.builder(ServerCommand.class).description("Starts Jetty server.").build();
-	}
+    private Provider<Server> serverProvider;
 
-	@Inject
-	public ServerCommand(Provider<Server> serverProvider) {
-		super(createMetadata());
-		this.serverProvider = serverProvider;
-	}
+    @Inject
+    public ServerCommand(Provider<Server> serverProvider) {
+        super(createMetadata());
+        this.serverProvider = serverProvider;
+    }
 
-	@Override
-	public CommandOutcome run(Cli cli) {
+    private static CommandMetadata createMetadata() {
+        return CommandMetadata.builder(ServerCommand.class).description("Starts Jetty server.").build();
+    }
 
-		LOGGER.info("Starting jetty...");
+    @Override
+    public CommandOutcome run(Cli cli) {
 
-		Server server = serverProvider.get();
-		try {
-			server.start();
-		} catch (Exception e) {
-			return CommandOutcome.failed(1, e);
-		}
+        LOGGER.info("Starting jetty...");
 
-		try {
-			Thread.currentThread().join();
-		} catch (InterruptedException e) {
-			return CommandOutcome.failed(1, e);
-		}
+        Server server = serverProvider.get();
+        try {
+            server.start();
+        } catch (Exception e) {
+            return CommandOutcome.failed(1, e);
+        }
 
-		return CommandOutcome.succeeded();
-	}
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException ie) {
+
+            // interruption of a running Jetty daemon is a normal event, so unless we get shutdown errors, return success
+            try {
+                server.stop();
+            } catch (Exception se) {
+                return CommandOutcome.failed(1, se);
+            }
+        }
+
+        return CommandOutcome.succeeded();
+    }
 
 }

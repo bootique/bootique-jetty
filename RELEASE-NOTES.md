@@ -1,3 +1,7 @@
+## 0.16
+
+* #36 ServerCommand: Jetty daemon interruption should be reported as successful completion
+
 ## 0.15:
 
 *  #9 Support for gzip compression

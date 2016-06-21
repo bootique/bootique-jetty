@@ -1,14 +1,9 @@
 package com.nhl.bootique.jetty.server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EventListener;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-
+import com.nhl.bootique.jetty.JettyModule;
+import com.nhl.bootique.jetty.MappedFilter;
+import com.nhl.bootique.jetty.MappedServlet;
+import com.nhl.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
@@ -22,10 +17,14 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhl.bootique.jetty.JettyModule;
-import com.nhl.bootique.jetty.MappedFilter;
-import com.nhl.bootique.jetty.MappedServlet;
-import com.nhl.bootique.resource.FolderResourceFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EventListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 
 public class ServerFactory {
 
@@ -61,6 +60,7 @@ public class ServerFactory {
 		ThreadPool threadPool = createThreadPool();
 		Server server = new Server(threadPool);
 		server.setStopAtShutdown(true);
+		server.setStopTimeout(1000L);
 		server.setHandler(createHandler(servlets, filters, listeners));
 
 		createRequestLog(server);
