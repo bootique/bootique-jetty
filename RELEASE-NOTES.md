@@ -2,6 +2,7 @@
 
 * #36 ServerCommand: Jetty daemon interruption should be reported as successful completion
 * #37 Upgrade to BQ 0.18
+* #38 Print full base URL on startup
 
 ## 0.15:
 

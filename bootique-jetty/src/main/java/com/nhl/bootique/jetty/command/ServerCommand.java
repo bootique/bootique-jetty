@@ -30,6 +30,7 @@ public class ServerCommand extends CommandWithMetadata {
     @Override
     public CommandOutcome run(Cli cli) {
 
+        long t0 = System.currentTimeMillis();
         LOGGER.info("Starting jetty...");
 
         Server server = serverProvider.get();
@@ -38,6 +39,9 @@ public class ServerCommand extends CommandWithMetadata {
         } catch (Exception e) {
             return CommandOutcome.failed(1, e);
         }
+
+        long t1 = System.currentTimeMillis();
+        LOGGER.info("Started Jetty in {} ms. Base URL: {}", t1 - t0, server.getURI());
 
         try {
             Thread.currentThread().join();
