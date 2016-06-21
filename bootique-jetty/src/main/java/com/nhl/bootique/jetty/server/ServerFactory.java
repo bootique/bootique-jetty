@@ -66,7 +66,7 @@ public class ServerFactory {
 		createRequestLog(server);
 		createConnectors(server, threadPool);
 
-		// TODO: GZIP filter, request loggers, etc.
+		server.addLifeCycleListener(new ServerLifecycleLogger(connector.getPort(), context));
 
 		return server;
 	}

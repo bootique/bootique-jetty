@@ -1,19 +1,14 @@
 package com.nhl.bootique.jetty.command;
 
-import org.eclipse.jetty.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.nhl.bootique.cli.Cli;
 import com.nhl.bootique.command.CommandMetadata;
 import com.nhl.bootique.command.CommandOutcome;
 import com.nhl.bootique.command.CommandWithMetadata;
+import org.eclipse.jetty.server.Server;
 
 public class ServerCommand extends CommandWithMetadata {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServerCommand.class);
 
     private Provider<Server> serverProvider;
 
@@ -30,18 +25,12 @@ public class ServerCommand extends CommandWithMetadata {
     @Override
     public CommandOutcome run(Cli cli) {
 
-        long t0 = System.currentTimeMillis();
-        LOGGER.info("Starting jetty...");
-
         Server server = serverProvider.get();
         try {
             server.start();
         } catch (Exception e) {
             return CommandOutcome.failed(1, e);
         }
-
-        long t1 = System.currentTimeMillis();
-        LOGGER.info("Started Jetty in {} ms. Base URL: {}", t1 - t0, server.getURI());
 
         try {
             Thread.currentThread().join();
