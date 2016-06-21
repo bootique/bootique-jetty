@@ -1,6 +1,7 @@
 ## 0.16
 
 * #36 ServerCommand: Jetty daemon interruption should be reported as successful completion
+* #37 Upgrade to BQ 0.18
 
 ## 0.15:
 
