@@ -7,12 +7,11 @@
     <para><link xlink:href="https://github.com/nhl/bootique-jetty"
             ><code>bootique-jetty</code></link> module embeds <link
             xlink:href="http://www.eclipse.org/jetty/">Jetty web server</link> in your application.
-        This would allow you to write web applications based on servlet specification, and beyond.
-        You will be able to run servlets, servlet filters, use servlet listeners. Also you will be
-        able to serve static files that are either a part of the application jar or located outside
-        of it. As things go with Bootique, you will be able to centrally configure both Jetty (e.g.
-        set connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet
-        parameters).</para>
+        It provides environment for running servlet specification objects (servlets, servlet
+        filters, servlet listeners). Also you will be able to serve static files that are either
+        packaged in the application jar or located somewhere on the filesystem. As things go with
+        Bootique, you will be able to centrally configure both Jetty (e.g. set connector ports) as
+        well as your apps (e.g. map servlet URL patterns and pass servlet parameters).</para>
     <para><code>bootique-jetty</code> is "drag-and-drop" just like any other Bootique module. It is
         enabled by simply adding it to the <code>pom.xml</code> dependencies (assuming
             <code>autoLoadModules()</code> is in effect):
