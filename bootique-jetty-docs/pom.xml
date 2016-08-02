@@ -18,7 +18,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- This property allows to only expose major version in the docs metadata to avoid confusing SEO -->
+        <!-- This annotation allows to only expose major version in the docs metadata to avoid confusing SEO -->
         <bootique.version.major>0</bootique.version.major>	
 	</properties>
 

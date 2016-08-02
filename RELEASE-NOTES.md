@@ -1,3 +1,7 @@
+## 0.17
+
+* #41 Upgrade to bootique 0.19 and metrics 0.7 to have access to healthchecks API
+
 ## 0.16
 
 * #36 ServerCommand: Jetty daemon interruption should be reported as successful completion

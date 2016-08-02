@@ -19,7 +19,7 @@
 	}
 )
 public class AnnotatedServlet extends HttpServlet { .. }</programlisting>The
-            "name" property is kind of important as it would allow to override annotation values in
+            "name" annotation is kind of important as it would allow to override annotation values in
             the YAML, as described in the "Configuration Reference" chapter. A servlet created this
             way can inject any services it might need using normal Guice injection. </para>
         <para>Next step is adding it to Bootique via <code>JettyModule</code> contribution API

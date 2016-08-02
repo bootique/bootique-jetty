@@ -103,7 +103,7 @@
                             a filesystem path, a URL or a special "<code>classpath:</code>" URL
                             (which gives the ability to bundle resources in the app, not unlike a
                             JavaEE .war file). </para>
-                        <para>For security reasons this property has to be set explicitly. There's
+                        <para>For security reasons this annotation has to be set explicitly. There's
                             no default. </para>
                         <para>This setting only makes sense when some form of "default" servlet is
                             in use, that will be responsible for serving static resources. See
