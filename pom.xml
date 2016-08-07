@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.nhl.bootique.parent</groupId>
+		<groupId>io.bootique.parent</groupId>
 		<artifactId>bootique-parent</artifactId>
-		<version>0.10</version>
+		<version>0.12</version>
 	</parent>
 
-	<groupId>com.nhl.bootique.jetty</groupId>
+	<groupId>io.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
 	<version>0.17-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -32,8 +32,8 @@
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/nhl/bootique-jetty</developerConnection>
-		<url>https://github.com/nhl/bootique-jetty</url>
+		<developerConnection>scm:git:ssh://git@github.com/bootique/bootique-jetty</developerConnection>
+		<url>https://github.com/bootique/bootique-jetty</url>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -50,22 +50,22 @@
 				<version>${jetty-version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhl.bootique</groupId>
+				<groupId>io.bootique</groupId>
 				<artifactId>bootique</artifactId>
 				<version>${bootique-version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhl.bootique</groupId>
+				<groupId>io.bootique</groupId>
 				<artifactId>bootique-test</artifactId>
 				<version>${bootique-version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhl.bootique.metrics</groupId>
+				<groupId>io.bootique.metrics</groupId>
 				<artifactId>bootique-metrics</artifactId>
 				<version>${bootique-metrics-version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.nhl.bootique.logback</groupId>
+				<groupId>io.bootique.logback</groupId>
 				<artifactId>bootique-logback</artifactId>
 				<version>0.9</version>
 			</dependency>

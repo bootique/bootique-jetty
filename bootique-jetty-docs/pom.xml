@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.nhl.bootique.jetty</groupId>
+		<groupId>io.bootique.jetty</groupId>
 		<artifactId>bootique-jetty-parent</artifactId>
 		<version>0.17-SNAPSHOT</version>
 	</parent>

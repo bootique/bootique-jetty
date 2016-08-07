@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.nhl.bootique.jetty</groupId>
+		<groupId>io.bootique.jetty</groupId>
 		<artifactId>bootique-jetty-parent</artifactId>
 		<version>0.17-SNAPSHOT</version>
 	</parent>
@@ -34,27 +34,27 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nhl.bootique</groupId>
+			<groupId>io.bootique</groupId>
 			<artifactId>bootique-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- using logback instead of SLF4J simple to test intrumented filters 
 			logging -->
 		<dependency>
-			<groupId>com.nhl.bootique.logback</groupId>
+			<groupId>io.bootique.logback</groupId>
 			<artifactId>bootique-logback</artifactId>
 			<scope>test</scope>
 		</dependency>
 
 		<!-- Compile dependencies -->
 		<dependency>
-			<groupId>com.nhl.bootique.jetty</groupId>
+			<groupId>io.bootique.jetty</groupId>
 			<artifactId>bootique-jetty</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nhl.bootique.metrics</groupId>
+			<groupId>io.bootique.metrics</groupId>
 			<artifactId>bootique-metrics</artifactId>
 			<scope>compile</scope>
 		</dependency>
