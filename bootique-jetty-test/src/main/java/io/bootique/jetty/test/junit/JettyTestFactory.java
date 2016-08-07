@@ -1,4 +1,4 @@
-package com.nhl.bootique.jetty.test.junit;
+package io.bootique.jetty.test.junit;
 
 import io.bootique.Bootique;
 import io.bootique.jetty.JettyModule;
