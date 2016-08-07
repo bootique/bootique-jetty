@@ -11,7 +11,7 @@ You can now inspect the local docs under ```target/site/index/```. If you are no
 
 ## Publishing Prerequisites
 
-Follow instructions for the [Bootique Core](https://github.com/nhl/bootique/blob/master/bootique-docs/README.md).
+Follow instructions for the [Bootique Core](https://github.com/bootique/bootique/blob/master/bootique-docs/README.md).
 
 ## Publishing the Docs
 

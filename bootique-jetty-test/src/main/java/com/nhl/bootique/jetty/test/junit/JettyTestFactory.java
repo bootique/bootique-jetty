@@ -1,18 +1,17 @@
 package com.nhl.bootique.jetty.test.junit;
 
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import io.bootique.Bootique;
+import io.bootique.jetty.JettyModule;
+import io.bootique.test.BQDaemonTestRuntime;
+import io.bootique.test.junit.BQDaemonTestFactory;
 import org.eclipse.jetty.server.Server;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
-import com.nhl.bootique.Bootique;
-import com.nhl.bootique.jetty.JettyModule;
-import com.nhl.bootique.test.BQDaemonTestRuntime;
-import com.nhl.bootique.test.junit.BQDaemonTestFactory;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A unit test helper that starts a Bootique Jetty server.
@@ -40,7 +39,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 				.configurator(bootique -> bootique.module(JettyModule.class));
 	}
 
-	public static class Builder extends com.nhl.bootique.test.junit.BQDaemonTestFactory.Builder {
+	public static class Builder extends io.bootique.test.junit.BQDaemonTestFactory.Builder {
 
 		public Builder(Collection<BQDaemonTestRuntime> runtimes) {
 			super(runtimes);

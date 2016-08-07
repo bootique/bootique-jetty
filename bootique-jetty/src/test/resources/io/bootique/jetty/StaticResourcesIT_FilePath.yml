@@ -1,0 +1,5 @@
+jetty:
+  servlets:
+    default:
+      params:
+        resourceBase: src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/

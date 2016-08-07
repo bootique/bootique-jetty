@@ -15,7 +15,7 @@
     b: b2</programlisting>
         </para>
         <para>"jetty" is a root element of the Jetty configuration and is bound to a <link
-                xlink:href="https://github.com/nhl/bootique-jetty/blob/master/bootique-jetty/src/main/java/com/nhl/bootique/jetty/server/ServerFactory.java"
+                xlink:href="https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java"
                     ><code>ServerFactory</code></link> object. It supports the following
             properties:</para>
     <table frame="void">
@@ -127,7 +127,7 @@
         </para>
         <para>"jetty.connector" element configures a web connector (i.e. an object that listens for
             network requests for our Jetty-enabled app) and is bound to <link
-                xlink:href="https://github.com/nhl/bootique-jetty/blob/master/bootique-jetty/src/main/java/com/nhl/bootique/jetty/server/HttpConnectorFactory.java"
+                xlink:href="https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/HttpConnectorFactory.java"
                     ><code>HttpConnectorFactory</code></link>. It supports the following
                 properties:<table frame="void">
                 <caption>"jetty.connector" Element Property Reference</caption>

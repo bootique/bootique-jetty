@@ -38,11 +38,9 @@
 			<artifactId>bootique-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- using logback instead of SLF4J simple to test intrumented filters 
-			logging -->
 		<dependency>
-			<groupId>io.bootique.logback</groupId>
-			<artifactId>bootique-logback</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
 
