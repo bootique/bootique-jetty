@@ -21,7 +21,7 @@
 &lt;/dependency></programlisting></para>
     <para>Alternatively you may include an "instrumented" version of <code>bootique-jetty</code>
         that will provide a number of metrics for your running
-        app:<programlisting>&lt;dependency>
+        app:<programlisting language="xml">&lt;dependency>
 	&lt;groupId>io.bootique.jetty&lt;/groupId>
 	&lt;artifactId>bootique-jetty-instrumented&lt;/artifactId>
 &lt;/dependency></programlisting></para>
