@@ -28,10 +28,10 @@
     <para>The module provides <code>--server</code> command, which starts your web server on
         foreground:<programlisting>java -jar my.jar --server
 ...
-c.n.b.j.s.ServerFactory - Adding listener i.b.j.s.DefaultServletEnvironment
-c.n.b.j.s.h.ContextHandler - Started o.e.j.s.ServletContextHandler@1e78c66e{/myapp,null,AVAILABLE}
-c.n.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
-c.n.b.j.s.Server - Started @490ms</programlisting>Various
+i.b.j.s.ServerFactory - Adding listener i.b.j.s.DefaultServletEnvironment
+i.b.j.s.h.ContextHandler - Started o.e.j.s.ServletContextHandler@1e78c66e{/myapp,null,AVAILABLE}
+i.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+i.b.j.s.Server - Started @490ms</programlisting>Various
         aspects of the Jetty container, such as listen port, thread pool size, etc. can be
         configured in a normal Bootique way via YAML, as detailed below in the "Configuration
         Reference" chapter.</para>
