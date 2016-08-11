@@ -1,5 +1,6 @@
 ## 0.18
 
+* #40 Simplify MappedServlet/MappedFilter with parameterization
 * #44 Removing deprecated API
 
 ## 0.17

@@ -8,9 +8,9 @@ import java.util.Set;
 /**
  * @since 0.10
  */
-public class MappedServlet extends MappedWebArtifact<Servlet> {
+public class MappedServlet<T extends  Servlet> extends MappedWebArtifact<T> {
 
-	public MappedServlet(Servlet servlet, Set<String> urlPatterns) {
+	public MappedServlet(T servlet, Set<String> urlPatterns) {
 		this(servlet, urlPatterns, null);
 	}
 
@@ -23,7 +23,7 @@ public class MappedServlet extends MappedWebArtifact<Servlet> {
 	 * @param name
 	 *            servlet name. If null, Jetty will assign its own name.
 	 */
-	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name) {
+	public MappedServlet(T servlet, Set<String> urlPatterns, String name) {
 		this(servlet, urlPatterns, name, Collections.emptyMap());
 	}
 
@@ -38,11 +38,11 @@ public class MappedServlet extends MappedWebArtifact<Servlet> {
 	 * @param params
 	 *            servlet init parameters map.
 	 */
-	public MappedServlet(Servlet servlet, Set<String> urlPatterns, String name, Map<String, String> params) {
+	public MappedServlet(T servlet, Set<String> urlPatterns, String name, Map<String, String> params) {
 		super(servlet, urlPatterns, name, params);
 	}
 
-	public Servlet getServlet() {
+	public T getServlet() {
 		return getArtifact();
 	}
 }

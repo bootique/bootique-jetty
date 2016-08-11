@@ -83,7 +83,7 @@ public class JettyModule extends ConfigModule {
 		Set<String> patternsSet = urlPatterns != null ? new HashSet<>(asList(urlPatterns)) : Collections.emptySet();
 
 		DefaultServlet servlet = new DefaultServlet();
-		MappedServlet mappedServlet = new MappedServlet(servlet, patternsSet, name);
+		MappedServlet<DefaultServlet> mappedServlet = new MappedServlet<>(servlet, patternsSet, name);
 		contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
 	}
 
