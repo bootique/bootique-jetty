@@ -45,22 +45,4 @@ public class MappedServlet extends MappedWebArtifact<Servlet> {
 	public Servlet getServlet() {
 		return getArtifact();
 	}
-
-	/**
-	 * @deprecated since 0.11 use {@link #getUrlPatterns()}.
-	 * @return a single URL pattern for this servlet.
-	 */
-	public String getPath() {
-
-		if (getUrlPatterns().size() == 0) {
-			return null;
-		}
-
-		if (getUrlPatterns().size() == 1) {
-			return getUrlPatterns().iterator().next();
-		}
-
-		throw new UnsupportedOperationException(
-				"This operation is deprecated and is not supported for servlets with multiple URL mappings");
-	}
 }
