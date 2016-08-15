@@ -3,6 +3,7 @@ package io.bootique.jetty.server;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedServlet;
+import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;

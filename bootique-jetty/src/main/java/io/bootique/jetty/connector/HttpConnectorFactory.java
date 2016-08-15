@@ -1,4 +1,4 @@
-package io.bootique.jetty.server;
+package io.bootique.jetty.connector;
 
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
