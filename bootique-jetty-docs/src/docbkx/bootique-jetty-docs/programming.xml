@@ -44,6 +44,22 @@ public void configure(Binder binder) {
 
     JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
 }</programlisting></para>
+        <para>Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but
+            also need the ability to initialize the underlying servlet with environment
+            dependencies, we can do something like
+            this:<programlisting language="java">@Singleton
+@Provides
+MappedServlet&lt;MyServlet> provideMyServlet(MyService1 s1, MyService2 s2) {
+    MyServlet servlet = new MyServlet(s1, s2);
+    return new MappedServlet&lt;>(servlet, Collections.singleton("/c"), "myservlet");
+}
+
+// must use TypeLiteral to contribute MappedServlet&lt;MyServlet> to the servlet collection
+@Override
+public void configure(Binder binder) {
+    TypeLiteral&lt;MappedServlet&lt;Servlet2>> tl = new TypeLiteral&lt;MappedServlet&lt;MyServlet>>() {};
+    JettyModule.contributeMappedServlets(binder).addBinding().to(Key.get(tl));
+}</programlisting></para>
     </section>
     <section>
         <title>Servlet Filters</title>
