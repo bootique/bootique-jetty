@@ -4,7 +4,9 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.unit.JettyApp;
-import org.glassfish.jersey.message.GZipEncoder;
+import io.bootique.test.BQDaemonTestRuntime;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -27,12 +29,16 @@ public class ServerFactoryConnectorsIT {
     @Rule
     public JettyApp app = new JettyApp();
 
-    private Client client = ClientBuilder.newClient().register(GZipEncoder.class);
+    private Client client = ClientBuilder.newClient();
 
     @Test
-    public void testMultipleConnectors() {
-        app.startServer(new UnitModule(),
-                "--config=classpath:io/bootique/jetty/server/connectors.yml");
+    public void testMultipleConnectors_WithDeprecated() {
+        BQDaemonTestRuntime runtime = app.startServer(new UnitModule(),
+                "--config=classpath:io/bootique/jetty/server/connectors-deprecated.yml");
+
+        // deprecated default connector must NOT be started
+        Connector[] connectors = runtime.getRuntime().getInstance(Server.class).getConnectors();
+        assertEquals(3, connectors.length);
 
         Response r1LegacyConnector = client.target("http://localhost:14001/").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1LegacyConnector.getStatus());
@@ -47,13 +53,23 @@ public class ServerFactoryConnectorsIT {
         assertEquals(OUT_CONTENT, r3NormalConnector.readEntity(String.class));
     }
 
+    @Test
+    public void testMultipleConnectors() {
 
-    class UnitModule implements Module {
+        BQDaemonTestRuntime runtime = app.startServer(new UnitModule(),
+                "--config=classpath:io/bootique/jetty/server/connectors.yml");
 
-        @Override
-        public void configure(Binder binder) {
-            JettyModule.contributeServlets(binder).addBinding().to(ContentServlet.class);
-        }
+        // deprecated default connector must NOT be started
+        Connector[] connectors = runtime.getRuntime().getInstance(Server.class).getConnectors();
+        assertEquals(2, connectors.length);
+
+        Response r1NormalConnector = client.target("http://localhost:14001/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1NormalConnector.getStatus());
+        assertEquals(OUT_CONTENT, r1NormalConnector.readEntity(String.class));
+
+        Response r2NormalConnector = client.target("http://localhost:14002/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2NormalConnector.getStatus());
+        assertEquals(OUT_CONTENT, r2NormalConnector.readEntity(String.class));
     }
 
     @WebServlet(urlPatterns = "/*")
@@ -65,6 +81,14 @@ public class ServerFactoryConnectorsIT {
         protected void doGet(HttpServletRequest req, HttpServletResponse resp)
                 throws ServletException, IOException {
             resp.getWriter().append(OUT_CONTENT);
+        }
+    }
+
+    class UnitModule implements Module {
+
+        @Override
+        public void configure(Binder binder) {
+            JettyModule.contributeServlets(binder).addBinding().to(ContentServlet.class);
         }
     }
 }

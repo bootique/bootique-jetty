@@ -1,0 +1,7 @@
+jetty:
+  # Legacy connector config
+  connector:
+    port: 14001
+  connectors:
+    - port: 14002
+    - port: 14003

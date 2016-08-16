@@ -13,6 +13,8 @@ import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
+import java.util.Objects;
+
 public class HttpConnectorFactory {
 
 	private int port;
@@ -25,7 +27,7 @@ public class HttpConnectorFactory {
 		this.responseHeaderSize = 8 * 1024;
 	}
 
-	public Connector createConnector(Server server, ThreadPool threadPool) {
+	public Connector createConnector(Server server) {
 
 		// a few things are hardcoded for now... if needed we can turn these
 		// into properties
@@ -36,6 +38,7 @@ public class HttpConnectorFactory {
 		ByteBufferPool bufferPool = buildBufferPool();
 		int selectorThreads = Runtime.getRuntime().availableProcessors();
 		int acceptorThreads = Math.max(1, selectorThreads / 2);
+        ThreadPool threadPool = Objects.requireNonNull(server.getThreadPool());
 
 		ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, acceptorThreads,
 				selectorThreads, connectionFactory);

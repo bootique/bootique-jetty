@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +55,6 @@ public class ServerFactory {
         this.idleThreadTimeout = 60000;
         this.sessions = true;
         this.compression = true;
-
-        this.connector = new HttpConnectorFactory();
     }
 
     public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
@@ -67,10 +66,21 @@ public class ServerFactory {
         server.setHandler(createHandler(servlets, filters, listeners));
 
         createRequestLog(server);
-        createConnectors(server, threadPool);
 
-        server.addLifeCycleListener(new ServerLifecycleLogger(connector.getPort(), context));
+        Collection<HttpConnectorFactory> connectorFactories = connectorFactories(server);
 
+        Collection<Integer> ports = new LinkedHashSet<>();
+
+        if (connectorFactories.isEmpty()) {
+            LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
+        } else {
+            connectorFactories.forEach(cf -> {
+                server.addConnector(cf.createConnector(server));
+                ports.add(cf.getPort());
+            });
+        }
+
+        server.addLifeCycleListener(new ServerLifecycleLogger(ports, context));
         return server;
     }
 
@@ -153,10 +163,8 @@ public class ServerFactory {
         return sorted;
     }
 
-    protected void createConnectors(Server server, ThreadPool threadPool) {
-
+    protected Collection<HttpConnectorFactory> connectorFactories(Server server) {
         Collection<HttpConnectorFactory> connectorFactories = new ArrayList<>();
-
 
         if (this.connector != null) {
             LOGGER.warn("Using deprecated 'connector' property. Consider changing configuration to 'connectors'");
@@ -167,11 +175,7 @@ public class ServerFactory {
             connectorFactories.addAll(this.connectors);
         }
 
-        if (connectorFactories.isEmpty()) {
-            LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
-        } else {
-            connectorFactories.forEach(cf -> server.addConnector(cf.createConnector(server, threadPool)));
-        }
+        return connectorFactories;
     }
 
     protected QueuedThreadPool createThreadPool() {

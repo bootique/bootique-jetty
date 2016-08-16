@@ -21,7 +21,7 @@ public class JettyApp extends BQDaemonTestFactory {
 		} , args);
 	}
 
-	public void startServer(Module config, String... args) {
+	public BQDaemonTestRuntime startServer(Module config, String... args) {
 
 		int len = args != null ? args.length + 1 : 1;
 
@@ -36,6 +36,6 @@ public class JettyApp extends BQDaemonTestFactory {
 		};
 		Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
 
-		newRuntime().configurator(configurator).startupCheck(startupCheck).start(serverArgs);
+		return newRuntime().configurator(configurator).startupCheck(startupCheck).start(serverArgs);
 	}
 }
