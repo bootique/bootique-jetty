@@ -1,0 +1,18 @@
+# Test certificate instructions:
+#
+#   keytool -keystore bootique-jetty/src/test/resources/io/bootique/jetty/server/testmulticertkeystore \
+#       -alias jetty1 -genkey -keyalg RSA -sigalg SHA256withRSA -validity 7300
+#
+#   keytool -keystore bootique-jetty/src/test/resources/io/bootique/jetty/server/testmulticertkeystore \
+#       -alias jetty2 -genkey -keyalg RSA -sigalg SHA256withRSA -validity 7300
+#
+# // provide "localhost" when prompted for First/Last name
+#
+
+jetty:
+  connectors:
+    - type: https
+      port: 14001
+      keyStore: 'classpath:io/bootique/jetty/server/testmulticertkeystore'
+      keyStorePassword: 'supersecret'
+      certificateAlias: jetty2

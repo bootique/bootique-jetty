@@ -18,13 +18,13 @@ import java.util.Objects;
  * @since 0.18
  */
 @JsonTypeName("https")
-public class TlsConnectorFactory extends ConnectorFactory {
+public class HttpsConnectorFactory extends ConnectorFactory {
 
     private ResourceFactory keyStore;
     private String keyStorePassword;
     private String certificateAlias;
 
-    public TlsConnectorFactory() {
+    public HttpsConnectorFactory() {
         keyStorePassword = "changeit";
     }
 

@@ -24,7 +24,7 @@ import java.security.cert.CertificateException;
 
 import static org.junit.Assert.assertEquals;
 
-public class TlsConnectorIT {
+public class HttpsConnectorIT {
 
     private static final String OUT_CONTENT = "https_content_stream_content_stream";
     private static final String SERVICE_URL = "https://localhost:14001/";
@@ -47,7 +47,7 @@ public class TlsConnectorIT {
     @Test
     public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         app.startServer(new UnitModule(),
-                "--config=classpath:io/bootique/jetty/server/TlsConnector.yml");
+                "--config=classpath:io/bootique/jetty/server/HttpsConnector.yml");
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
@@ -57,7 +57,7 @@ public class TlsConnectorIT {
     @Test
     public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         app.startServer(new UnitModule(),
-                "--config=classpath:io/bootique/jetty/server/TlsMultiCertConnector.yml");
+                "--config=classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml");
 
         // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
 
