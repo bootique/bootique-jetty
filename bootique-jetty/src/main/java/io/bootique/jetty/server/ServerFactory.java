@@ -175,6 +175,11 @@ public class ServerFactory {
             connectorFactories.addAll(this.connectors);
         }
 
+        // add default connector if none are configured
+        if(connectorFactories.isEmpty()) {
+            connectorFactories.add(new HttpConnectorFactory());
+        }
+
         return connectorFactories;
     }
 
