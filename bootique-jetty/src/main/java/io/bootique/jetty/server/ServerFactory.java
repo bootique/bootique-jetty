@@ -3,6 +3,7 @@ package io.bootique.jetty.server;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedServlet;
+import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.Handler;
@@ -33,8 +34,8 @@ public class ServerFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
     @Deprecated
-    protected HttpConnectorFactory connector;
-    protected List<HttpConnectorFactory> connectors;
+    protected ConnectorFactory connector;
+    protected List<ConnectorFactory> connectors;
     protected String context;
     protected int idleThreadTimeout;
     protected Map<String, FilterFactory> filters;
@@ -67,7 +68,7 @@ public class ServerFactory {
 
         createRequestLog(server);
 
-        Collection<HttpConnectorFactory> connectorFactories = connectorFactories(server);
+        Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
 
         Collection<Integer> ports = new LinkedHashSet<>();
 
@@ -163,8 +164,8 @@ public class ServerFactory {
         return sorted;
     }
 
-    protected Collection<HttpConnectorFactory> connectorFactories(Server server) {
-        Collection<HttpConnectorFactory> connectorFactories = new ArrayList<>();
+    protected Collection<ConnectorFactory> connectorFactories(Server server) {
+        Collection<ConnectorFactory> connectorFactories = new ArrayList<>();
 
         if (this.connector != null) {
             LOGGER.warn("Using deprecated 'connector' property. Consider changing configuration to 'connectors'");
@@ -209,7 +210,7 @@ public class ServerFactory {
      * @return a List of server connectors, each listening on its own unique port.
      * @since 0.18
      */
-    public List<HttpConnectorFactory> getConnectors() {
+    public List<ConnectorFactory> getConnectors() {
         return connectors;
     }
 
@@ -219,7 +220,7 @@ public class ServerFactory {
      * @param connectors a list of preconfigured connector factories.
      * @since 0.18
      */
-    public void setConnectors(List<HttpConnectorFactory> connectors) {
+    public void setConnectors(List<ConnectorFactory> connectors) {
         this.connectors = connectors;
     }
 
@@ -238,7 +239,7 @@ public class ServerFactory {
      * @deprecated since 0.18 in favor of "connectors" property.
      */
     @Deprecated
-    public HttpConnectorFactory getConnector() {
+    public ConnectorFactory getConnector() {
         return connector;
     }
 
@@ -247,7 +248,7 @@ public class ServerFactory {
      * @deprecated since 0.18 in favor of "connectors" property.
      */
     @Deprecated
-    public void setConnector(HttpConnectorFactory connector) {
+    public void setConnector(ConnectorFactory connector) {
         this.connector = connector;
     }
 
