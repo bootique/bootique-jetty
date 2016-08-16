@@ -38,7 +38,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         // into properties
 
         HttpConfiguration httpConfig = buildHttpConfiguration();
-        ConnectionFactory connectionFactory = buildHttpConnectionFactory(httpConfig);
+        ConnectionFactory[] connectionFactories = buildHttpConnectionFactories(httpConfig);
         Scheduler scheduler = new ScheduledExecutorScheduler();
         ByteBufferPool bufferPool = buildBufferPool();
         int selectorThreads = Runtime.getRuntime().availableProcessors();
@@ -46,14 +46,14 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         ThreadPool threadPool = Objects.requireNonNull(server.getThreadPool());
 
         ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, acceptorThreads,
-                selectorThreads, connectionFactory);
+                selectorThreads, connectionFactories);
         connector.setPort(getPort());
         connector.setIdleTimeout(30 * 1000);
 
         return connector;
     }
 
-    protected abstract ConnectionFactory buildHttpConnectionFactory(HttpConfiguration httpConfig);
+    protected abstract ConnectionFactory[] buildHttpConnectionFactories(HttpConfiguration httpConfig);
 
     protected HttpConfiguration buildHttpConfiguration() {
 

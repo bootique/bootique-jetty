@@ -33,7 +33,7 @@ public class TlsConnectorIT {
     public void testTlsConnector() {
         app.startServer(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/TlsConnector.yml");
-
+        
         Response r1HTTPS = client.target("https://localhost:14001/").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
         assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
