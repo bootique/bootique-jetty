@@ -2,6 +2,7 @@
 
 * #40 Simplify MappedServlet/MappedFilter with parameterization
 * #44 Removing deprecated API
+* #45 Support for multiple connectors
 
 ## 0.17
 

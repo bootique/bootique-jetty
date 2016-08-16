@@ -5,7 +5,6 @@ import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
@@ -29,320 +29,360 @@ import java.util.concurrent.BlockingQueue;
 
 public class ServerFactory {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
-	protected HttpConnectorFactory connector;
-	protected String context;
-	protected int idleThreadTimeout;
-	protected Map<String, FilterFactory> filters;
-	protected int maxThreads;
-	protected int minThreads;
-	protected int maxQueuedRequests;
-	private Map<String, String> params;
-	protected Map<String, ServletFactory> servlets;
-	protected boolean sessions;
-	private FolderResourceFactory staticResourceBase;
-	private boolean compression;
+    @Deprecated
+    protected HttpConnectorFactory connector;
+    protected List<HttpConnectorFactory> connectors;
+    protected String context;
+    protected int idleThreadTimeout;
+    protected Map<String, FilterFactory> filters;
+    protected int maxThreads;
+    protected int minThreads;
+    protected int maxQueuedRequests;
+    protected Map<String, ServletFactory> servlets;
+    protected boolean sessions;
+    private Map<String, String> params;
+    private FolderResourceFactory staticResourceBase;
+    private boolean compression;
 
-	public ServerFactory() {
-		this.context = "/";
-		this.minThreads = 4;
-		this.maxThreads = 1024;
-		this.maxQueuedRequests = 1024;
-		this.idleThreadTimeout = 60000;
-		this.sessions = true;
-		this.compression = true;
+    public ServerFactory() {
+        this.context = "/";
+        this.minThreads = 4;
+        this.maxThreads = 1024;
+        this.maxQueuedRequests = 1024;
+        this.idleThreadTimeout = 60000;
+        this.sessions = true;
+        this.compression = true;
 
-		this.connector = new HttpConnectorFactory();
-	}
+        this.connector = new HttpConnectorFactory();
+    }
 
-	public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
+    public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
 
-		ThreadPool threadPool = createThreadPool();
-		Server server = new Server(threadPool);
-		server.setStopAtShutdown(true);
-		server.setStopTimeout(1000L);
-		server.setHandler(createHandler(servlets, filters, listeners));
+        ThreadPool threadPool = createThreadPool();
+        Server server = new Server(threadPool);
+        server.setStopAtShutdown(true);
+        server.setStopTimeout(1000L);
+        server.setHandler(createHandler(servlets, filters, listeners));
 
-		createRequestLog(server);
-		createConnectors(server, threadPool);
+        createRequestLog(server);
+        createConnectors(server, threadPool);
 
-		server.addLifeCycleListener(new ServerLifecycleLogger(connector.getPort(), context));
+        server.addLifeCycleListener(new ServerLifecycleLogger(connector.getPort(), context));
 
-		return server;
-	}
+        return server;
+    }
 
-	protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
-			Set<EventListener> listeners) {
+    protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
+                                    Set<EventListener> listeners) {
 
-		int options = 0;
+        int options = 0;
 
-		if (sessions) {
-			options |= ServletContextHandler.SESSIONS;
-		}
+        if (sessions) {
+            options |= ServletContextHandler.SESSIONS;
+        }
 
-		ServletContextHandler handler = new ServletContextHandler(options);
-		handler.setContextPath(context);
-		if (params != null) {
-			params.forEach((k, v) -> handler.setInitParameter(k, v));
-		}
+        ServletContextHandler handler = new ServletContextHandler(options);
+        handler.setContextPath(context);
+        if (params != null) {
+            params.forEach((k, v) -> handler.setInitParameter(k, v));
+        }
 
-		if (staticResourceBase != null) {
-			handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
-		}
+        if (staticResourceBase != null) {
+            handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
+        }
 
-		if (compression) {
-			handler.setGzipHandler(createGzipHandler());
-		}
+        if (compression) {
+            handler.setGzipHandler(createGzipHandler());
+        }
 
-		installListeners(handler, listeners);
-		installServlets(handler, servlets);
-		installFilters(handler, filters);
+        installListeners(handler, listeners);
+        installServlets(handler, servlets);
+        installFilters(handler, filters);
 
-		return handler;
-	}
+        return handler;
+    }
 
-	protected GzipHandler createGzipHandler() {
-		GzipHandler gzipHandler = new GzipHandler();
-		gzipHandler.setCheckGzExists(false);
-		return gzipHandler;
-	}
+    protected GzipHandler createGzipHandler() {
+        GzipHandler gzipHandler = new GzipHandler();
+        gzipHandler.setCheckGzExists(false);
+        return gzipHandler;
+    }
 
-	protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
-		servlets.forEach(mappedServlet -> getServletFactory(mappedServlet.getName()).createAndAddJettyServlet(handler,
-				mappedServlet));
-	}
+    protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
+        servlets.forEach(mappedServlet -> getServletFactory(mappedServlet.getName()).createAndAddJettyServlet(handler,
+                mappedServlet));
+    }
 
-	protected ServletFactory getServletFactory(String name) {
-		ServletFactory factory = null;
-		if (servlets != null && name != null) {
-			factory = servlets.get(name);
-		}
+    protected ServletFactory getServletFactory(String name) {
+        ServletFactory factory = null;
+        if (servlets != null && name != null) {
+            factory = servlets.get(name);
+        }
 
-		return factory != null ? factory : new ServletFactory();
-	}
+        return factory != null ? factory : new ServletFactory();
+    }
 
-	protected void installFilters(ServletContextHandler handler, Set<MappedFilter> filters) {
-		sortedFilters(filters).forEach(mappedFilter -> getFilterFactory(mappedFilter.getName())
-				.createAndAddJettyFilter(handler, mappedFilter));
-	}
+    protected void installFilters(ServletContextHandler handler, Set<MappedFilter> filters) {
+        sortedFilters(filters).forEach(mappedFilter -> getFilterFactory(mappedFilter.getName())
+                .createAndAddJettyFilter(handler, mappedFilter));
+    }
 
-	protected FilterFactory getFilterFactory(String name) {
-		FilterFactory factory = null;
-		if (filters != null && name != null) {
-			factory = filters.get(name);
-		}
+    protected FilterFactory getFilterFactory(String name) {
+        FilterFactory factory = null;
+        if (filters != null && name != null) {
+            factory = filters.get(name);
+        }
 
-		return factory != null ? factory : new FilterFactory();
-	}
+        return factory != null ? factory : new FilterFactory();
+    }
 
-	protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
-		listeners.forEach(listener -> {
+    protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
+        listeners.forEach(listener -> {
 
-			LOGGER.info("Adding listener {}", listener.getClass().getName());
-			handler.addEventListener(listener);
-		});
-	}
+            LOGGER.info("Adding listener {}", listener.getClass().getName());
+            handler.addEventListener(listener);
+        });
+    }
 
-	private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
-		List<MappedFilter> sorted = new ArrayList<>(unsorted);
+    private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
+        List<MappedFilter> sorted = new ArrayList<>(unsorted);
 
-		Collections.sort(sorted, Comparator.comparing(MappedFilter::getOrder));
-		return sorted;
-	}
+        Collections.sort(sorted, Comparator.comparing(MappedFilter::getOrder));
+        return sorted;
+    }
 
-	protected void createConnectors(Server server, ThreadPool threadPool) {
-		Connector c = connector.createConnector(server, threadPool);
-		server.addConnector(c);
-	}
+    protected void createConnectors(Server server, ThreadPool threadPool) {
 
-	protected QueuedThreadPool createThreadPool() {
-		BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-		QueuedThreadPool threadPool = createThreadPool(queue);
-		threadPool.setName("bootique-http");
+        Collection<HttpConnectorFactory> connectorFactories = new ArrayList<>();
 
-		return threadPool;
-	}
 
-	protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
-		return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
-	}
+        if (this.connector != null) {
+            LOGGER.warn("Using deprecated 'connector' property. Consider changing configuration to 'connectors'");
+            connectorFactories.add(this.connector);
+        }
 
-	protected void createRequestLog(Server server) {
+        if (this.connectors != null) {
+            connectorFactories.addAll(this.connectors);
+        }
 
-		Logger logger = LoggerFactory.getLogger(RequestLog.class);
-		if (logger.isInfoEnabled()) {
-			Slf4jRequestLog requestLog = new Slf4jRequestLog();
-			requestLog.setExtended(true);
-			server.setRequestLog(requestLog);
-		}
-	}
+        if (connectorFactories.isEmpty()) {
+            LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
+        } else {
+            connectorFactories.forEach(cf -> server.addConnector(cf.createConnector(server, threadPool)));
+        }
+    }
 
-	public void setConnector(HttpConnectorFactory connector) {
-		this.connector = connector;
-	}
+    protected QueuedThreadPool createThreadPool() {
+        BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
+        QueuedThreadPool threadPool = createThreadPool(queue);
+        threadPool.setName("bootique-http");
 
-	public void setContext(String context) {
-		this.context = context;
-	}
+        return threadPool;
+    }
 
-	public void setMaxThreads(int maxConnectorThreads) {
-		this.maxThreads = maxConnectorThreads;
-	}
+    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
+        return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
+    }
 
-	public void setMinThreads(int minThreads) {
-		this.minThreads = minThreads;
-	}
+    protected void createRequestLog(Server server) {
 
-	public void setMaxQueuedRequests(int maxQueuedRequests) {
-		this.maxQueuedRequests = maxQueuedRequests;
-	}
+        Logger logger = LoggerFactory.getLogger(RequestLog.class);
+        if (logger.isInfoEnabled()) {
+            Slf4jRequestLog requestLog = new Slf4jRequestLog();
+            requestLog.setExtended(true);
+            server.setRequestLog(requestLog);
+        }
+    }
 
-	public void setIdleThreadTimeout(int idleThreadTimeout) {
-		this.idleThreadTimeout = idleThreadTimeout;
-	}
+    /**
+     * @return a List of server connectors, each listening on its own unique port.
+     * @since 0.18
+     */
+    public List<HttpConnectorFactory> getConnectors() {
+        return connectors;
+    }
 
-	public void setServlets(Map<String, ServletFactory> servlets) {
-		this.servlets = servlets;
-	}
+    /**
+     * Sets a list of connector factories for this server. Each connectors would listen on its own unique port.
+     *
+     * @param connectors a list of preconfigured connector factories.
+     * @since 0.18
+     */
+    public void setConnectors(List<HttpConnectorFactory> connectors) {
+        this.connectors = connectors;
+    }
 
-	public void setFilters(Map<String, FilterFactory> filters) {
-		this.filters = filters;
-	}
+    public void setServlets(Map<String, ServletFactory> servlets) {
+        this.servlets = servlets;
+    }
 
-	public void setSessions(boolean sessions) {
-		this.sessions = sessions;
-	}
+    public void setFilters(Map<String, FilterFactory> filters) {
+        this.filters = filters;
+    }
 
-	/**
-	 * @since 0.13
-	 * @param params
-	 *            a map of context init parameters.
-	 */
-	public void setParams(Map<String, String> params) {
-		this.params = params;
-	}
+    /**
+     * @return an object containing properties of the web connector and acting
+     * as connector factory.
+     * @since 0.15
+     * @deprecated since 0.18 in favor of "connectors" property.
+     */
+    @Deprecated
+    public HttpConnectorFactory getConnector() {
+        return connector;
+    }
 
-	/**
-	 * Sets a base location for resources of the Jetty context. Used by static
-	 * resource servlets, including the "default" servlet. The value can be a
-	 * file path or a URL, as well as a special URL starting with "classpath:".
-	 * <p>
-	 * It can be optionally overridden by DefaultServlet configuration.
-	 * <p>
-	 * For security reasons this has to be set explicitly when "staticResources"
-	 * is "true". There's no default.
-	 * 
-	 * @since 0.13
-	 * @see JettyModule#contributeDefaultServlet(com.google.inject.Binder)
-	 * @see JettyModule#contributeStaticServlet(com.google.inject.Binder,
-	 *      String, String...)
-	 * @see <a href=
-	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
-	 *      DefaultServlet</a>.
-	 * @param staticResourceBase
-	 *            A base location for resources of the Jetty context, that can
-	 *            be a file path or a URL, as well as a special URL starting
-	 *            with "classpath:".
-	 */
-	public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
-		this.staticResourceBase = staticResourceBase;
-	}
+    /**
+     * @param connector connector factory
+     * @deprecated since 0.18 in favor of "connectors" property.
+     */
+    @Deprecated
+    public void setConnector(HttpConnectorFactory connector) {
+        this.connector = connector;
+    }
 
-	/**
-	 * Sets whether compression whether gzip compression should be supported.
-	 * When true, responses will be compressed if a client requests it via
-	 * "Accept-Encoding:" header. Default is true.
-	 * 
-	 * @since 0.15
-	 * @param compression
-	 *            whether gzip compression should be supported.
-	 */
-	public void setCompression(boolean compression) {
-		this.compression = compression;
-	}
+    /**
+     * @return web application context path.
+     * @since 0.15
+     */
+    public String getContext() {
+        return context;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return an object containing properties of the web connector and acting
-	 *         as connector factory.
-	 */
-	public HttpConnectorFactory getConnector() {
-		return connector;
-	}
+    public void setContext(String context) {
+        this.context = context;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return web application context path.
-	 */
-	public String getContext() {
-		return context;
-	}
+    /**
+     * @return a period in milliseconds specifying how long it takes until an
+     * idle thread is terminated.
+     * @since 0.15
+     */
+    public int getIdleThreadTimeout() {
+        return idleThreadTimeout;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a period in milliseconds specifying how long it takes until an
-	 *         idle thread is terminated.
-	 */
-	public int getIdleThreadTimeout() {
-		return idleThreadTimeout;
-	}
+    public void setIdleThreadTimeout(int idleThreadTimeout) {
+        this.idleThreadTimeout = idleThreadTimeout;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a maximum number of requests to queue if the thread pool is busy.
-	 */
-	public int getMaxQueuedRequests() {
-		return maxQueuedRequests;
-	}
+    /**
+     * @return a maximum number of requests to queue if the thread pool is busy.
+     * @since 0.15
+     */
+    public int getMaxQueuedRequests() {
+        return maxQueuedRequests;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a maximum number of request processing threads in the pool.
-	 */
-	public int getMaxThreads() {
-		return maxThreads;
-	}
+    public void setMaxQueuedRequests(int maxQueuedRequests) {
+        this.maxQueuedRequests = maxQueuedRequests;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return an initial number of request processing threads in the pool.
-	 */
-	public int getMinThreads() {
-		return minThreads;
-	}
+    /**
+     * @return a maximum number of request processing threads in the pool.
+     * @since 0.15
+     */
+    public int getMaxThreads() {
+        return maxThreads;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a map of arbitrary key/value parameters that are used as "init"
-	 *         parameters of the ServletContext.
-	 */
-	public Map<String, String> getParams() {
-		return params != null ? Collections.unmodifiableMap(params) : Collections.emptyMap();
-	}
+    public void setMaxThreads(int maxConnectorThreads) {
+        this.maxThreads = maxConnectorThreads;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a boolean specifying whether servlet sessions should be supported
-	 *         by Jetty.
-	 */
-	public boolean isSessions() {
-		return sessions;
-	}
+    /**
+     * @return an initial number of request processing threads in the pool.
+     * @since 0.15
+     */
+    public int getMinThreads() {
+        return minThreads;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return a base location for resources of the Jetty context.
-	 */
-	public FolderResourceFactory getStaticResourceBase() {
-		return staticResourceBase;
-	}
+    public void setMinThreads(int minThreads) {
+        this.minThreads = minThreads;
+    }
 
-	/**
-	 * @since 0.15
-	 * @return whether content compression is supported.
-	 */
-	public boolean isCompression() {
-		return compression;
-	}
+    /**
+     * @return a map of arbitrary key/value parameters that are used as "init"
+     * parameters of the ServletContext.
+     * @since 0.15
+     */
+    public Map<String, String> getParams() {
+        return params != null ? Collections.unmodifiableMap(params) : Collections.emptyMap();
+    }
+
+    /**
+     * @param params a map of context init parameters.
+     * @since 0.13
+     */
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
+
+    /**
+     * @return a boolean specifying whether servlet sessions should be supported
+     * by Jetty.
+     * @since 0.15
+     */
+    public boolean isSessions() {
+        return sessions;
+    }
+
+    public void setSessions(boolean sessions) {
+        this.sessions = sessions;
+    }
+
+    /**
+     * @return a base location for resources of the Jetty context.
+     * @since 0.15
+     */
+    public FolderResourceFactory getStaticResourceBase() {
+        return staticResourceBase;
+    }
+
+    /**
+     * Sets a base location for resources of the Jetty context. Used by static
+     * resource servlets, including the "default" servlet. The value can be a
+     * file path or a URL, as well as a special URL starting with "classpath:".
+     * <p>
+     * It can be optionally overridden by DefaultServlet configuration.
+     * <p>
+     * For security reasons this has to be set explicitly when "staticResources"
+     * is "true". There's no default.
+     *
+     * @param staticResourceBase A base location for resources of the Jetty context, that can
+     *                           be a file path or a URL, as well as a special URL starting
+     *                           with "classpath:".
+     * @see JettyModule#contributeDefaultServlet(com.google.inject.Binder)
+     * @see JettyModule#contributeStaticServlet(com.google.inject.Binder,
+     * String, String...)
+     * @see <a href=
+     * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+     * DefaultServlet</a>.
+     * @since 0.13
+     */
+    public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
+        this.staticResourceBase = staticResourceBase;
+    }
+
+    /**
+     * @return whether content compression is supported.
+     * @since 0.15
+     */
+    public boolean isCompression() {
+        return compression;
+    }
+
+    /**
+     * Sets whether compression whether gzip compression should be supported.
+     * When true, responses will be compressed if a client requests it via
+     * "Accept-Encoding:" header. Default is true.
+     *
+     * @param compression whether gzip compression should be supported.
+     * @since 0.15
+     */
+    public void setCompression(boolean compression) {
+        this.compression = compression;
+    }
 }
