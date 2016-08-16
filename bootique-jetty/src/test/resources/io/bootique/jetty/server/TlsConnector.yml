@@ -1,4 +1,14 @@
+# Test certificate instructions:
+#
+#   keytool -keystore bootique-jetty/src/test/resources/io/bootique/jetty/server/testkeystore \
+#       -alias jetty -genkey -keyalg RSA -sigalg SHA256withRSA -validity 7300
+#
+# // provide "localhost" when prompted for First/Last name
+#
+
 jetty:
   connectors:
     - type: https
       port: 14001
+      keyStore: 'classpath:io/bootique/jetty/server/testkeystore'
+      keyStorePassword: 'supersecret'

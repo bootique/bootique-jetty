@@ -4,7 +4,6 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.unit.JettyApp;
-import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -13,10 +12,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,14 +31,24 @@ public class TlsConnectorIT {
     @Rule
     public JettyApp app = new JettyApp();
 
-    private Client client = ClientBuilder.newClient().register(GZipEncoder.class);
+    private WebTarget createHttpsClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+
+        KeyStore trustStore;
+
+        try (InputStream in = getClass().getResourceAsStream("testkeystore")) {
+            trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(in, "supersecret".toCharArray());
+        }
+
+        return ClientBuilder.newBuilder().trustStore(trustStore).build().target("https://localhost:14001/");
+    }
 
     @Test
-    public void testTlsConnector() {
+    public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         app.startServer(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/TlsConnector.yml");
         
-        Response r1HTTPS = client.target("https://localhost:14001/").request().get();
+        Response r1HTTPS = createHttpsClient().request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
         assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
     }
