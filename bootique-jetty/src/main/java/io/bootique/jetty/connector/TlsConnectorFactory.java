@@ -22,6 +22,7 @@ public class TlsConnectorFactory extends ConnectorFactory {
 
     private ResourceFactory keyStore;
     private String keyStorePassword;
+    private String certificateAlias;
 
     public TlsConnectorFactory() {
         keyStorePassword = "changeit";
@@ -33,6 +34,10 @@ public class TlsConnectorFactory extends ConnectorFactory {
 
     public void setKeyStorePassword(String keyStorePassword) {
         this.keyStorePassword = keyStorePassword;
+    }
+
+    public void setCertificateAlias(String certificateAlias) {
+        this.certificateAlias = certificateAlias;
     }
 
     @Override
@@ -51,6 +56,7 @@ public class TlsConnectorFactory extends ConnectorFactory {
         contextFactory.setKeyStoreResource(new URLResource(keystoreUrl, null) {
         });
         contextFactory.setKeyStorePassword(keyStorePassword);
+        contextFactory.setCertAlias(certificateAlias);
 
         return new SslConnectionFactory(contextFactory, HttpVersion.HTTP_1_1.asString());
     }

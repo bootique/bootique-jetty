@@ -27,28 +27,41 @@ import static org.junit.Assert.assertEquals;
 public class TlsConnectorIT {
 
     private static final String OUT_CONTENT = "https_content_stream_content_stream";
+    private static final String SERVICE_URL = "https://localhost:14001/";
 
     @Rule
     public JettyApp app = new JettyApp();
 
-    private WebTarget createHttpsClient() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    private WebTarget createHttpsClient(String keystore) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         KeyStore trustStore;
 
-        try (InputStream in = getClass().getResourceAsStream("testkeystore")) {
+        try (InputStream in = getClass().getResourceAsStream(keystore)) {
             trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(in, "supersecret".toCharArray());
         }
 
-        return ClientBuilder.newBuilder().trustStore(trustStore).build().target("https://localhost:14001/");
+        return ClientBuilder.newBuilder().trustStore(trustStore).build().target(SERVICE_URL);
     }
 
     @Test
     public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         app.startServer(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/TlsConnector.yml");
-        
-        Response r1HTTPS = createHttpsClient().request().get();
+
+        Response r1HTTPS = createHttpsClient("testkeystore").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
+        assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
+    }
+
+    @Test
+    public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+        app.startServer(new UnitModule(),
+                "--config=classpath:io/bootique/jetty/server/TlsMultiCertConnector.yml");
+
+        // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
+
+        Response r1HTTPS = createHttpsClient("testmulticertkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
         assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
     }
