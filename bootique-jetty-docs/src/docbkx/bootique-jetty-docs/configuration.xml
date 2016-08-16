@@ -41,9 +41,16 @@
                 </tr>
                 <tr>
                     <td><code>connector</code></td>
-                    <td><code>HttpConnectorFactory</code></td>
-                    <td>An object specifying properties of the web connector. See
-                            <code>jetty.connector</code> below.</td>
+                    <td><emphasis>N/A (deprecated since 0.18)</emphasis></td>
+                    <td><emphasis>Deprecated as more than one connector is supported.</emphasis>
+                        <emphasis>Use </emphasis><code>connectors</code><emphasis>instead.
+                        </emphasis>An object specifying properties of the web connector. </td>
+                </tr>
+                <tr>
+                    <td><code>connectors</code></td>
+                    <td>a single HTTP connector on port 8080</td>
+                    <td>A list of connectors. Each connector listens on a single port. There can be
+                        HTTP or HTTPS connectors. See <code>jetty.connectors</code> below.</td>
                 </tr>
                 <tr>
                     <td><code>context</code></td>
@@ -119,18 +126,27 @@
     </table>
     </section>
     <section>
-        <title>jetty.connector</title>
+        <title>jetty.connectors</title>
         <para>
             <programlisting>jetty:
-  connector:
-    port: 9999</programlisting>
+  connectors:
+    - port: 9999
+    - port: 9998
+      type: https
+</programlisting>
         </para>
-        <para>"jetty.connector" element configures a web connector (i.e. an object that listens for
-            network requests for our Jetty-enabled app) and is bound to <link
-                xlink:href="https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/HttpConnectorFactory.java"
-                    ><code>HttpConnectorFactory</code></link>. It supports the following
-                properties:<table frame="void">
-                <caption>"jetty.connector" Element Property Reference</caption>
+        <para>"jetty.connectors" element configures one or more web connectors. Each connector
+            listens on a specified port and has an associated protocol (http or https). If no
+            connectors are provided, Bootique will create a single HTTP connector on port 8080. </para>
+        <para>HTTPS connectors require an SSL certificate (real or self-signed), stored in a
+            keystore. <link
+                xlink:href="http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html"
+                >Jetty documentaion on the subject</link> should help with generating a certificate.
+            In its simplest form it may look like
+                this:<programlisting><code>keytool -keystore src/main/resources/mykeystore \
+       -alias mycert -genkey -keyalg RSA -sigalg SHA256withRSA -validity 365</code></programlisting><table
+                frame="void">
+                <caption>HTTP connector property reference</caption>
                 <col width="20%"/>
                 <col width="15%"/>
                 <col width="65%"/>
@@ -142,6 +158,12 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td><code>type</code></td>
+                        <td>N/A</td>
+                        <td>Connector type. To use HTTP connector, this value must be set to "http",
+                            or omitted all together ("http" is the default).</td>
+                    </tr>
                     <tr>
                         <td><code>port</code></td>
                         <td><code>8080</code></td>
@@ -159,6 +181,59 @@
                     </tr>
                 </tbody>
             </table></para>
+        <table frame="void">
+            <caption>HTTPS connector property reference</caption>
+            <col width="20%"/>
+            <col width="15%"/>
+            <col width="65%"/>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>type</code></td>
+                    <td>N/A</td>
+                    <td>Connector type. To use HTTPS connector, this value must be set to
+                        "https".</td>
+                </tr>
+                <tr>
+                    <td><code>port</code></td>
+                    <td><code>8080</code></td>
+                    <td>A port the connector listens on.</td>
+                </tr>
+                <tr>
+                    <td><code>requestHeaderSize</code></td>
+                    <td><code>8192</code></td>
+                    <td>A max size in bytes of Jetty request headers and GET URLs. </td>
+                </tr>
+                <tr>
+                    <td><code>responseHeaderSize</code></td>
+                    <td><code>8192</code></td>
+                    <td>A max size in bytes of Jetty response headers.</td>
+                </tr>
+                <tr>
+                    <td><code>keyStore</code></td>
+                    <td/>
+                    <td>Required. A resource pointing to the keystore that has server SSL
+                        certificate. Can be a "classpath:" resource, etc.</td>
+                </tr>
+                <tr>
+                    <td><code>keyStorePassword</code></td>
+                    <td><code>changeit</code></td>
+                    <td>A password to access the keystore.</td>
+                </tr>
+                <tr>
+                    <td><code>certificateAlias</code></td>
+                    <td/>
+                    <td>An optional name of the certificate in the keystore, if there's more than
+                        one certificate.</td>
+                </tr>
+            </tbody>
+        </table>
     </section>
     <section>
         <title>jetty.filters</title>
