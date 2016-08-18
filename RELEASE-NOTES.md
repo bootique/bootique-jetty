@@ -1,8 +1,10 @@
 ## 0.18
 
 * #40 Simplify MappedServlet/MappedFilter with parameterization
+* #42 SSL connector
 * #44 Removing deprecated API
 * #45 Support for multiple connectors
+* #47 Support binding connector to a specific interface
 
 ## 0.17
 

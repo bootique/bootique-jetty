@@ -23,6 +23,7 @@ import java.util.Objects;
 public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     private int port;
+    private String host;
     private int responseHeaderSize;
     private int requestHeaderSize;
 
@@ -49,6 +50,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
                 selectorThreads, connectionFactories);
         connector.setPort(getPort());
         connector.setIdleTimeout(30 * 1000);
+        connector.setHost(getHost());
 
         return connector;
     }
@@ -89,6 +91,25 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    /**
+     * @return configured host value.
+     * @since 0.18
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Sets the network interface this connector should bind to, either as IP or hostname. This setting is optional.
+     * By default connector binds to all interfaces.
+     *
+     * @param host the network interface this connector binds to, either as IP or hostname.
+     * @since 0.18
+     */
+    public void setHost(String host) {
+        this.host = host;
     }
 
     /**
