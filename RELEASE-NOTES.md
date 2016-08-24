@@ -6,6 +6,7 @@
 * #45 Support for multiple connectors
 * #47 Support binding connector to a specific interface
 * #48 Upgrade to Bootique 0.20
+* #49 Suppress Jetty INFO loggers by default
 
 ## 0.17
 

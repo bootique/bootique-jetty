@@ -28,6 +28,7 @@ import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import static java.util.Arrays.asList;
 
@@ -183,6 +184,9 @@ public class JettyModule extends ConfigModule {
 
 		// register default listeners
 		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
+
+		// make Jetty less verbose .. 
+		BQCoreModule.contributeLogLevels(binder).addBinding("org.eclipse.jetty").toInstance(Level.WARNING);
 	}
 
 	@Singleton
