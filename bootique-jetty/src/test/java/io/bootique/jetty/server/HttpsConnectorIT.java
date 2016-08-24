@@ -51,7 +51,7 @@ public class HttpsConnectorIT {
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
-        assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
+        assertEquals(OUT_CONTENT + "_true", r1HTTPS.readEntity(String.class));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class HttpsConnectorIT {
 
         Response r1HTTPS = createHttpsClient("testmulticertkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
-        assertEquals(OUT_CONTENT, r1HTTPS.readEntity(String.class));
+        assertEquals(OUT_CONTENT + "_true", r1HTTPS.readEntity(String.class));
     }
 
     @WebServlet(urlPatterns = "/*")
@@ -72,7 +72,7 @@ public class HttpsConnectorIT {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp)
                 throws ServletException, IOException {
-            resp.getWriter().append(OUT_CONTENT);
+            resp.getWriter().append(OUT_CONTENT + "_" + req.isSecure());
         }
     }
 

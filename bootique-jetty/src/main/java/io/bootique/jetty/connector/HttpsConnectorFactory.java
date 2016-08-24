@@ -62,7 +62,7 @@ public class HttpsConnectorFactory extends ConnectorFactory {
     }
 
     protected HttpConnectionFactory buildHttp1BackingConnectorFactory(HttpConfiguration httpConfig) {
-        return new HttpConnectionFactory();
+        return new HttpConnectionFactory(httpConfig);
     }
 
     @Override
