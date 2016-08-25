@@ -5,9 +5,9 @@ import io.bootique.config.PolymorphicConfiguration;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -33,7 +33,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         this.responseHeaderSize = 8 * 1024;
     }
 
-    public Connector createConnector(Server server) {
+    public NetworkConnector createConnector(Server server) {
 
         // a few things are hardcoded for now... if needed we can turn these
         // into properties

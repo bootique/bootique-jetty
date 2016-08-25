@@ -7,6 +7,7 @@ import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Slf4jRequestLog;
@@ -23,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,18 +70,19 @@ public class ServerFactory {
 
         Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
 
-        Collection<Integer> ports = new LinkedHashSet<>();
+        Collection<ConnectorDescriptor> connectorDescriptors = new ArrayList<>(2);
 
         if (connectorFactories.isEmpty()) {
             LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
         } else {
             connectorFactories.forEach(cf -> {
-                server.addConnector(cf.createConnector(server));
-                ports.add(cf.getPort());
+                NetworkConnector connector = cf.createConnector(server);
+                server.addConnector(connector);
+                connectorDescriptors.add(new ConnectorDescriptor(connector));
             });
         }
 
-        server.addLifeCycleListener(new ServerLifecycleLogger(ports, context));
+        server.addLifeCycleListener(new ServerLifecycleLogger(connectorDescriptors, context));
         return server;
     }
 

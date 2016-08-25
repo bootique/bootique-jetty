@@ -185,7 +185,7 @@ public class JettyModule extends ConfigModule {
 		// register default listeners
 		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
 
-		// make Jetty less verbose .. 
+		// make Jetty less verbose ..
 		BQCoreModule.contributeLogLevels(binder).addBinding("org.eclipse.jetty").toInstance(Level.WARNING);
 	}
 
