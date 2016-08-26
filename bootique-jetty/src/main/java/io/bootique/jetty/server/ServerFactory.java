@@ -8,9 +8,7 @@ import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
-import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
@@ -199,11 +197,9 @@ public class ServerFactory {
 
     protected void createRequestLog(Server server) {
 
-        Logger logger = LoggerFactory.getLogger(RequestLog.class);
+        Logger logger = LoggerFactory.getLogger(RequestLogger.class);
         if (logger.isInfoEnabled()) {
-            Slf4jRequestLog requestLog = new Slf4jRequestLog();
-            requestLog.setExtended(true);
-            server.setRequestLog(requestLog);
+            server.setRequestLog(new RequestLogger());
         }
     }
 
