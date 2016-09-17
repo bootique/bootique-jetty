@@ -11,9 +11,9 @@
 	<artifactId>bootique-jetty-test</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Helper classes for the unit tests that require a Bootique Jetty container</name>
+	<name>bootique-jetty-test: Helper classes for unit tests that require a Bootique Jetty container</name>
 	<description>
-		Provides Helper classes for the unit tests that require a Bootique Jetty container.
+		Provides Helper classes for unit tests that require a Bootique Jetty container.
 	</description>
 
 	<dependencies>
