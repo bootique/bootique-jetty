@@ -8,6 +8,7 @@
 * #48 Upgrade to Bootique 0.20
 * #49 Suppress Jetty INFO loggers by default
 * #50 Use bootique-jetty-instrumented for tests run via JettyTestFactory
+* #52 JettyTestFactory rework to align with new BQ test API
 
 ## 0.17
 

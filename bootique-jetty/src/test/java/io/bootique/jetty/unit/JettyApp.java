@@ -12,30 +12,17 @@ import java.util.function.Function;
 
 public class JettyApp extends BQDaemonTestFactory {
 
-	public void stop() {
-		after();
-	}
+    public void stop() {
+        after();
+    }
 
-	public void startServer(String... args) {
-		startServer(b -> {
-		} , args);
-	}
+    public void startServer(String... args) {
+        startServer(b -> {
+        }, args);
+    }
 
-	public BQDaemonTestRuntime startServer(Module config, String... args) {
-
-		int len = args != null ? args.length + 1 : 1;
-
-		String[] serverArgs = new String[len];
-		serverArgs[0] = "--server";
-		if (len > 1) {
-			System.arraycopy(args, 0, serverArgs, 1, args.length);
-		}
-
-		Consumer<Bootique> configurator = bq -> {
-			bq.modules(JettyModule.class).module(config);
-		};
-		Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
-
-		return newRuntime().configurator(configurator).startupCheck(startupCheck).start(serverArgs);
-	}
+    public BQDaemonTestRuntime startServer(Module config, String... args) {
+        Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
+        return app(args).args("--server").modules(JettyModule.class).module(config).startupCheck(startupCheck).start();
+    }
 }

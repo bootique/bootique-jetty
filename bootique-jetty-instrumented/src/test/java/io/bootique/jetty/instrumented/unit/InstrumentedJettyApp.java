@@ -25,21 +25,18 @@ public class InstrumentedJettyApp extends BQDaemonTestFactory {
 
 	public BQDaemonTestRuntime startServer(Module config, String... args) {
 
-		int len = args != null ? args.length + 1 : 1;
-
-		String[] serverArgs = new String[len];
-		serverArgs[0] = "--server";
-		if (len > 1) {
-			System.arraycopy(args, 0, serverArgs, 1, args.length);
-		}
 
 		Consumer<Bootique> configurator = bq -> {
-			bq.modules(JettyModule.class, MetricsModule.class)
-					.module(new InstrumentedJettyModuleProvider()).module(config);
+			bq.;
 		};
 		Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
 
-		return newRuntime().configurator(configurator).startupCheck(startupCheck).start(serverArgs);
+		return app(args)
+				.args("--server")
+				.modules(JettyModule.class, MetricsModule.class)
+				.module(new InstrumentedJettyModuleProvider())
+				.module(config)
+				.startupCheck(startupCheck).start();
 	}
 
 }
