@@ -35,7 +35,7 @@ public class AnnotatedServletIT {
 
 	@Test
 	public void testServletContainerState() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -56,7 +56,7 @@ public class AnnotatedServletIT {
 	@Test
 	public void testConfig_Override() throws Exception {
 
-		app.startServer(new ServletModule(),
+		app.start(new ServletModule(),
 				"--config=classpath:io/bootique/jetty/servlet/AnnotatedServletIT1.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

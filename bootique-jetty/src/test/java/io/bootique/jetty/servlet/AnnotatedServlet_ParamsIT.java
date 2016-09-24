@@ -28,7 +28,7 @@ public class AnnotatedServlet_ParamsIT {
 
 	@Test
 	public void testAnnotationParams() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -39,7 +39,7 @@ public class AnnotatedServlet_ParamsIT {
 	@Test
 	public void testConfig_Override() throws Exception {
 
-		app.startServer(new ServletModule(),
+		app.start(new ServletModule(),
 				"--config=classpath:io/bootique/jetty/servlet/AnnotatedServletIT2.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

@@ -1,6 +1,8 @@
 package io.bootique.jetty.test.junit;
 
+import io.bootique.BQCoreModule;
 import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.command.ServerCommand;
 import io.bootique.test.BQDaemonTestRuntime;
 import io.bootique.test.junit.BQDaemonTestFactory;
 import org.eclipse.jetty.server.Server;
@@ -58,15 +60,18 @@ public class JettyTestFactory extends BQDaemonTestFactory {
         /**
          * @param args
          * @return a new {@link BQDaemonTestRuntime}.
-         * @deprecated since 0.20 use no-arg {@link #startServer()}.
+         * @deprecated since 0.20 use {@link #start()}
          */
+        @Deprecated
         public BQDaemonTestRuntime startServer(String... args) {
             bootique.args(args);
-            return startServer();
+            return start();
         }
 
-        public BQDaemonTestRuntime startServer() {
-            return args("--server").start();
+        @Override
+        public BQDaemonTestRuntime start() {
+            module(binder -> BQCoreModule.setDefaultCommand(binder, ServerCommand.class));
+            return super.start();
         }
     }
 }

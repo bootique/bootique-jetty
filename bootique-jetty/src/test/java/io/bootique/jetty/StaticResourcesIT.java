@@ -21,7 +21,7 @@ public class StaticResourcesIT {
 
 	@Test
 	public void testDisabled() {
-		app.startServer();
+		app.start();
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 		Response r = base.path("/other.txt").request().get();
@@ -30,7 +30,7 @@ public class StaticResourcesIT {
 
 	@Test
 	public void testEnabled_ButNoBase() {
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 		});
 
@@ -41,7 +41,7 @@ public class StaticResourcesIT {
 
 	@Test
 	public void testWithContextBase_FilePath() {
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
 					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
@@ -61,7 +61,7 @@ public class StaticResourcesIT {
 		File baseDir = new File("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
 		String baseUrl = baseDir.getAbsoluteFile().toURI().toURL().toString();
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase").toInstance(baseUrl);
 		});
@@ -76,7 +76,7 @@ public class StaticResourcesIT {
 	@Test
 	public void testWithContextBase_ClasspathUrl() {
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
 					.toInstance("classpath:io/bootique/jetty/StaticResourcesIT_docroot");
@@ -91,7 +91,7 @@ public class StaticResourcesIT {
 
 	@Test
 	public void testWithContextBase_FilePath_ImplicitIndex() {
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
 					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
@@ -106,7 +106,7 @@ public class StaticResourcesIT {
 	
 	@Test
 	public void testWithContextBase_FilePath_DotSlash() {
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeDefaultServlet(binder);
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
 					.toInstance("./src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
@@ -122,7 +122,7 @@ public class StaticResourcesIT {
 	@Test
 	public void testWithServletBase() {
 
-		app.startServer(binder -> JettyModule.contributeDefaultServlet(binder),
+		app.start(binder -> JettyModule.contributeDefaultServlet(binder),
 				"--config=src/test/resources/io/bootique/jetty/StaticResourcesIT_FilePath.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -134,7 +134,7 @@ public class StaticResourcesIT {
 	@Test
 	public void testContributeStaticServlet() {
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeStaticServlet(binder, "sub", "/sub1/*", "/sub2/*");
 			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
 					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");

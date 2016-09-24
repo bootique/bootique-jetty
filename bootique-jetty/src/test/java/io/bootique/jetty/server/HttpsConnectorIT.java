@@ -46,7 +46,7 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.startServer(new UnitModule(),
+        app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/HttpsConnector.yml");
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
@@ -56,7 +56,7 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.startServer(new UnitModule(),
+        app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml");
 
         // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?

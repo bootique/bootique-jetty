@@ -58,7 +58,7 @@ public class JettyModuleIT {
 		MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 		MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet1);
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet2);
 		});
@@ -95,7 +95,7 @@ public class JettyModuleIT {
 		MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
 		MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf1);
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf2);
@@ -142,7 +142,7 @@ public class JettyModuleIT {
 
 		MappedServlet mappedServlet = new MappedServlet(mockServlet1, Collections.singleton("/a/*"));
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf1);
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf2);
@@ -167,7 +167,7 @@ public class JettyModuleIT {
 		verify(scListener, times(0)).contextInitialized(any());
 		verify(scListener, times(0)).contextDestroyed(any());
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(scListener);
 		});
 
@@ -187,7 +187,7 @@ public class JettyModuleIT {
 		verify(srListener, times(0)).requestInitialized(any());
 		verify(srListener, times(0)).requestDestroyed(any());
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(srListener);
 		});
 

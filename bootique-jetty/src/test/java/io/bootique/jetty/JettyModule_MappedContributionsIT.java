@@ -40,8 +40,8 @@ public class JettyModule_MappedContributionsIT {
     private static WebTarget BASE;
 
     @BeforeClass
-    public static void startServer() {
-        JETTY_FACTORY.startServer(new Module(), "--server");
+    public static void start() {
+        JETTY_FACTORY.start(new Module());
         BASE = ClientBuilder.newClient().target("http://localhost:8080");
     }
 

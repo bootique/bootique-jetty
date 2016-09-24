@@ -34,7 +34,7 @@ public class RequestTimerIT {
 
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		BQDaemonTestRuntime runtime = app.startServer(
+		BQDaemonTestRuntime runtime = app.start(
 				binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

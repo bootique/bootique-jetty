@@ -31,7 +31,7 @@ public class AnnotatedFilter_ParamsIT {
 
 	@Test
 	public void testAnnotationParams() throws Exception {
-		app.startServer(new FilterModule());
+		app.start(new FilterModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -42,7 +42,7 @@ public class AnnotatedFilter_ParamsIT {
 	@Test
 	public void testConfig_Override() throws Exception {
 
-		app.startServer(new FilterModule(), "--config=classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml");
+		app.start(new FilterModule(), "--config=classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

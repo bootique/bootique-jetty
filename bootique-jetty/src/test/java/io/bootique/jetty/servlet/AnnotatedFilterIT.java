@@ -38,7 +38,7 @@ public class AnnotatedFilterIT {
 
 	@Test
 	public void testServletContatinerState() throws Exception {
-		app.startServer(new FilterModule());
+		app.start(new FilterModule());
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -59,7 +59,7 @@ public class AnnotatedFilterIT {
 	@Test
 	public void testConfig_Override() throws Exception {
 
-		app.startServer(new FilterModule(), "--config=classpath:io/bootique/jetty/servlet/AnnotatedFilterIT1.yml");
+		app.start(new FilterModule(), "--config=classpath:io/bootique/jetty/servlet/AnnotatedFilterIT1.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

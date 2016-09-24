@@ -36,7 +36,7 @@ public class MappedServletIT {
 
 		MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
 		});
 
@@ -60,7 +60,7 @@ public class MappedServletIT {
 		MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")),
 				"s1");
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
 		}, "--config=classpath:io/bootique/jetty/MappedServletIT1.yml");
 

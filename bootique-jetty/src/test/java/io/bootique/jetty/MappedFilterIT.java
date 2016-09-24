@@ -36,7 +36,7 @@ public class MappedFilterIT {
 
 		MappedFilter mappedFilter = new MappedFilter(mockFilter, new HashSet<>(Arrays.asList("/a/*", "/b/*")), "f1", 0);
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mappedFilter);
 		});
 
@@ -59,7 +59,7 @@ public class MappedFilterIT {
 
 		MappedFilter mappedFilter = new MappedFilter(mockFilter, new HashSet<>(Arrays.asList("/a/*", "/b/*")), "f1", 0);
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mappedFilter);
 		}, "--config=classpath:io/bootique/jetty/MappedFilterIT1.yml");
 

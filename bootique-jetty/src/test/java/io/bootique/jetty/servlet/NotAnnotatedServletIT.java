@@ -23,7 +23,7 @@ public class NotAnnotatedServletIT {
 
 	@Test(expected = RuntimeException.class)
 	public void testServletContatinerState() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 	}
 
 	class ServletModule implements Module {

@@ -49,7 +49,7 @@ public class FilterInitParametersIT {
 
 		MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5);
 
-		app.startServer(binder -> {
+		app.start(binder -> {
 			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf);
 			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(endOfChainServlet);
 		} , "--config=src/test/resources/io/bootique/jetty/FilterInitParametersIT.yml");

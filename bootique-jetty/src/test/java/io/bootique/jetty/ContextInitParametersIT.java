@@ -34,7 +34,7 @@ public class ContextInitParametersIT {
 		params.put("b", "b2");
 		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
 
-		app.startServer(binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet),
+		app.start(binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet),
 				"--config=src/test/resources/io/bootique/jetty/ContextInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

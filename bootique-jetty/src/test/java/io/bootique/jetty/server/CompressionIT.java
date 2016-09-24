@@ -36,7 +36,7 @@ public class CompressionIT {
 
 	@Test
 	public void testCompression_Flat() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 
 		Response flatResponse = gzipTarget.request().get();
 		assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
@@ -46,7 +46,7 @@ public class CompressionIT {
 
 	@Test
 	public void testCompression_GzipDeflate() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 
 		Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
 		assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
@@ -56,7 +56,7 @@ public class CompressionIT {
 
 	@Test
 	public void testCompression_Gzip() throws Exception {
-		app.startServer(new ServletModule());
+		app.start(new ServletModule());
 
 		Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
 		assertEquals(Status.OK.getStatusCode(), gzipResponse.getStatus());
@@ -66,7 +66,7 @@ public class CompressionIT {
 
 	@Test
 	public void testUncompressed() throws Exception {
-		app.startServer(new ServletModule(),
+		app.start(new ServletModule(),
 				"--config=src/test/resources/io/bootique/jetty/server/NoCompressionIT.yml");
 
 		Response flatResponse = gzipTarget.request().get();

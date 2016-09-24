@@ -33,7 +33,7 @@ public class ServerFactoryConnectorsIT {
 
     @Test
     public void testMultipleConnectors_WithDeprecated() {
-        BQDaemonTestRuntime runtime = app.startServer(new UnitModule(),
+        BQDaemonTestRuntime runtime = app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/connectors-deprecated.yml");
 
         // deprecated default connector must NOT be started
@@ -56,7 +56,7 @@ public class ServerFactoryConnectorsIT {
     @Test
     public void testMultipleConnectors() {
 
-        BQDaemonTestRuntime runtime = app.startServer(new UnitModule(),
+        BQDaemonTestRuntime runtime = app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/connectors.yml");
 
         // deprecated default connector must NOT be started
