@@ -355,8 +355,7 @@ public class ServerFactory {
      * <p>
      * It can be optionally overridden by DefaultServlet configuration.
      * <p>
-     * For security reasons this has to be set explicitly when "staticResources"
-     * is "true". There's no default.
+     * For security reasons this has to be set explicitly. There's no default.
      *
      * @param staticResourceBase A base location for resources of the Jetty context, that can
      *                           be a file path or a URL, as well as a special URL starting
