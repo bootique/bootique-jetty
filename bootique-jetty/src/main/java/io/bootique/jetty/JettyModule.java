@@ -34,226 +34,222 @@ import static java.util.Arrays.asList;
 
 public class JettyModule extends ConfigModule {
 
-	/**
-	 * @param binder
-	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.14
-	 * @return returns a {@link Multibinder} for servlets.
-	 */
-	public static Multibinder<MappedServlet> contributeMappedServlets(Binder binder) {
-		return Multibinder.newSetBinder(binder, MappedServlet.class);
-	}
+    private String context;
+    private int port;
 
-	/**
-	 * Returns a {@link Multibinder} for container servlets. Servlets must be
-	 * annotated with {@link WebServlet}. Otherwise they should be mapped via
-	 * {@link #contributeMappedServlets(Binder)}.
-	 * 
-	 * @param binder
-	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.14
-	 * @return returns a {@link Multibinder} for servlets.
-	 */
-	public static Multibinder<Servlet> contributeServlets(Binder binder) {
-		return Multibinder.newSetBinder(binder, Servlet.class);
-	}
+    public JettyModule(String configPrefix) {
+        super(configPrefix);
+    }
 
-	/**
-	 * Adds a servlet for serving static resources for a given URL. The actual
-	 * servlet used is Jetty <a href=
-	 * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
-	 * DefaultServlet</a>, and it can be configured further via servlet
-	 * parameters. Static resources will be resolved relative to ServerFactory's
-	 * "staticResourceBase" , with URL path used to locate a subfolder, unless
-	 * servlet-specific configuration is explicitly provided.
-	 * 
-	 * @since 0.15
-	 * @param binder
-	 *            DI binder.
-	 * @param name
-	 *            servlet name that can be referenced in YAML to pass
-	 *            parameters.
-	 * @param urlPatterns
-	 *            url patterns
-	 * @see <a href=
-	 *      "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
-	 *      DefaultServlet</a>.
-	 */
-	public static void contributeStaticServlet(Binder binder, String name, String... urlPatterns) {
+    public JettyModule() {
+    }
 
-		Set<String> patternsSet = urlPatterns != null ? new HashSet<>(asList(urlPatterns)) : Collections.emptySet();
+    /**
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return returns a {@link Multibinder} for servlets.
+     * @since 0.14
+     */
+    public static Multibinder<MappedServlet> contributeMappedServlets(Binder binder) {
+        return Multibinder.newSetBinder(binder, MappedServlet.class);
+    }
 
-		DefaultServlet servlet = new DefaultServlet();
-		MappedServlet<DefaultServlet> mappedServlet = new MappedServlet<>(servlet, patternsSet, name);
-		contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
-	}
+    /**
+     * Returns a {@link Multibinder} for container servlets. Servlets must be
+     * annotated with {@link WebServlet}. Otherwise they should be mapped via
+     * {@link #contributeMappedServlets(Binder)}.
+     *
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return returns a {@link Multibinder} for servlets.
+     * @since 0.14
+     */
+    public static Multibinder<Servlet> contributeServlets(Binder binder) {
+        return Multibinder.newSetBinder(binder, Servlet.class);
+    }
 
-	/**
-	 * Adds a default servlet to Jetty, as specified in servlet spec. Equivalent
-	 * to 'contributeStaticServlet(binder, "/", "default")'.
-	 * 
-	 * @since 0.15
-	 * @param binder
-	 *            DI binder.
-	 */
-	public static void contributeDefaultServlet(Binder binder) {
-		contributeStaticServlet(binder, "default", "/");
-	}
+    /**
+     * Adds a servlet for serving static resources for a given URL. The actual
+     * servlet used is Jetty <a href=
+     * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+     * DefaultServlet</a>, and it can be configured further via servlet
+     * parameters. Static resources will be resolved relative to ServerFactory's
+     * "staticResourceBase" , with URL path used to locate a subfolder, unless
+     * servlet-specific configuration is explicitly provided.
+     *
+     * @param binder      DI binder.
+     * @param name        servlet name that can be referenced in YAML to pass
+     *                    parameters.
+     * @param urlPatterns url patterns
+     * @see <a href=
+     * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+     * DefaultServlet</a>.
+     * @since 0.15
+     */
+    public static void contributeStaticServlet(Binder binder, String name, String... urlPatterns) {
 
-	/**
-	 * Returns a {@link Multibinder} for servlet filters. Filters must be
-	 * annotated with {@link WebFilter}. Otherwise they should be mapped via
-	 * {@link #contributeMappedFilters(Binder)}, where you can explicitly
-	 * specify URL patterns, etc.
-	 * 
-	 * @param binder
-	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.14
-	 * @return returns a {@link Multibinder} for container filters.
-	 */
-	public static Multibinder<Filter> contributeFilters(Binder binder) {
-		return Multibinder.newSetBinder(binder, Filter.class);
-	}
+        Set<String> patternsSet = urlPatterns != null ? new HashSet<>(asList(urlPatterns)) : Collections.emptySet();
 
-	/**
-	 * @param binder
-	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.14
-	 * @return returns a {@link Multibinder} for servlet filters.
-	 */
-	public static Multibinder<MappedFilter> contributeMappedFilters(Binder binder) {
-		return Multibinder.newSetBinder(binder, MappedFilter.class);
-	}
+        DefaultServlet servlet = new DefaultServlet();
+        MappedServlet<DefaultServlet> mappedServlet = new MappedServlet<>(servlet, patternsSet, name);
+        contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
+    }
 
-	/**
-	 * @param binder
-	 *            DI binder passed to the Module that invokes this method.
-	 * @since 0.12
-	 * @return returns a {@link Multibinder} for web listeners.
-	 */
-	public static Multibinder<EventListener> contributeListeners(Binder binder) {
-		return Multibinder.newSetBinder(binder, EventListener.class);
-	}
+    /**
+     * Adds a default servlet to Jetty, as specified in servlet spec. Equivalent
+     * to 'contributeStaticServlet(binder, "/", "default")'.
+     *
+     * @param binder DI binder.
+     * @since 0.15
+     */
+    public static void contributeDefaultServlet(Binder binder) {
+        contributeStaticServlet(binder, "default", "/");
+    }
 
-	private String context;
-	private int port;
+    /**
+     * Returns a {@link Multibinder} for servlet filters. Filters must be
+     * annotated with {@link WebFilter}. Otherwise they should be mapped via
+     * {@link #contributeMappedFilters(Binder)}, where you can explicitly
+     * specify URL patterns, etc.
+     *
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return returns a {@link Multibinder} for container filters.
+     * @since 0.14
+     */
+    public static Multibinder<Filter> contributeFilters(Binder binder) {
+        return Multibinder.newSetBinder(binder, Filter.class);
+    }
 
-	public JettyModule(String configPrefix) {
-		super(configPrefix);
-	}
+    /**
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return returns a {@link Multibinder} for servlet filters.
+     * @since 0.14
+     */
+    public static Multibinder<MappedFilter> contributeMappedFilters(Binder binder) {
+        return Multibinder.newSetBinder(binder, MappedFilter.class);
+    }
 
-	public JettyModule() {
-	}
+    /**
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return returns a {@link Multibinder} for web listeners.
+     * @since 0.12
+     */
+    public static Multibinder<EventListener> contributeListeners(Binder binder) {
+        return Multibinder.newSetBinder(binder, EventListener.class);
+    }
 
-	public JettyModule context(String context) {
-		this.context = context;
-		return this;
-	}
+    static int maxOrder(Set<MappedFilter> mappedFilters) {
+        return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
+    }
 
-	public JettyModule port(int port) {
-		this.port = port;
-		return this;
-	}
+    public JettyModule context(String context) {
+        this.context = context;
+        return this;
+    }
 
-	@Override
-	public void configure(Binder binder) {
+    public JettyModule port(int port) {
+        this.port = port;
+        return this;
+    }
 
-		BQCoreModule.contributeCommands(binder).addBinding().to(ServerCommand.class).in(Singleton.class);
+    @Override
+    public void configure(Binder binder) {
 
-		if (context != null) {
-			BQCoreModule.contributeProperties(binder)
-					.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
-					.toInstance(context);
-		}
+        BQCoreModule.contributeCommands(binder).addBinding().to(ServerCommand.class).in(Singleton.class);
 
-		if (port > 0) {
-			BQCoreModule.contributeProperties(binder)
-					.addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
-					.toInstance(String.valueOf(port));
-		}
+        if (context != null) {
+            BQCoreModule.contributeProperties(binder)
+                    .addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
+                    .toInstance(context);
+        }
 
-		// trigger extension points creation
+        if (port > 0) {
+            BQCoreModule.contributeProperties(binder)
+                    .addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
+                    .toInstance(String.valueOf(port));
+        }
 
-		JettyModule.contributeServlets(binder);
-		JettyModule.contributeFilters(binder);
+        // trigger extension points creation
 
-		JettyModule.contributeMappedServlets(binder);
-		JettyModule.contributeMappedFilters(binder);
+        JettyModule.contributeServlets(binder);
+        JettyModule.contributeFilters(binder);
 
-		JettyModule.contributeListeners(binder);
+        JettyModule.contributeMappedServlets(binder);
+        JettyModule.contributeMappedFilters(binder);
 
-		// register default listeners
-		JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
+        JettyModule.contributeListeners(binder);
 
-		// make Jetty less verbose ..
-		BQCoreModule.contributeLogLevels(binder).addBinding("org.eclipse.jetty").toInstance(Level.INFO);
-	}
+        // register default listeners
+        JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
 
-	@Singleton
-	@Provides
-	ServletEnvironment createStateTracker(DefaultServletEnvironment stateImpl) {
-		return stateImpl;
-	}
+        // make Jetty less verbose ..
+        BQCoreModule.contributeLogLevels(binder).addBinding("org.eclipse.jetty").toInstance(Level.INFO);
+    }
 
-	@Singleton
-	@Provides
-	DefaultServletEnvironment createStateTrackerImpl() {
-		return new DefaultServletEnvironment();
-	}
+    @Singleton
+    @Provides
+    ServletEnvironment createStateTracker(DefaultServletEnvironment stateImpl) {
+        return stateImpl;
+    }
 
-	@Singleton
-	@Provides
-	Server createServer(ServerFactory factory, Set<Servlet> servlets, Set<MappedServlet> mappedServlets,
-			Set<Filter> filters, Set<MappedFilter> mappedFilters, Set<EventListener> listeners, BootLogger bootLogger,
-			ShutdownManager shutdownManager) {
+    @Singleton
+    @Provides
+    DefaultServletEnvironment createStateTrackerImpl() {
+        return new DefaultServletEnvironment();
+    }
 
-		Server server = factory.createServer(allServlets(servlets, mappedServlets), allFilters(filters, mappedFilters),
-				listeners);
+    @Singleton
+    @Provides
+    Server createServer(ServerFactory factory,
+                        Set<Servlet> servlets,
+                        Set<MappedServlet> mappedServlets,
+                        Set<Filter> filters,
+                        Set<MappedFilter> mappedFilters,
+                        Set<EventListener> listeners,
+                        BootLogger bootLogger,
+                        ShutdownManager shutdownManager) {
 
-		shutdownManager.addShutdownHook(() -> {
-			bootLogger.trace(() -> "stopping Jetty...");
-			server.stop();
-		});
+        Server server = factory.createServer(allServlets(servlets, mappedServlets), allFilters(filters, mappedFilters),
+                listeners);
 
-		return server;
-	}
+        shutdownManager.addShutdownHook(() -> {
+            bootLogger.trace(() -> "stopping Jetty...");
+            server.stop();
+        });
 
-	private Set<MappedServlet> allServlets(Set<Servlet> servlets, Set<MappedServlet> mappedServlets) {
-		if (servlets.isEmpty()) {
-			return mappedServlets;
-		}
+        return server;
+    }
 
-		Set<MappedServlet> mappedServletsClone = new HashSet<>(mappedServlets);
-		MappedServletFactory mappedServletFactory = new MappedServletFactory();
-		servlets.forEach(servlet -> mappedServletsClone.add(mappedServletFactory.toMappedServlet(servlet)));
-		return mappedServletsClone;
-	}
+    private Set<MappedServlet> allServlets(Set<Servlet> servlets, Set<MappedServlet> mappedServlets) {
+        if (servlets.isEmpty()) {
+            return mappedServlets;
+        }
 
-	private Set<MappedFilter> allFilters(Set<Filter> filters, Set<MappedFilter> mappedFilters) {
-		if (filters.isEmpty()) {
-			return mappedFilters;
-		}
+        Set<MappedServlet> mappedServletsClone = new HashSet<>(mappedServlets);
+        MappedServletFactory mappedServletFactory = new MappedServletFactory();
+        servlets.forEach(servlet -> mappedServletsClone.add(mappedServletFactory.toMappedServlet(servlet)));
+        return mappedServletsClone;
+    }
 
-		// place annotated filters after the last explicit filter.. In any event
-		// the actual ordering is unpredictable (depends on the set iteration
-		// order).
-		AtomicInteger order = new AtomicInteger(maxOrder(mappedFilters) + 1);
+    private Set<MappedFilter> allFilters(Set<Filter> filters, Set<MappedFilter> mappedFilters) {
+        if (filters.isEmpty()) {
+            return mappedFilters;
+        }
 
-		Set<MappedFilter> mappeFiltersClone = new HashSet<>(mappedFilters);
-		MappedFilterFactory mappedFilterFactory = new MappedFilterFactory();
-		filters.forEach(
-				filter -> mappeFiltersClone.add(mappedFilterFactory.toMappedFilter(filter, order.getAndIncrement())));
+        // place annotated filters after the last explicit filter.. In any event
+        // the actual ordering is unpredictable (depends on the set iteration
+        // order).
+        AtomicInteger order = new AtomicInteger(maxOrder(mappedFilters) + 1);
 
-		return mappeFiltersClone;
-	}
+        Set<MappedFilter> mappeFiltersClone = new HashSet<>(mappedFilters);
+        MappedFilterFactory mappedFilterFactory = new MappedFilterFactory();
+        filters.forEach(
+                filter -> mappeFiltersClone.add(mappedFilterFactory.toMappedFilter(filter, order.getAndIncrement())));
 
-	static int maxOrder(Set<MappedFilter> mappedFilters) {
-		return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
-	}
+        return mappeFiltersClone;
+    }
 
-	@Singleton
-	@Provides
-	ServerFactory createServerFactory(ConfigurationFactory configFactory) {
-		return configFactory.config(ServerFactory.class, configPrefix);
-	}
+    @Singleton
+    @Provides
+    ServerFactory createServerFactory(ConfigurationFactory configFactory) {
+        return configFactory.config(ServerFactory.class, configPrefix);
+    }
 }
