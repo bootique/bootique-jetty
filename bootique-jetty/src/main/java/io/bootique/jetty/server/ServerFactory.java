@@ -10,6 +10,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -24,6 +25,7 @@ import java.util.Comparator;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
@@ -149,10 +151,17 @@ public class ServerFactory {
     }
 
     protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
+
+        Optional<SessionHandler> sessionHandler = sessions
+                ? Optional.of(handler.getSessionHandler()) : Optional.empty();
+
         listeners.forEach(listener -> {
 
             LOGGER.info("Adding listener {}", listener.getClass().getName());
+            // context handler and session handler would do their own listener filtering
+            // passing every listener down to them without trying to second guess
             handler.addEventListener(listener);
+            sessionHandler.ifPresent(sh -> sh.addEventListener(listener));
         });
     }
 

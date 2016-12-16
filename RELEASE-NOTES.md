@@ -1,3 +1,7 @@
+## 0.19
+
+* #55 HttpSessionListeners are not registered
+
 ## 0.18
 
 * #40 Simplify MappedServlet/MappedFilter with parameterization

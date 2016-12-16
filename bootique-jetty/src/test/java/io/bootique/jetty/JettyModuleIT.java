@@ -1,5 +1,29 @@
 package io.bootique.jetty;
 
+import io.bootique.BQCoreModule;
+import io.bootique.jetty.unit.JettyApp;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSessionListener;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -7,28 +31,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import io.bootique.jetty.unit.JettyApp;
 
 public class JettyModuleIT {
 
@@ -164,8 +166,6 @@ public class JettyModuleIT {
 	public void testContributeListeners_ServletContextListener() throws Exception {
 
 		ServletContextListener scListener = mock(ServletContextListener.class);
-		verify(scListener, times(0)).contextInitialized(any());
-		verify(scListener, times(0)).contextDestroyed(any());
 
 		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(scListener);
@@ -183,9 +183,6 @@ public class JettyModuleIT {
 	public void testContributeListeners_ServletRequestListener() throws Exception {
 
 		ServletRequestListener srListener = mock(ServletRequestListener.class);
-
-		verify(srListener, times(0)).requestInitialized(any());
-		verify(srListener, times(0)).requestDestroyed(any());
 
 		app.start(binder -> {
 			JettyModule.contributeListeners(binder).addBinding().toInstance(srListener);
@@ -213,6 +210,81 @@ public class JettyModuleIT {
 		verify(srListener, times(3)).requestDestroyed(any());
 	}
 
-	// TODO: tests for Attribute listeners, session listeners
+	@Test
+	public void testContributeListeners_SessionListener() throws Exception {
+
+		// TODO: test session destroy event...
+
+		MappedServlet servlet = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
+		doAnswer(i -> {
+			HttpServletRequest request = (HttpServletRequest) i.getArgumentAt(0, ServletRequest.class);
+			request.getSession(true);
+			return  null;
+		}).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));
+
+		HttpSessionListener sessionListener = mock(HttpSessionListener.class);
+
+		app.start(binder -> {
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(servlet);
+			JettyModule.contributeListeners(binder).addBinding().toInstance(sessionListener);
+		});
+
+		verify(sessionListener, times(0)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+		base.path("/a").request().get();
+		Thread.sleep(100);
+		verify(sessionListener, times(1)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+
+		base.path("/b").request().get();
+		Thread.sleep(100);
+		verify(sessionListener, times(2)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+
+		// not_found request
+		base.path("/c").request().get();
+		Thread.sleep(100);
+		verify(sessionListener, times(2)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+	}
+
+	@Test
+	public void testContributeListeners_SessionListener_SessionsDisabled() throws Exception {
+
+		MappedServlet servlet = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
+		doAnswer(i -> {
+			HttpServletRequest request = (HttpServletRequest) i.getArgumentAt(0, ServletRequest.class);
+			try {
+				request.getSession(true);
+			}
+			catch (IllegalStateException e) {
+				// expected, ignoring...
+			}
+			return  null;
+		}).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));
+
+		HttpSessionListener sessionListener = mock(HttpSessionListener.class);
+
+		app.start(binder -> {
+			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(servlet);
+			JettyModule.contributeListeners(binder).addBinding().toInstance(sessionListener);
+			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.sessions").toInstance("false");
+		});
+
+		verify(sessionListener, times(0)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+
+		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+		base.path("/a").request().get();
+		Thread.sleep(100);
+		verify(sessionListener, times(0)).sessionCreated(any());
+		verify(sessionListener, times(0)).sessionDestroyed(any());
+	}
+
+	// TODO: tests for Attribute listeners
 
 }
