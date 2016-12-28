@@ -1,5 +1,7 @@
 package io.bootique.jetty.server;
 
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedServlet;
@@ -29,6 +31,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
+@BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
+        "thread pool parameters, etc.")
 public class ServerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
@@ -216,6 +220,7 @@ public class ServerFactory {
      * @return a List of server connectors, each listening on its own unique port.
      * @since 0.18
      */
+    @BQConfigProperty
     public List<ConnectorFactory> getConnectors() {
         return connectors;
     }
@@ -226,14 +231,17 @@ public class ServerFactory {
      * @param connectors a list of preconfigured connector factories.
      * @since 0.18
      */
+    @BQConfigProperty
     public void setConnectors(List<ConnectorFactory> connectors) {
         this.connectors = connectors;
     }
 
+    @BQConfigProperty
     public void setServlets(Map<String, ServletFactory> servlets) {
         this.servlets = servlets;
     }
 
+    @BQConfigProperty
     public void setFilters(Map<String, FilterFactory> filters) {
         this.filters = filters;
     }
@@ -266,6 +274,7 @@ public class ServerFactory {
         return context;
     }
 
+    @BQConfigProperty
     public void setContext(String context) {
         this.context = context;
     }
@@ -279,6 +288,7 @@ public class ServerFactory {
         return idleThreadTimeout;
     }
 
+    @BQConfigProperty
     public void setIdleThreadTimeout(int idleThreadTimeout) {
         this.idleThreadTimeout = idleThreadTimeout;
     }
@@ -291,6 +301,7 @@ public class ServerFactory {
         return maxQueuedRequests;
     }
 
+    @BQConfigProperty
     public void setMaxQueuedRequests(int maxQueuedRequests) {
         this.maxQueuedRequests = maxQueuedRequests;
     }
@@ -303,6 +314,7 @@ public class ServerFactory {
         return maxThreads;
     }
 
+    @BQConfigProperty
     public void setMaxThreads(int maxConnectorThreads) {
         this.maxThreads = maxConnectorThreads;
     }
@@ -315,6 +327,7 @@ public class ServerFactory {
         return minThreads;
     }
 
+    @BQConfigProperty
     public void setMinThreads(int minThreads) {
         this.minThreads = minThreads;
     }
@@ -332,6 +345,7 @@ public class ServerFactory {
      * @param params a map of context init parameters.
      * @since 0.13
      */
+    @BQConfigProperty
     public void setParams(Map<String, String> params) {
         this.params = params;
     }
@@ -345,6 +359,7 @@ public class ServerFactory {
         return sessions;
     }
 
+    @BQConfigProperty
     public void setSessions(boolean sessions) {
         this.sessions = sessions;
     }
@@ -377,6 +392,7 @@ public class ServerFactory {
      * DefaultServlet</a>.
      * @since 0.13
      */
+    @BQConfigProperty
     public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
         this.staticResourceBase = staticResourceBase;
     }
@@ -397,6 +413,7 @@ public class ServerFactory {
      * @param compression whether gzip compression should be supported.
      * @since 0.15
      */
+    @BQConfigProperty
     public void setCompression(boolean compression) {
         this.compression = compression;
     }

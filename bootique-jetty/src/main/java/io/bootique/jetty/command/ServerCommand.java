@@ -2,10 +2,10 @@ package io.bootique.jetty.command;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import io.bootique.application.CommandMetadata;
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;
 import io.bootique.command.CommandWithMetadata;
+import io.bootique.meta.application.CommandMetadata;
 import org.eclipse.jetty.server.Server;
 
 public class ServerCommand extends CommandWithMetadata {

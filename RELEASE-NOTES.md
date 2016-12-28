@@ -1,6 +1,7 @@
 ## 0.19
 
 * #55 HttpSessionListeners are not registered
+* #56 Upgrade to Bootique 0.21: new app metadata package, annotated config help
 
 ## 0.18
 
