@@ -34,7 +34,7 @@
                 <tr>
                     <td><code>compression</code></td>
                     <td><code>true</code></td>
-                    <td>A boolean specifying whether compression  gzip compression should be
+                    <td>A boolean specifying whether gzip compression should be
                         supported. When enabled (default), responses will be compressed if a client
                         indicates it supports compression via <code>"Accept-Encoding: gzip"</code>
                         header.</td>

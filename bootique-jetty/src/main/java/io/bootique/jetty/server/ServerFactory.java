@@ -189,7 +189,7 @@ public class ServerFactory {
         }
 
         // add default connector if none are configured
-        if(connectorFactories.isEmpty()) {
+        if (connectorFactories.isEmpty()) {
             connectorFactories.add(new HttpConnectorFactory());
         }
 
@@ -230,7 +230,7 @@ public class ServerFactory {
      * @param connectors a list of preconfigured connector factories.
      * @since 0.18
      */
-    @BQConfigProperty
+    @BQConfigProperty("A list of objects specifying properties of the server network connectors.")
     public void setConnectors(List<ConnectorFactory> connectors) {
         this.connectors = connectors;
     }
@@ -273,7 +273,7 @@ public class ServerFactory {
         return context;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("Web application context path. Default is '/'.")
     public void setContext(String context) {
         this.context = context;
     }
@@ -412,7 +412,9 @@ public class ServerFactory {
      * @param compression whether gzip compression should be supported.
      * @since 0.15
      */
-    @BQConfigProperty
+    @BQConfigProperty("A boolean specifying whether gzip compression should be supported. When enabled " +
+            "responses will be compressed if a client indicates it supports compression via " +
+            "\"Accept-Encoding: gzip\" header. Default value is 'true'.")
     public void setCompression(boolean compression) {
         this.compression = compression;
     }

@@ -67,26 +67,27 @@ public class JettyModuleProvider_MetadataIT {
 
             @Override
             public String visitListMetadata(ConfigListMetadata metadata) {
-                return "list:" + metadata.getName();
+                return "list:" + metadata.getName() +  "<" + metadata.getElementType().getType().getTypeName() + ">";
             }
 
             @Override
             public String visitMapMetadata(ConfigMapMetadata metadata) {
-                return "map:" + metadata.getName();
+                return "map:" + metadata.getName() + "<" + metadata.getKeysType().getTypeName() + "," +
+                        metadata.getValuesType().getType().getTypeName() + ">";
             }
         });
 
         assertEquals("jetty" +
                 "[compression:boolean]" +
-                "[list:connectors]" +
+                "[list:connectors<io.bootique.jetty.connector.ConnectorFactory>]" +
                 "[context:java.lang.String]" +
-                "[map:filters]" +
+                "[map:filters<java.lang.String,io.bootique.jetty.server.FilterFactory>]" +
                 "[idleThreadTimeout:int]" +
                 "[maxQueuedRequests:int]" +
                 "[maxThreads:int]" +
                 "[minThreads:int]" +
-                "[map:params]" +
-                "[map:servlets]" +
+                "[map:params<java.lang.String,java.lang.String>]" +
+                "[map:servlets<java.lang.String,io.bootique.jetty.server.ServletFactory>]" +
                 "[sessions:boolean]" +
                 "[staticResourceBase:io.bootique.resource.FolderResourceFactory]", result);
     }
