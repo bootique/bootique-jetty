@@ -220,7 +220,6 @@ public class ServerFactory {
      * @return a List of server connectors, each listening on its own unique port.
      * @since 0.18
      */
-    @BQConfigProperty
     public List<ConnectorFactory> getConnectors() {
         return connectors;
     }

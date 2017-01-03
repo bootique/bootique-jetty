@@ -1,6 +1,7 @@
 package io.bootique.jetty;
 
 import com.google.inject.Module;
+import io.bootique.BQModule;
 import io.bootique.BQModuleProvider;
 import io.bootique.jetty.server.ServerFactory;
 
@@ -23,5 +24,12 @@ public class JettyModuleProvider implements BQModuleProvider {
 		// TODO: config prefix is hardcoded. Refactor away from ConfigModule, and make provider
 		// generate config prefix, reusing it in metadata...
 		return Collections.singletonMap("jetty", ServerFactory.class);
+	}
+
+	@Override
+	public BQModule.Builder moduleBuilder() {
+		return BQModuleProvider.super
+				.moduleBuilder()
+				.description("Integrates Jetty web server in the application.");
 	}
 }
