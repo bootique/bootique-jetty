@@ -235,12 +235,12 @@ public class ServerFactory {
         this.connectors = connectors;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("A map of servlet configurations by servlet name. ")
     public void setServlets(Map<String, ServletFactory> servlets) {
         this.servlets = servlets;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("A map of servlet Filter configurations by filter name.")
     public void setFilters(Map<String, FilterFactory> filters) {
         this.filters = filters;
     }
@@ -287,7 +287,7 @@ public class ServerFactory {
         return idleThreadTimeout;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("A period in milliseconds specifying how long until an idle thread is terminated. ")
     public void setIdleThreadTimeout(int idleThreadTimeout) {
         this.idleThreadTimeout = idleThreadTimeout;
     }
@@ -300,7 +300,8 @@ public class ServerFactory {
         return maxQueuedRequests;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("Maximum number of requests to queue if the thread pool is busy. If this number is exceeded, " +
+            "the server will start dropping requests.")
     public void setMaxQueuedRequests(int maxQueuedRequests) {
         this.maxQueuedRequests = maxQueuedRequests;
     }
@@ -313,7 +314,7 @@ public class ServerFactory {
         return maxThreads;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("Maximum number of request processing threads in the pool.")
     public void setMaxThreads(int maxConnectorThreads) {
         this.maxThreads = maxConnectorThreads;
     }
@@ -326,7 +327,7 @@ public class ServerFactory {
         return minThreads;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("Minimal number of request processing threads in the pool.")
     public void setMinThreads(int minThreads) {
         this.minThreads = minThreads;
     }
@@ -344,7 +345,8 @@ public class ServerFactory {
      * @param params a map of context init parameters.
      * @since 0.13
      */
-    @BQConfigProperty
+    @BQConfigProperty("A map of application-specific key/value parameters that are used as \"init\" parameters of the " +
+            "ServletContext.")
     public void setParams(Map<String, String> params) {
         this.params = params;
     }
@@ -358,7 +360,7 @@ public class ServerFactory {
         return sessions;
     }
 
-    @BQConfigProperty
+    @BQConfigProperty("A boolean specifying whether servlet sessions should be supported by Jetty. The default is 'true'")
     public void setSessions(boolean sessions) {
         this.sessions = sessions;
     }
@@ -391,7 +393,11 @@ public class ServerFactory {
      * DefaultServlet</a>.
      * @since 0.13
      */
-    @BQConfigProperty
+    @BQConfigProperty("Defines a base location for resources of the Jetty context. It can be a filesystem path, a URL " +
+            "or a special \"classpath:\" URL (giving the ability to bundle resources in the app, not unlike a JavaEE " +
+            ".war file). This setting only makes sense when some form of \"default\" servlet is in use, that will be " +
+            "responsible for serving static resources. See JettyModule.contributeStaticServlet(..) or " +
+            "JettyModule.contributeDefaultServlet(..). ")
     public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
         this.staticResourceBase = staticResourceBase;
     }

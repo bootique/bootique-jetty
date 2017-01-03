@@ -1,6 +1,8 @@
 package io.bootique.jetty.connector;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.config.PolymorphicConfiguration;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
@@ -19,6 +21,7 @@ import java.util.Objects;
 /**
  * @since 0.18
  */
+@BQConfig
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = HttpConnectorFactory.class)
 public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
@@ -89,6 +92,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         return port;
     }
 
+    @BQConfigProperty
     public void setPort(int port) {
         this.port = port;
     }
@@ -108,6 +112,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * @param host the network interface this connector binds to, either as IP or hostname.
      * @since 0.18
      */
+    @BQConfigProperty
     public void setHost(String host) {
         this.host = host;
     }
@@ -127,6 +132,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * @param requestHeaderSize request header size value in bytes.
      * @since 0.15
      */
+    @BQConfigProperty
     public void setRequestHeaderSize(int requestHeaderSize) {
         this.requestHeaderSize = requestHeaderSize;
     }
@@ -145,6 +151,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * @param responseHeaderSize response header size value in bytes.
      * @since 0.15
      */
+    @BQConfigProperty
     public void setResponseHeaderSize(int responseHeaderSize) {
         this.responseHeaderSize = responseHeaderSize;
     }

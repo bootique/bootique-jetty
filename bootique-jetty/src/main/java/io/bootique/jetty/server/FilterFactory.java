@@ -1,5 +1,6 @@
 package io.bootique.jetty.server;
 
+import io.bootique.annotation.BQConfig;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -16,6 +17,7 @@ import java.util.Set;
 /**
  * @since 0.13
  */
+@BQConfig
 public class FilterFactory extends WebArtifactFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilterFactory.class);

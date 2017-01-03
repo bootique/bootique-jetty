@@ -1,6 +1,8 @@
 package io.bootique.jetty.connector;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 import io.bootique.resource.ResourceFactory;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -17,6 +19,7 @@ import java.util.Objects;
 /**
  * @since 0.18
  */
+@BQConfig
 @JsonTypeName("https")
 public class HttpsConnectorFactory extends ConnectorFactory {
 
@@ -28,14 +31,17 @@ public class HttpsConnectorFactory extends ConnectorFactory {
         keyStorePassword = "changeit";
     }
 
+    @BQConfigProperty
     public void setKeyStore(ResourceFactory keyStore) {
         this.keyStore = keyStore;
     }
 
+    @BQConfigProperty
     public void setKeyStorePassword(String keyStorePassword) {
         this.keyStorePassword = keyStorePassword;
     }
 
+    @BQConfigProperty
     public void setCertificateAlias(String certificateAlias) {
         this.certificateAlias = certificateAlias;
     }

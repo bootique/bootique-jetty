@@ -1,19 +1,21 @@
 package io.bootique.jetty.server;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
+import io.bootique.annotation.BQConfig;
 import io.bootique.jetty.MappedServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 /**
  * @since 0.13
  */
+@BQConfig
 public class ServletFactory extends WebArtifactFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServletFactory.class);
