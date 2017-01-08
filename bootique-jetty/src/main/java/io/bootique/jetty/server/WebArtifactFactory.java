@@ -1,5 +1,7 @@
 package io.bootique.jetty.server;
 
+import io.bootique.annotation.BQConfigProperty;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -16,10 +18,12 @@ public abstract class WebArtifactFactory {
 	 * @param urlPatterns
 	 *            a set of URL patterns for the servlet created by this factory.
 	 */
+	@BQConfigProperty
 	public void setUrlPatterns(Set<String> urlPatterns) {
 		this.urlPatterns = urlPatterns;
 	}
 
+	@BQConfigProperty
 	public void setParams(Map<String, String> params) {
 		this.params = params;
 	}
