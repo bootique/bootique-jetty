@@ -16,147 +16,145 @@ import static org.junit.Assert.assertEquals;
 
 public class StaticResourcesIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public JettyApp app = new JettyApp();
 
-	@Test
-	public void testDisabled() {
-		app.start();
+    @Test
+    public void testDisabled() {
+        app.start();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
-	}
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
+    }
 
-	@Test
-	public void testEnabled_ButNoBase() {
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-		});
+    @Test
+    public void testEnabled_ButNoBase() {
+        app.start(binder -> JettyModule.extend(binder).useDefaultServlet());
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
-	}
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
+    }
 
-	@Test
-	public void testWithContextBase_FilePath() {
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
-					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
-		});
+    @Test
+    public void testWithContextBase_FilePath() {
+        app.start(binder -> {
+            JettyModule.extend(binder).useDefaultServlet();
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase",
+                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
+        });
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		// resources are mapped relative to "user.dir".
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("I am a text file", r.readEntity(String.class));
-	}
+        // resources are mapped relative to "user.dir".
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("I am a text file", r.readEntity(String.class));
+    }
 
-	@Test
-	public void testWithContextBase_FileUrl() throws MalformedURLException {
+    @Test
+    public void testWithContextBase_FileUrl() throws MalformedURLException {
 
-		File baseDir = new File("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
-		String baseUrl = baseDir.getAbsoluteFile().toURI().toURL().toString();
+        File baseDir = new File("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
+        String baseUrl = baseDir.getAbsoluteFile().toURI().toURL().toString();
 
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase").toInstance(baseUrl);
-		});
+        app.start(binder -> {
+            JettyModule.extend(binder).useDefaultServlet();
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase", baseUrl);
+        });
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("I am a text file", r.readEntity(String.class));
-	}
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("I am a text file", r.readEntity(String.class));
+    }
 
-	@Test
-	public void testWithContextBase_ClasspathUrl() {
+    @Test
+    public void testWithContextBase_ClasspathUrl() {
 
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
-					.toInstance("classpath:io/bootique/jetty/StaticResourcesIT_docroot");
-		});
+        app.start(binder -> {
+            JettyModule.extend(binder).useDefaultServlet();
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase",
+                    "classpath:io/bootique/jetty/StaticResourcesIT_docroot");
+        });
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("I am a text file", r.readEntity(String.class));
-	}
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("I am a text file", r.readEntity(String.class));
+    }
 
-	@Test
-	public void testWithContextBase_FilePath_ImplicitIndex() {
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
-					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
-		});
+    @Test
+    public void testWithContextBase_FilePath_ImplicitIndex() {
+        app.start(binder -> {
+            JettyModule.extend(binder).useDefaultServlet();
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase",
+                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
+        });
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
-	}
-	
-	@Test
-	public void testWithContextBase_FilePath_DotSlash() {
-		app.start(binder -> {
-			JettyModule.contributeDefaultServlet(binder);
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
-					.toInstance("./src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
-		});
+        Response r = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+    }
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+    @Test
+    public void testWithContextBase_FilePath_DotSlash() {
+        app.start(binder -> {
+            JettyModule.extend(binder).useDefaultServlet();
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase",
+                    "./src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
+        });
 
-		Response r = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
-	}
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-	@Test
-	public void testWithServletBase() {
+        Response r = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+    }
 
-		app.start(binder -> JettyModule.contributeDefaultServlet(binder),
-				"--config=src/test/resources/io/bootique/jetty/StaticResourcesIT_FilePath.yml");
+    @Test
+    public void testWithServletBase() {
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-		Response r = base.path("/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r.getStatus());
-		assertEquals("I am a text file", r.readEntity(String.class));
-	}
+        app.start(binder -> JettyModule.extend(binder).useDefaultServlet(),
+                "--config=src/test/resources/io/bootique/jetty/StaticResourcesIT_FilePath.yml");
 
-	@Test
-	public void testContributeStaticServlet() {
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("I am a text file", r.readEntity(String.class));
+    }
 
-		app.start(binder -> {
-			JettyModule.contributeStaticServlet(binder, "sub", "/sub1/*", "/sub2/*");
-			BQCoreModule.contributeProperties(binder).addBinding("bq.jetty.staticResourceBase")
-					.toInstance("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
-		});
+    @Test
+    public void testContributeStaticServlet() {
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        app.start(binder -> {
+            JettyModule.extend(binder).addStaticServlet("sub", "/sub1/*", "/sub2/*");
+            BQCoreModule.extend(binder).setProperty("bq.jetty.staticResourceBase",
+                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
+        });
 
-		assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/").request().get().getStatus());
-		assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/other.txt").request().get().getStatus());
-		assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/sub3/other.txt").request().get().getStatus());
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r1 = base.path("/sub1/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
-		assertEquals("other1", r1.readEntity(String.class));
+        assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/").request().get().getStatus());
+        assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/other.txt").request().get().getStatus());
+        assertEquals(Status.NOT_FOUND.getStatusCode(), base.path("/sub3/other.txt").request().get().getStatus());
 
-		Response r2 = base.path("/sub2/other.txt").request().get();
-		assertEquals(Status.OK.getStatusCode(), r2.getStatus());
-		assertEquals("other2", r2.readEntity(String.class));
+        Response r1 = base.path("/sub1/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("other1", r1.readEntity(String.class));
 
-		Response r3 = base.path("/sub2/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r3.getStatus());
-		assertEquals("<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
-	}
+        Response r2 = base.path("/sub2/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("other2", r2.readEntity(String.class));
+
+        Response r3 = base.path("/sub2/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r3.getStatus());
+        assertEquals("<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
+    }
 
 }

@@ -2,7 +2,7 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
@@ -385,9 +385,8 @@ public class ServerFactory {
      * @param staticResourceBase A base location for resources of the Jetty context, that can
      *                           be a file path or a URL, as well as a special URL starting
      *                           with "classpath:".
-     * @see JettyModule#contributeDefaultServlet(com.google.inject.Binder)
-     * @see JettyModule#contributeStaticServlet(com.google.inject.Binder,
-     * String, String...)
+     * @see JettyModuleExtender#useDefaultServlet()
+     * @see JettyModuleExtender#addStaticServlet(String, String...)
      * @see <a href=
      * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
      * DefaultServlet</a>.

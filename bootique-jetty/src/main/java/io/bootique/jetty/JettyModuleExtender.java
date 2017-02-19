@@ -4,10 +4,12 @@ import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
+import org.eclipse.jetty.servlet.DefaultServlet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +27,7 @@ public class JettyModuleExtender {
     private Multibinder<Servlet> servlets;
     private Multibinder<MappedFilter> mappedFilters;
     private Multibinder<MappedServlet> mappedServlets;
+    private Multibinder<EventListener> listeners;
 
     protected JettyModuleExtender(Binder binder) {
         this.binder = binder;
@@ -37,12 +40,31 @@ public class JettyModuleExtender {
      * @return this extender instance.
      */
     JettyModuleExtender initAllExtensions() {
-        getOrCreateFiltersBinder();
-        getOrCreateServletsBinder();
-        getOrCreateMappedFiltersBinder();
-        getOrCreateMappedServletsBinder();
+        contributeFilters();
+        contributeServlets();
+        contributeMappedFilters();
+        contributeMappedServlets();
+        contributeListeners();
 
         return this;
+    }
+
+    public JettyModuleExtender addListener(EventListener listener) {
+        contributeListeners().addBinding().toInstance(listener);
+        return this;
+    }
+
+    public JettyModuleExtender addListener(Class<? extends EventListener> listenerType) {
+        contributeListeners().addBinding().to(listenerType);
+        return this;
+    }
+
+    public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
+        return addServlet(new DefaultServlet(), name, urlPatterns);
+    }
+
+    public JettyModuleExtender useDefaultServlet() {
+        return addStaticServlet("default", "/");
     }
 
     /**
@@ -54,7 +76,7 @@ public class JettyModuleExtender {
      * @return this extender instance.
      */
     public JettyModuleExtender addServlet(Class<? extends Servlet> servletType) {
-        getOrCreateServletsBinder().addBinding().to(servletType);
+        contributeServlets().addBinding().to(servletType);
         return this;
     }
 
@@ -69,12 +91,12 @@ public class JettyModuleExtender {
     }
 
     public <T extends Servlet> JettyModuleExtender addMappedServlet(MappedServlet<T> mappedServlet) {
-        getOrCreateMappedServletsBinder().addBinding().toInstance(mappedServlet);
+        contributeMappedServlets().addBinding().toInstance(mappedServlet);
         return this;
     }
 
     public <T extends Servlet> JettyModuleExtender addMappedServlet(Key<MappedServlet<T>> mappedServletKey) {
-        getOrCreateMappedServletsBinder().addBinding().to(mappedServletKey);
+        contributeMappedServlets().addBinding().to(mappedServletKey);
         return this;
     }
 
@@ -91,7 +113,7 @@ public class JettyModuleExtender {
      * @return this extender instance.
      */
     public JettyModuleExtender addFilter(Class<? extends Filter> filterType) {
-        getOrCreateFiltersBinder().addBinding().to(filterType);
+        contributeFilters().addBinding().to(filterType);
         return this;
     }
 
@@ -106,12 +128,12 @@ public class JettyModuleExtender {
     }
 
     public <T extends Filter> JettyModuleExtender addMappedFilter(MappedFilter<T> mappedFilter) {
-        getOrCreateMappedFiltersBinder().addBinding().toInstance(mappedFilter);
+        contributeMappedFilters().addBinding().toInstance(mappedFilter);
         return this;
     }
 
     public <T extends Filter> JettyModuleExtender addMappedFilter(Key<MappedFilter<T>> mappedFilterKey) {
-        getOrCreateMappedFiltersBinder().addBinding().to(mappedFilterKey);
+        contributeMappedFilters().addBinding().to(mappedFilterKey);
         return this;
     }
 
@@ -119,7 +141,7 @@ public class JettyModuleExtender {
         return addMappedFilter(Key.get(mappedFilterType));
     }
 
-    protected Multibinder<Filter> getOrCreateFiltersBinder() {
+    protected Multibinder<Filter> contributeFilters() {
         if (filters == null) {
             filters = Multibinder.newSetBinder(binder, Filter.class);
         }
@@ -127,7 +149,7 @@ public class JettyModuleExtender {
         return filters;
     }
 
-    protected Multibinder<Servlet> getOrCreateServletsBinder() {
+    protected Multibinder<Servlet> contributeServlets() {
         if (servlets == null) {
             servlets = Multibinder.newSetBinder(binder, Servlet.class);
         }
@@ -135,7 +157,7 @@ public class JettyModuleExtender {
         return servlets;
     }
 
-    protected Multibinder<MappedFilter> getOrCreateMappedFiltersBinder() {
+    protected Multibinder<MappedFilter> contributeMappedFilters() {
         if (mappedFilters == null) {
             mappedFilters = Multibinder.newSetBinder(binder, MappedFilter.class);
         }
@@ -143,11 +165,18 @@ public class JettyModuleExtender {
         return mappedFilters;
     }
 
-    protected Multibinder<MappedServlet> getOrCreateMappedServletsBinder() {
+    protected Multibinder<MappedServlet> contributeMappedServlets() {
         if (mappedServlets == null) {
             mappedServlets = Multibinder.newSetBinder(binder, MappedServlet.class);
         }
 
         return mappedServlets;
+    }
+
+    protected Multibinder<EventListener> contributeListeners() {
+        if (listeners == null) {
+            listeners = Multibinder.newSetBinder(binder, EventListener.class);
+        }
+        return listeners;
     }
 }

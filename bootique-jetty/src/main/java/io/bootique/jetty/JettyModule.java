@@ -63,7 +63,7 @@ public class JettyModule extends ConfigModule {
      */
     @Deprecated
     public static Multibinder<MappedServlet> contributeMappedServlets(Binder binder) {
-        return extend(binder).getOrCreateMappedServletsBinder();
+        return extend(binder).contributeMappedServlets();
     }
 
     /**
@@ -79,7 +79,7 @@ public class JettyModule extends ConfigModule {
      */
     @Deprecated
     public static Multibinder<Servlet> contributeServlets(Binder binder) {
-        return extend(binder).getOrCreateServletsBinder();
+        return extend(binder).contributeServlets();
     }
 
     /**
@@ -99,8 +99,10 @@ public class JettyModule extends ConfigModule {
      * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
      * DefaultServlet</a>.
      * @since 0.15
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call
+     * {@link JettyModuleExtender#addStaticServlet(String, String...)}.
      */
-    // TODO: move to JettyModuleExtender
+    @Deprecated
     public static void contributeStaticServlet(Binder binder, String name, String... urlPatterns) {
         extend(binder).addServlet(new DefaultServlet(), name, urlPatterns);
     }
@@ -111,9 +113,12 @@ public class JettyModule extends ConfigModule {
      *
      * @param binder DI binder.
      * @since 0.15
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call
+     * {@link JettyModuleExtender#useDefaultServlet()}.
      */
+    @Deprecated
     public static void contributeDefaultServlet(Binder binder) {
-        contributeStaticServlet(binder, "default", "/");
+        extend(binder).useDefaultServlet();
     }
 
     /**
@@ -130,7 +135,7 @@ public class JettyModule extends ConfigModule {
      */
     @Deprecated
     public static Multibinder<Filter> contributeFilters(Binder binder) {
-        return extend(binder).getOrCreateFiltersBinder();
+        return extend(binder).contributeFilters();
     }
 
     /**
@@ -142,16 +147,19 @@ public class JettyModule extends ConfigModule {
      */
     @Deprecated
     public static Multibinder<MappedFilter> contributeMappedFilters(Binder binder) {
-        return Multibinder.newSetBinder(binder, MappedFilter.class);
+        return extend(binder).contributeMappedFilters();
     }
 
     /**
      * @param binder DI binder passed to the Module that invokes this method.
      * @return returns a {@link Multibinder} for web listeners.
      * @since 0.12
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call
+     * {@link JettyModuleExtender#addListener(Class)}or similar methods.
      */
+    @Deprecated
     public static Multibinder<EventListener> contributeListeners(Binder binder) {
-        return Multibinder.newSetBinder(binder, EventListener.class);
+        return extend(binder).contributeListeners();
     }
 
     static int maxOrder(Set<MappedFilter> mappedFilters) {
@@ -193,10 +201,9 @@ public class JettyModule extends ConfigModule {
         }
 
         // trigger extension points creation and init defaults
-        JettyModule.extend(binder).initAllExtensions();
-
-        // register default listeners
-        JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
+        JettyModule.extend(binder)
+                .initAllExtensions()
+                .addListener(DefaultServletEnvironment.class);
     }
 
     @Singleton

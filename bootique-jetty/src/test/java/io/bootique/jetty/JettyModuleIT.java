@@ -162,7 +162,7 @@ public class JettyModuleIT {
         ServletContextListener scListener = mock(ServletContextListener.class);
 
         app.start(binder -> {
-            JettyModule.contributeListeners(binder).addBinding().toInstance(scListener);
+            JettyModule.extend(binder).addListener(scListener);
         });
 
         verify(scListener).contextInitialized(any());
@@ -178,9 +178,7 @@ public class JettyModuleIT {
 
         ServletRequestListener srListener = mock(ServletRequestListener.class);
 
-        app.start(binder -> {
-            JettyModule.contributeListeners(binder).addBinding().toInstance(srListener);
-        });
+        app.start(binder -> JettyModule.extend(binder).addListener(srListener));
 
         verify(srListener, times(0)).requestInitialized(any());
         verify(srListener, times(0)).requestDestroyed(any());
@@ -218,8 +216,9 @@ public class JettyModuleIT {
         HttpSessionListener sessionListener = mock(HttpSessionListener.class);
 
         app.start(binder -> {
-            JettyModule.extend(binder).addServlet(mockServlet1, "s1", "/a/*", "/b/*");
-            JettyModule.contributeListeners(binder).addBinding().toInstance(sessionListener);
+            JettyModule.extend(binder)
+                    .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
+                    .addListener(sessionListener);
         });
 
         verify(sessionListener, times(0)).sessionCreated(any());
@@ -261,8 +260,9 @@ public class JettyModuleIT {
 
         app.start(binder -> {
 
-            JettyModule.extend(binder).addServlet(mockServlet1, "s1", "/a/*", "/b/*");
-            JettyModule.contributeListeners(binder).addBinding().toInstance(sessionListener);
+            JettyModule.extend(binder)
+                    .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
+                    .addListener(sessionListener);
             BQCoreModule.extend(binder).setProperty("bq.jetty.sessions", "false");
         });
 
