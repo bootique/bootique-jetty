@@ -20,6 +20,7 @@
 	<modules>
 		<module>bootique-jetty</module>
 		<module>bootique-jetty-instrumented</module>
+		<module>bootique-jetty-metrics</module>
 		<module>bootique-jetty-test</module>
 		<module>bootique-jetty-docs</module>
 	</modules>
@@ -27,7 +28,7 @@
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
 		<bootique-version>0.22-SNAPSHOT</bootique-version>
-		<bootique-metrics-version>0.8</bootique-metrics-version>
+		<bootique-metrics-version>0.9-SNAPSHOT</bootique-metrics-version>
 	</properties>
 
 	<scm>

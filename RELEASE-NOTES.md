@@ -1,6 +1,7 @@
 ## 0.20
 
 * #57 Module "extend" API - a better version of "contribute*"
+* #58 Move bootique-metrics-web to bootique-jetty-metrics
 
 ## 0.19
 
