@@ -50,8 +50,7 @@ public class FilterInitParametersIT {
 		MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5);
 
 		app.start(binder -> {
-			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mf);
-			JettyModule.contributeMappedServlets(binder).addBinding().toInstance(endOfChainServlet);
+			JettyModule.extend(binder).addMappedFilter(mf).addMappedServlet(endOfChainServlet);
 		} , "--config=src/test/resources/io/bootique/jetty/FilterInitParametersIT.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

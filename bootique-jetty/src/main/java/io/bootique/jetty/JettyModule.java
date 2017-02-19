@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import io.bootique.BQCoreModule;
+import io.bootique.BQCoreModuleExtender;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.env.DefaultEnvironment;
@@ -23,14 +24,11 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebServlet;
-import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-
-import static java.util.Arrays.asList;
 
 public class JettyModule extends ConfigModule {
 
@@ -45,12 +43,27 @@ public class JettyModule extends ConfigModule {
     }
 
     /**
+     * Returns an instance of {@link JettyModuleExtender} used by downstream modules to load custom extensions of
+     * services declared in the JettyModule. Should be invoked from a downstream Module's "configure" method.
+     *
+     * @param binder DI binder passed to the Module that invokes this method.
+     * @return an instance of {@link JettyModuleExtender} that can be used to load Jetty custom extensions.
+     * @since 0.20
+     */
+    public static JettyModuleExtender extend(Binder binder) {
+        return new JettyModuleExtender(binder);
+    }
+
+    /**
      * @param binder DI binder passed to the Module that invokes this method.
      * @return returns a {@link Multibinder} for servlets.
      * @since 0.14
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call
+     * {@link JettyModuleExtender#addMappedServlet(MappedServlet)} or similar methods.
      */
+    @Deprecated
     public static Multibinder<MappedServlet> contributeMappedServlets(Binder binder) {
-        return Multibinder.newSetBinder(binder, MappedServlet.class);
+        return extend(binder).getOrCreateMappedServletsBinder();
     }
 
     /**
@@ -61,9 +74,12 @@ public class JettyModule extends ConfigModule {
      * @param binder DI binder passed to the Module that invokes this method.
      * @return returns a {@link Multibinder} for servlets.
      * @since 0.14
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call {@link JettyModuleExtender#addServlet(Class)}
+     * or similar methods.
      */
+    @Deprecated
     public static Multibinder<Servlet> contributeServlets(Binder binder) {
-        return Multibinder.newSetBinder(binder, Servlet.class);
+        return extend(binder).getOrCreateServletsBinder();
     }
 
     /**
@@ -84,13 +100,9 @@ public class JettyModule extends ConfigModule {
      * DefaultServlet</a>.
      * @since 0.15
      */
+    // TODO: move to JettyModuleExtender
     public static void contributeStaticServlet(Binder binder, String name, String... urlPatterns) {
-
-        Set<String> patternsSet = urlPatterns != null ? new HashSet<>(asList(urlPatterns)) : Collections.emptySet();
-
-        DefaultServlet servlet = new DefaultServlet();
-        MappedServlet<DefaultServlet> mappedServlet = new MappedServlet<>(servlet, patternsSet, name);
-        contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
+        extend(binder).addServlet(new DefaultServlet(), name, urlPatterns);
     }
 
     /**
@@ -113,16 +125,22 @@ public class JettyModule extends ConfigModule {
      * @param binder DI binder passed to the Module that invokes this method.
      * @return returns a {@link Multibinder} for container filters.
      * @since 0.14
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call {@link JettyModuleExtender#addFilter(Class)}
+     * or similar methods.
      */
+    @Deprecated
     public static Multibinder<Filter> contributeFilters(Binder binder) {
-        return Multibinder.newSetBinder(binder, Filter.class);
+        return extend(binder).getOrCreateFiltersBinder();
     }
 
     /**
      * @param binder DI binder passed to the Module that invokes this method.
      * @return returns a {@link Multibinder} for servlet filters.
      * @since 0.14
+     * @deprecated since 0.20 call {@link #extend(Binder)} and then call
+     * {@link JettyModuleExtender#addMappedFilter(MappedFilter)} or similar methods.
      */
+    @Deprecated
     public static Multibinder<MappedFilter> contributeMappedFilters(Binder binder) {
         return Multibinder.newSetBinder(binder, MappedFilter.class);
     }
@@ -140,11 +158,13 @@ public class JettyModule extends ConfigModule {
         return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
     }
 
+    // TODO: deprecate
     public JettyModule context(String context) {
         this.context = context;
         return this;
     }
 
+    // TODO: deprecate
     public JettyModule port(int port) {
         this.port = port;
         return this;
@@ -153,35 +173,30 @@ public class JettyModule extends ConfigModule {
     @Override
     public void configure(Binder binder) {
 
-        BQCoreModule.contributeCommands(binder).addBinding().to(ServerCommand.class).in(Singleton.class);
+        BQCoreModuleExtender coreExtender = BQCoreModule
+                .extend(binder)
+                .addCommand(ServerCommand.class)
+                // make Jetty less verbose ..
+                .setLogLevel("org.eclipse.jetty", Level.INFO);
 
         if (context != null) {
-            BQCoreModule.contributeProperties(binder)
-                    .addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context")
-                    .toInstance(context);
+            coreExtender.setProperty(
+                    DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".context",
+                    context);
         }
 
         if (port > 0) {
-            BQCoreModule.contributeProperties(binder)
-                    .addBinding(DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port")
-                    .toInstance(String.valueOf(port));
+            coreExtender.setProperty(
+                    DefaultEnvironment.FRAMEWORK_PROPERTIES_PREFIX + "." + configPrefix + ".connector.port",
+                    String.valueOf(port)
+            );
         }
 
-        // trigger extension points creation
-
-        JettyModule.contributeServlets(binder);
-        JettyModule.contributeFilters(binder);
-
-        JettyModule.contributeMappedServlets(binder);
-        JettyModule.contributeMappedFilters(binder);
-
-        JettyModule.contributeListeners(binder);
+        // trigger extension points creation and init defaults
+        JettyModule.extend(binder).initAllExtensions();
 
         // register default listeners
         JettyModule.contributeListeners(binder).addBinding().to(DefaultServletEnvironment.class);
-
-        // make Jetty less verbose ..
-        BQCoreModule.contributeLogLevels(binder).addBinding("org.eclipse.jetty").toInstance(Level.INFO);
     }
 
     @Singleton

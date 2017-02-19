@@ -1,20 +1,18 @@
 package io.bootique.jetty.servlet;
 
-import java.io.IOException;
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.unit.JettyApp;
+import org.junit.Rule;
+import org.junit.Test;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import io.bootique.jetty.unit.JettyApp;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import io.bootique.jetty.JettyModule;
+import java.io.IOException;
 
 public class NotAnnotatedServletIT {
 
@@ -30,7 +28,7 @@ public class NotAnnotatedServletIT {
 
 		@Override
 		public void configure(Binder binder) {
-			JettyModule.contributeServlets(binder).addBinding().to(NotAnnotatedServlet.class);
+			JettyModule.extend(binder).addServlet(NotAnnotatedServlet.class);
 		}
 
 		@Provides

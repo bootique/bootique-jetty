@@ -75,7 +75,7 @@ public class AnnotatedServletIT {
 
 		@Override
 		public void configure(Binder binder) {
-			JettyModule.contributeServlets(binder).addBinding().to(AnnotatedServlet.class);
+			JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
 		}
 
 		@Provides

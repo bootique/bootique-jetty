@@ -1,7 +1,6 @@
 package io.bootique.jetty;
 
 import com.google.inject.Binder;
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -24,10 +23,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -69,44 +64,36 @@ public class JettyModule_MappedContributionsIT {
         assertEquals("f3_s3r", r1.readEntity(String.class));
     }
 
-
-    @Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @BindingAnnotation
-    public static @interface A1 {
-
-    }
-
     public static class Module implements com.google.inject.Module {
 
         @Override
         public void configure(Binder binder) {
-            JettyModule.contributeMappedServlets(binder).addBinding().to(Key.get(MappedServlet.class, A1.class));
+
+            TypeLiteral<MappedServlet<Servlet1>> s1 = new TypeLiteral<MappedServlet<Servlet1>>() {
+            };
 
             TypeLiteral<MappedServlet<Servlet2>> s2 = new TypeLiteral<MappedServlet<Servlet2>>() {
             };
-            JettyModule.contributeMappedServlets(binder).addBinding().to(Key.get(s2));
 
-            TypeLiteral<MappedServlet<Servlet3>> s3 = new TypeLiteral<MappedServlet<Servlet3>>() {
+            TypeLiteral<MappedFilter<Filter1>> f1 = new TypeLiteral<MappedFilter<Filter1>>() {
             };
-            JettyModule.contributeMappedServlets(binder).addBinding().to(Key.get(s3));
-
-            JettyModule.contributeMappedFilters(binder).addBinding().to(Key.get(MappedFilter.class, A1.class));
 
             TypeLiteral<MappedFilter<Filter2>> f2 = new TypeLiteral<MappedFilter<Filter2>>() {
             };
-            JettyModule.contributeMappedFilters(binder).addBinding().to(Key.get(f2));
 
-            TypeLiteral<MappedFilter<Filter3>> f3 = new TypeLiteral<MappedFilter<Filter3>>() {
-            };
-            JettyModule.contributeMappedFilters(binder).addBinding().to(Key.get(f3));
+            JettyModule.extend(binder)
+                    .addMappedServlet(Key.get(s1))
+                    .addMappedServlet(s2)
+                    .addServlet(new Servlet3(), "s3", "/s3")
+                    .addMappedFilter(Key.get(f1))
+                    .addMappedFilter(f2)
+                    .addFilter(new Filter3(), "f3", 1, "/s3/*");
         }
 
 
-        @A1
         @Singleton
         @Provides
-        MappedServlet provideMappedAnnotated(Servlet1 servlet) {
+        MappedServlet<Servlet1> provideMappedAnnotated(Servlet1 servlet) {
             return new MappedServlet<>(servlet, Collections.singleton("/s1"), "s1");
         }
 
@@ -118,14 +105,7 @@ public class JettyModule_MappedContributionsIT {
 
         @Singleton
         @Provides
-        MappedServlet<Servlet3> provideType2(Servlet3 servlet) {
-            return new MappedServlet<>(servlet, Collections.singleton("/s3"), "s3");
-        }
-
-        @A1
-        @Singleton
-        @Provides
-        MappedFilter provideMappedAnnotated(Filter1 filter) {
+        MappedFilter<Filter1> provideMappedAnnotated(Filter1 filter) {
             return new MappedFilter<>(filter, Collections.singleton("/s1/*"), "f1", 1);
         }
 
@@ -133,12 +113,6 @@ public class JettyModule_MappedContributionsIT {
         @Provides
         MappedFilter<Filter2> provideType1(Filter2 filter) {
             return new MappedFilter<>(filter, Collections.singleton("/s2/*"), "f2", 1);
-        }
-
-        @Singleton
-        @Provides
-        MappedFilter<Filter3> provideType2(Filter3 filter) {
-            return new MappedFilter<>(filter, Collections.singleton("/s3/*"), "f3", 1);
         }
     }
 
@@ -173,7 +147,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
-
         }
 
         @Override
@@ -184,7 +157,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void destroy() {
-
         }
     }
 
@@ -192,7 +164,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
-
         }
 
         @Override
@@ -203,7 +174,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void destroy() {
-
         }
     }
 
@@ -211,7 +181,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void init(FilterConfig filterConfig) throws ServletException {
-
         }
 
         @Override
@@ -222,7 +191,6 @@ public class JettyModule_MappedContributionsIT {
 
         @Override
         public void destroy() {
-
         }
     }
 }

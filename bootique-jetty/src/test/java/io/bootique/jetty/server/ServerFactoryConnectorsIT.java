@@ -88,7 +88,7 @@ public class ServerFactoryConnectorsIT {
 
         @Override
         public void configure(Binder binder) {
-            JettyModule.contributeServlets(binder).addBinding().to(ContentServlet.class);
+            JettyModule.extend(binder).addServlet(ContentServlet.class);
         }
     }
 }

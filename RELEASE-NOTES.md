@@ -1,3 +1,7 @@
+## 0.20
+
+* #57 Module "extend" API - a better version of "contribute*"
+
 ## 0.19
 
 * #55 HttpSessionListeners are not registered

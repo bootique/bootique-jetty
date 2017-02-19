@@ -1,12 +1,15 @@
 package io.bootique.jetty.servlet;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedServlet;
+import io.bootique.jetty.unit.JettyApp;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,17 +18,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 
-import io.bootique.jetty.unit.JettyApp;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedServlet;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 public class ServletEnvironmentIT {
 
@@ -63,11 +62,12 @@ public class ServletEnvironmentIT {
 
 		@Override
 		public void configure(Binder binder) {
-			JettyModule.contributeMappedServlets(binder).addBinding().to(MappedServlet.class);
+			TypeLiteral<MappedServlet<ServletCheckingState>> st = new TypeLiteral<MappedServlet<ServletCheckingState>>() {};
+			JettyModule.extend(binder).addMappedServlet(st);
 		}
 
 		@Provides
-		MappedServlet createMappedServlet(ServletCheckingState servlet) {
+		MappedServlet<ServletCheckingState> createMappedServlet(ServletCheckingState servlet) {
 			return new MappedServlet(servlet, new HashSet<>(Arrays.asList("/a/*")));
 		}
 

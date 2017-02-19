@@ -3,7 +3,6 @@ package io.bootique.jetty.instrumented.request;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import io.bootique.test.BQDaemonTestRuntime;
 import org.junit.Rule;
@@ -18,9 +17,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,10 +29,8 @@ public class RequestTimerIT {
 	@Test
 	public void testInitParametersPassed() {
 
-		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
-
 		BQDaemonTestRuntime runtime = app.start(
-				binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet));
+				binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

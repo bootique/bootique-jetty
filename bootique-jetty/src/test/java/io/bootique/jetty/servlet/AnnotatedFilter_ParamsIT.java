@@ -54,7 +54,7 @@ public class AnnotatedFilter_ParamsIT {
 
 		@Override
 		public void configure(Binder binder) {
-			JettyModule.contributeFilters(binder).addBinding().to(AnnotatedFilter.class);
+			JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
 		}
 
 		@Provides

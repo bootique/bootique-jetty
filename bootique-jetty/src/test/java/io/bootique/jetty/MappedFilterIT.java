@@ -10,14 +10,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class MappedFilterIT {
 
@@ -34,11 +30,7 @@ public class MappedFilterIT {
 	@Test
 	public void testMappedConfig() throws Exception {
 
-		MappedFilter mappedFilter = new MappedFilter(mockFilter, new HashSet<>(Arrays.asList("/a/*", "/b/*")), "f1", 0);
-
-		app.start(binder -> {
-			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mappedFilter);
-		});
+		app.start(binder -> JettyModule.extend(binder).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -57,11 +49,8 @@ public class MappedFilterIT {
 	@Test
 	public void testMappedConfig_Override() throws Exception {
 
-		MappedFilter mappedFilter = new MappedFilter(mockFilter, new HashSet<>(Arrays.asList("/a/*", "/b/*")), "f1", 0);
-
-		app.start(binder -> {
-			JettyModule.contributeMappedFilters(binder).addBinding().toInstance(mappedFilter);
-		}, "--config=classpath:io/bootique/jetty/MappedFilterIT1.yml");
+		app.start(binder -> JettyModule.extend(binder).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"),
+				"--config=classpath:io/bootique/jetty/MappedFilterIT1.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

@@ -15,10 +15,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,12 +27,7 @@ public class SessionsIT {
 	@Test
 	public void testSessions() {
 
-		Map<String, String> params = new HashMap<>();
-		params.put("a", "a1");
-		params.put("b", "b2");
-		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
-
-		app.start(binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet));
+		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -55,12 +46,7 @@ public class SessionsIT {
 	@Test
 	public void testNoSessions() {
 
-		Map<String, String> params = new HashMap<>();
-		params.put("a", "a1");
-		params.put("b", "b2");
-		MappedServlet mappedServlet = new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")), "s1");
-
-		app.start(binder -> JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet),
+		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"),
 				"--config=src/test/resources/io/bootique/jetty/nosessions.yml");
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
