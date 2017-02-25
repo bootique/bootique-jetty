@@ -9,4 +9,9 @@ public class JettyModuleProviderIT {
 	public void testPresentInJar() {
 		BQModuleProviderChecker.testPresentInJar(JettyModuleProvider.class);
 	}
+
+	@Test
+	public void testMetadata() {
+	    BQModuleProviderChecker.testMetadata(JettyModuleProvider.class);
+    }
 }
