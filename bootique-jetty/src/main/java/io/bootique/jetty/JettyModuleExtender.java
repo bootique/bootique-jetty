@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
+import io.bootique.ModuleExtender;
 import org.eclipse.jetty.servlet.DefaultServlet;
 
 import javax.servlet.Filter;
@@ -19,9 +20,8 @@ import java.util.Set;
  *
  * @since 0.20
  */
-public class JettyModuleExtender {
+public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
-    private Binder binder;
 
     private Multibinder<Filter> filters;
     private Multibinder<Servlet> servlets;
@@ -29,8 +29,8 @@ public class JettyModuleExtender {
     private Multibinder<MappedServlet> mappedServlets;
     private Multibinder<EventListener> listeners;
 
-    protected JettyModuleExtender(Binder binder) {
-        this.binder = binder;
+    public JettyModuleExtender(Binder binder) {
+        super(binder);
     }
 
     /**
@@ -39,7 +39,8 @@ public class JettyModuleExtender {
      *
      * @return this extender instance.
      */
-    JettyModuleExtender initAllExtensions() {
+    @Override
+    public JettyModuleExtender initAllExtensions() {
         contributeFilters();
         contributeServlets();
         contributeMappedFilters();
@@ -142,41 +143,22 @@ public class JettyModuleExtender {
     }
 
     protected Multibinder<Filter> contributeFilters() {
-        if (filters == null) {
-            filters = Multibinder.newSetBinder(binder, Filter.class);
-        }
-
-        return filters;
+        return filters != null ? filters : (filters = newSet(Filter.class));
     }
 
     protected Multibinder<Servlet> contributeServlets() {
-        if (servlets == null) {
-            servlets = Multibinder.newSetBinder(binder, Servlet.class);
-        }
-
-        return servlets;
+        return servlets != null ? servlets : (servlets = newSet(Servlet.class));
     }
 
     protected Multibinder<MappedFilter> contributeMappedFilters() {
-        if (mappedFilters == null) {
-            mappedFilters = Multibinder.newSetBinder(binder, MappedFilter.class);
-        }
-
-        return mappedFilters;
+        return mappedFilters != null ? mappedFilters : (mappedFilters = newSet(MappedFilter.class));
     }
 
     protected Multibinder<MappedServlet> contributeMappedServlets() {
-        if (mappedServlets == null) {
-            mappedServlets = Multibinder.newSetBinder(binder, MappedServlet.class);
-        }
-
-        return mappedServlets;
+        return mappedServlets != null ? mappedServlets : (mappedServlets = newSet(MappedServlet.class));
     }
 
     protected Multibinder<EventListener> contributeListeners() {
-        if (listeners == null) {
-            listeners = Multibinder.newSetBinder(binder, EventListener.class);
-        }
-        return listeners;
+        return listeners != null ? listeners : (listeners = newSet(EventListener.class));
     }
 }
