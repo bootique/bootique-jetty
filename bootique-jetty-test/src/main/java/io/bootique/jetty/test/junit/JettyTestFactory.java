@@ -70,7 +70,7 @@ public class JettyTestFactory extends BQDaemonTestFactory {
 
         @Override
         public BQDaemonTestRuntime start() {
-            module(binder -> BQCoreModule.setDefaultCommand(binder, ServerCommand.class));
+            module(binder -> BQCoreModule.extend(binder).setDefaultCommand(ServerCommand.class));
             return super.start();
         }
     }
