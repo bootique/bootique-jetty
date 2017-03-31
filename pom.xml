@@ -9,7 +9,7 @@
 
 	<groupId>io.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
-	<version>0.20-SNAPSHOT</version>
+	<version>0.20</version>
 	<packaging>pom</packaging>
 
 	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
@@ -34,7 +34,7 @@
 	<scm>
         <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-jetty</developerConnection>
         <url>https://github.com/bootique/bootique-jetty</url>
-        <tag>HEAD</tag>
+        <tag>bootique-jetty-parent-0.20</tag>
     </scm>
 
     <distributionManagement>
