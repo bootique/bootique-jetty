@@ -26,7 +26,7 @@ public class AnnotatedServlet extends HttpServlet { .. }</programlisting>The
             called from your application
             Module:<programlisting language="java">@Override
 public void configure(Binder binder) {
-	JettyModule.contributeServlets(binder).addBinding().to(AnnotatedServlet.class);
+	JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
 }</programlisting>But
             what if you are deploying a third-party servlet that is not annotated? Or annotation
             values are off in the context of your application? There are two choices. The first is
@@ -42,7 +42,7 @@ public void configure(Binder binder) {
        Collections.singleton("/c"),
        "myservlet");
 
-    JettyModule.contributeMappedServlets(binder).addBinding().toInstance(mappedServlet);
+    JettyModule.extend(binder).addMappedServlet(mappedServlet);
 }</programlisting></para>
         <para>Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but
             also need the ability to initialize the underlying servlet with environment
@@ -58,7 +58,7 @@ MappedServlet&lt;MyServlet> provideMyServlet(MyService1 s1, MyService2 s2) {
 @Override
 public void configure(Binder binder) {
     TypeLiteral&lt;MappedServlet&lt;Servlet2>> tl = new TypeLiteral&lt;MappedServlet&lt;MyServlet>>() {};
-    JettyModule.contributeMappedServlets(binder).addBinding().to(Key.get(tl));
+    JettyModule.extend(binder).addMappedServlet(tl);
 }</programlisting></para>
     </section>
     <section>
@@ -75,11 +75,11 @@ public void configure(Binder binder) {
 public class AnnotatedFilter implements Filter { .. }</programlisting></para>
         <para><programlisting>@Override
 public void configure(Binder binder) {
-	JettyModule.contributeFilters(binder).addBinding().to(AnnotatedFilter.class);
+	JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
 }</programlisting>And
             just like with servlets you can use <code>MappedFilter</code> and
-                <code>JettyModule.contributeMappedFilters(..)</code> to wrap a filter in
-            app-specific metadata.</para>
+                <code>JettyModule.extend(..).addMappedFilter</code> to wrap a filter in app-specific
+            metadata.</para>
     </section>
     <section>
         <title>Listeners</title>
@@ -89,7 +89,7 @@ public void configure(Binder binder) {
             bind them in your
             app:<programlisting>@Override
 public void configure(Binder binder) {
-	JettyModule.contributeListeners(binder).addBinding().to(MyListener.class);
+	JettyModule.extend(binder).addListener(MyListener.class);
 }</programlisting></para>
         <para>Listeners can rely on injection to obtain dependencies, just like servlets and
             filters.</para>
