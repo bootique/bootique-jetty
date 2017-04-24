@@ -27,7 +27,7 @@ public class JettyApp extends BQDaemonTestFactory {
         return app(args)
                 .modules(JettyModule.class)
                 .module(config)
-                .module(binder -> BQCoreModule.setDefaultCommand(binder, ServerCommand.class))
+                .module(binder -> BQCoreModule.extend(binder).setDefaultCommand(ServerCommand.class))
                 .startupCheck(startupCheck)
                 .start();
     }

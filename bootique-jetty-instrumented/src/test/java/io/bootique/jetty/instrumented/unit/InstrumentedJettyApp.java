@@ -31,7 +31,7 @@ public class InstrumentedJettyApp extends BQDaemonTestFactory {
 				.modules(JettyModule.class, MetricsModule.class)
 				.module(new InstrumentedJettyModuleProvider())
 				.module(config)
-				.module(binder -> BQCoreModule.setDefaultCommand(binder, ServerCommand.class))
+				.module(binder -> BQCoreModule.extend(binder).setDefaultCommand(ServerCommand.class))
 				.startupCheck(startupCheck).start();
 	}
 
