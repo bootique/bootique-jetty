@@ -1,5 +1,6 @@
 package io.bootique.jetty;
 
+import io.bootique.BQRuntime;
 import io.bootique.meta.config.ConfigListMetadata;
 import io.bootique.meta.config.ConfigMapMetadata;
 import io.bootique.meta.config.ConfigMetadataNode;
@@ -8,7 +9,6 @@ import io.bootique.meta.config.ConfigObjectMetadata;
 import io.bootique.meta.config.ConfigValueMetadata;
 import io.bootique.meta.module.ModuleMetadata;
 import io.bootique.meta.module.ModulesMetadata;
-import io.bootique.test.BQTestRuntime;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,9 +27,9 @@ public class JettyModuleProvider_MetadataIT {
     @Test
     public void testMetadata() {
 
-        BQTestRuntime runtime = testFactory.app().autoLoadModules().createRuntime();
+        BQRuntime runtime = testFactory.app().autoLoadModules().createRuntime();
 
-        ModulesMetadata modulesMetadata = runtime.getRuntime().getInstance(ModulesMetadata.class);
+        ModulesMetadata modulesMetadata = runtime.getInstance(ModulesMetadata.class);
         Optional<ModuleMetadata> jettyOpt = modulesMetadata.getModules()
                 .stream()
                 .filter(m -> "JettyModule".equals(m.getName()))

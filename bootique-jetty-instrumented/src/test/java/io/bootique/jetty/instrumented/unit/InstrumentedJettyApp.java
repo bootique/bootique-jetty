@@ -2,11 +2,11 @@ package io.bootique.jetty.instrumented.unit;
 
 import com.google.inject.Module;
 import io.bootique.BQCoreModule;
+import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.instrumented.InstrumentedJettyModuleProvider;
 import io.bootique.metrics.MetricsModule;
-import io.bootique.test.BQDaemonTestRuntime;
 import io.bootique.test.junit.BQDaemonTestFactory;
 import org.eclipse.jetty.server.Server;
 
@@ -23,9 +23,9 @@ public class InstrumentedJettyApp extends BQDaemonTestFactory {
 		}, args);
 	}
 
-	public BQDaemonTestRuntime start(Module config, String... args) {
+	public BQRuntime start(Module config, String... args) {
 
-		Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
+		Function<BQRuntime, Boolean> startupCheck = r -> r.getInstance(Server.class).isStarted();
 
 		return app(args)
 				.modules(JettyModule.class, MetricsModule.class)

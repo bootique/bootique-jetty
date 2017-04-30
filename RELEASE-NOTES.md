@@ -1,3 +1,7 @@
+## 0.21
+
+* #59 Update JettyTestFactory to match new core test API
+
 ## 0.20
 
 * #57 Module "extend" API - a better version of "contribute*"

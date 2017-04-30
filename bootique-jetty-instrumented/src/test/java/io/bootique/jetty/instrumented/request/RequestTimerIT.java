@@ -2,9 +2,9 @@ package io.bootique.jetty.instrumented.request;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
-import io.bootique.test.BQDaemonTestRuntime;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class RequestTimerIT {
 	@Test
 	public void testInitParametersPassed() {
 
-		BQDaemonTestRuntime runtime = app.start(
+		BQRuntime runtime = app.start(
 				binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"));
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -39,7 +39,7 @@ public class RequestTimerIT {
 
 		assertEquals("test_servlet", r1.readEntity(String.class));
 
-		MetricRegistry metrics = runtime.getRuntime().getInstance(MetricRegistry.class);
+		MetricRegistry metrics = runtime.getInstance(MetricRegistry.class);
 
 		Collection<Timer> timers = metrics.getTimers().values();
 		assertEquals(1, timers.size());

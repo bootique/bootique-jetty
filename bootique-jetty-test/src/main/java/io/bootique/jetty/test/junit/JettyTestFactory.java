@@ -1,15 +1,16 @@
 package io.bootique.jetty.test.junit;
 
 import io.bootique.BQCoreModule;
+import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.command.ServerCommand;
-import io.bootique.test.BQDaemonTestRuntime;
 import io.bootique.test.junit.BQDaemonTestFactory;
+import io.bootique.test.junit.BQRuntimeDaemon;
 import org.eclipse.jetty.server.Server;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -37,39 +38,18 @@ public class JettyTestFactory extends BQDaemonTestFactory {
      */
     @Override
     public Builder app(String... args) {
-        Function<BQDaemonTestRuntime, Boolean> startupCheck = r -> r.getRuntime().getInstance(Server.class).isStarted();
+        Function<BQRuntime, Boolean> startupCheck = r -> r.getInstance(Server.class).isStarted();
         return new Builder(runtimes, args).startupCheck(startupCheck).modules(JettyModule.class);
-    }
-
-    /**
-     * @return a new instance of builder for the test runtime stack.
-     * @deprecated since 0.20 in favor of {@link #app(String...)}.
-     */
-    @Deprecated
-    @Override
-    public Builder newRuntime() {
-        return app();
     }
 
     public static class Builder extends io.bootique.test.junit.BQDaemonTestFactory.Builder<Builder> {
 
-        protected Builder(Collection<BQDaemonTestRuntime> runtimes, String[] args) {
+        protected Builder(Map<BQRuntime, BQRuntimeDaemon> runtimes, String[] args) {
             super(runtimes, args);
         }
 
-        /**
-         * @param args
-         * @return a new {@link BQDaemonTestRuntime}.
-         * @deprecated since 0.20 use {@link #start()}
-         */
-        @Deprecated
-        public BQDaemonTestRuntime startServer(String... args) {
-            bootique.args(args);
-            return start();
-        }
-
         @Override
-        public BQDaemonTestRuntime start() {
+        public BQRuntime start() {
             module(binder -> BQCoreModule.extend(binder).setDefaultCommand(ServerCommand.class));
             return super.start();
         }

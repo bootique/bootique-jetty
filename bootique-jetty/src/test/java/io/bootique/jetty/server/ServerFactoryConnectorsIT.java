@@ -2,9 +2,9 @@ package io.bootique.jetty.server;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.unit.JettyApp;
-import io.bootique.test.BQDaemonTestRuntime;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.junit.Rule;
@@ -33,11 +33,11 @@ public class ServerFactoryConnectorsIT {
 
     @Test
     public void testMultipleConnectors_WithDeprecated() {
-        BQDaemonTestRuntime runtime = app.start(new UnitModule(),
+        BQRuntime runtime = app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/connectors-deprecated.yml");
 
         // deprecated default connector must NOT be started
-        Connector[] connectors = runtime.getRuntime().getInstance(Server.class).getConnectors();
+        Connector[] connectors = runtime.getInstance(Server.class).getConnectors();
         assertEquals(3, connectors.length);
 
         Response r1LegacyConnector = client.target("http://localhost:14001/").request().get();
@@ -56,11 +56,11 @@ public class ServerFactoryConnectorsIT {
     @Test
     public void testMultipleConnectors() {
 
-        BQDaemonTestRuntime runtime = app.start(new UnitModule(),
+        BQRuntime runtime = app.start(new UnitModule(),
                 "--config=classpath:io/bootique/jetty/server/connectors.yml");
 
         // deprecated default connector must NOT be started
-        Connector[] connectors = runtime.getRuntime().getInstance(Server.class).getConnectors();
+        Connector[] connectors = runtime.getInstance(Server.class).getConnectors();
         assertEquals(2, connectors.length);
 
         Response r1NormalConnector = client.target("http://localhost:14001/").request().get();
