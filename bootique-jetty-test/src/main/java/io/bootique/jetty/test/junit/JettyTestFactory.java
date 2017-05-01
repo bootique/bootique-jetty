@@ -49,9 +49,9 @@ public class JettyTestFactory extends BQDaemonTestFactory {
         }
 
         @Override
-        public BQRuntime start() {
+        public BQRuntime createRuntime() {
             module(binder -> BQCoreModule.extend(binder).setDefaultCommand(ServerCommand.class));
-            return super.start();
+            return super.createRuntime();
         }
     }
 }
