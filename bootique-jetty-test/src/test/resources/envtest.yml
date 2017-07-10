@@ -1,0 +1,11 @@
+jetty:
+  context: '/myapp'
+  connectors:
+    - port: 9999
+  servlets:
+    servlet2:
+      urlPatterns:
+        - '/ss2'
+      params:
+        p3: v33
+        p4: v44
