@@ -83,6 +83,8 @@ public class JettyModuleProvider_MetadataIT {
                 "[context:java.lang.String]" +
                 "[map:filters<java.lang.String,io.bootique.jetty.server.FilterFactory>]" +
                 "[idleThreadTimeout:int]" +
+                "[maxFormContentSize:int]" +
+                "[maxFormKeys:int]" +
                 "[maxQueuedRequests:int]" +
                 "[maxThreads:int]" +
                 "[minThreads:int]" +
