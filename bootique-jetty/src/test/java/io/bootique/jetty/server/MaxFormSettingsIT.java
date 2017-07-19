@@ -32,7 +32,7 @@ public class MaxFormSettingsIT {
     public void testMaxFormContentSize() {
 
         app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
-                "--config=classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml");
+                "-c", "classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml");
 
         Response belowThreshold = target
                 .request()

@@ -1,7 +1,5 @@
 package io.bootique.jetty.server;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.unit.JettyApp;
 import org.junit.Rule;
@@ -46,7 +44,7 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.start(new UnitModule(),
+        app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
                 "--config=classpath:io/bootique/jetty/server/HttpsConnector.yml");
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
@@ -56,7 +54,7 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.start(new UnitModule(),
+        app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
                 "--config=classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml");
 
         // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
@@ -73,14 +71,6 @@ public class HttpsConnectorIT {
         protected void doGet(HttpServletRequest req, HttpServletResponse resp)
                 throws ServletException, IOException {
             resp.getWriter().append(OUT_CONTENT + "_" + req.isSecure());
-        }
-    }
-
-    private class UnitModule implements Module {
-
-        @Override
-        public void configure(Binder binder) {
-            JettyModule.extend(binder).addServlet(ContentServlet.class);
         }
     }
 }
