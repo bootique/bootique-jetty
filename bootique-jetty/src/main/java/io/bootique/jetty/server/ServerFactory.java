@@ -51,6 +51,9 @@ public class ServerFactory {
     private Map<String, String> params;
     private FolderResourceFactory staticResourceBase;
     private boolean compression;
+    // defined as "int" in Jetty, so we should not exceed max int
+    private int maxFormContentSize;
+    private int maxFormKeys;
 
     public ServerFactory() {
         this.context = "/";
@@ -69,6 +72,14 @@ public class ServerFactory {
         server.setStopAtShutdown(true);
         server.setStopTimeout(1000L);
         server.setHandler(createHandler(servlets, filters, listeners));
+
+        if (maxFormContentSize > 0) {
+            server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
+        }
+
+        if (maxFormKeys > 0) {
+            server.setAttribute("org.eclipse.jetty.server.Request.maxFormKeys", maxFormKeys);
+        }
 
         createRequestLog(server);
 
@@ -422,5 +433,27 @@ public class ServerFactory {
             "\"Accept-Encoding: gzip\" header. Default value is 'true'.")
     public void setCompression(boolean compression) {
         this.compression = compression;
+    }
+
+    /**
+     * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).
+     *
+     * @param maxFormContentSize maximum size of submitted forms in bytes. Default is 200000 (~195K)
+     * @since 0.22
+     */
+    @BQConfigProperty("Maximum size of submitted forms in bytes. Default is 200000 (~195K).")
+    public void setMaxFormContentSize(int maxFormContentSize) {
+        this.maxFormContentSize = maxFormContentSize;
+    }
+
+    /**
+     * Sets the maximum number of form fields. Default is 1000.
+     *
+     * @param maxFormKeys maximum number of form fields. Default is 1000.
+     * @since 0.22
+     */
+    @BQConfigProperty("Maximum number of form fields. Default is 1000.")
+    public void setMaxFormKeys(int maxFormKeys) {
+        this.maxFormKeys = maxFormKeys;
     }
 }

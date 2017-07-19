@@ -1,0 +1,2 @@
+jetty:
+  maxFormContentSize: 10

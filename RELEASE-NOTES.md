@@ -1,3 +1,7 @@
+## 0.22
+
+* #61 Support for maxFormContentSize and maxFormKeys
+
 ## 0.21
 
 * #59 Update JettyTestFactory to match new core test API
