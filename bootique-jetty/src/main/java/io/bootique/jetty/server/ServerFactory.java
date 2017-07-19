@@ -273,6 +273,7 @@ public class ServerFactory {
      */
     @Deprecated
     public void setConnector(ConnectorFactory connector) {
+        LOGGER.warn("'connector' property is deprecated. Use 'connectors' instead.");
         this.connector = connector;
     }
 
