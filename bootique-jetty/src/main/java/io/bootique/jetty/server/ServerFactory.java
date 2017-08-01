@@ -437,7 +437,7 @@ public class ServerFactory {
      * Sets mappings between HTTP status codes and corresponding pages which will be returned to the user instead.
      *
      * @param errorPages map where keys are HTTP status codes and values are page URLs which will be used to handle them
-     * @since 0.22
+     * @since 0.24
      */
     @BQConfigProperty("A map specifying a mapping between HTTP status codes and pages (URLs) which will be used as their handlers. If no mapping is specified then standard error handler is used.")
     public void setErrorPages(Map<Integer, String> errorPages) {
