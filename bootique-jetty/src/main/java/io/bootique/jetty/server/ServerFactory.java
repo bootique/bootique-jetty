@@ -1,5 +1,6 @@
 package io.bootique.jetty.server;
 
+import com.google.common.collect.ImmutableMap;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.JettyModuleExtender;
@@ -13,6 +14,7 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -20,15 +22,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EventListener;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
@@ -51,6 +45,11 @@ public class ServerFactory {
     private Map<String, String> params;
     private FolderResourceFactory staticResourceBase;
     private boolean compression;
+
+    /**
+     * Maintains a mapping between erroneous response's Status Code and the page (URL) which will be used to handle it further.
+     */
+    private Map<Integer, String> errorPages;
 
     public ServerFactory() {
         this.context = "/";
@@ -111,6 +110,12 @@ public class ServerFactory {
 
         if (compression) {
             handler.setGzipHandler(createGzipHandler());
+        }
+
+        if (errorPages != null) {
+            ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+            errorPages.forEach((statusCode, location) -> errorHandler.addErrorPage(statusCode, location));
+            handler.setErrorHandler(errorHandler);
         }
 
         installListeners(handler, listeners);
@@ -422,5 +427,20 @@ public class ServerFactory {
             "\"Accept-Encoding: gzip\" header. Default value is 'true'.")
     public void setCompression(boolean compression) {
         this.compression = compression;
+    }
+
+    public Map<Integer, String> getErrorPages() {
+        return ImmutableMap.copyOf(errorPages);
+    }
+
+    /**
+     * Sets mappings between HTTP status codes and corresponding pages which will be returned to the user instead.
+     *
+     * @param errorPages map where keys are HTTP status codes and values are page URLs which will be used to handle them
+     * @since 0.22
+     */
+    @BQConfigProperty("A map specifying a mapping between HTTP status codes and pages (URLs) which will be used as their handlers. If no mapping is specified then standard error handler is used.")
+    public void setErrorPages(Map<Integer, String> errorPages) {
+        this.errorPages = errorPages;
     }
 }
