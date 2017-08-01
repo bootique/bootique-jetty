@@ -9,7 +9,7 @@
 
 	<groupId>io.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
-	<version>0.22-SNAPSHOT</version>
+	<version>0.24-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
