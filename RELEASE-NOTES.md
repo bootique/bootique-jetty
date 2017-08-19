@@ -1,3 +1,7 @@
+## 0.24
+
+* #62 Adds support for custom error pages handlers
+
 ## 0.22
 
 * #61 Support for maxFormContentSize and maxFormKeys

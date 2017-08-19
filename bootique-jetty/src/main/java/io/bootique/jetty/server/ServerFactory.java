@@ -1,6 +1,5 @@
 package io.bootique.jetty.server;
 
-import com.google.common.collect.ImmutableMap;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.JettyModuleExtender;
@@ -22,7 +21,15 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EventListener;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
@@ -463,8 +470,12 @@ public class ServerFactory {
         this.maxFormKeys = maxFormKeys;
     }
 
+    /**
+     * @since 0.24
+     * @return a potentially null map of error pages configuration.
+     */
     public Map<Integer, String> getErrorPages() {
-        return ImmutableMap.copyOf(errorPages);
+        return errorPages;
     }
 
     /**
