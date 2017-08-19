@@ -81,6 +81,7 @@ public class JettyModuleProvider_MetadataIT {
                 "[compression:boolean]" +
                 "[list:connectors<io.bootique.jetty.connector.ConnectorFactory>]" +
                 "[context:java.lang.String]" +
+                "[map:errorPages<java.lang.Integer,java.lang.String>]" +
                 "[map:filters<java.lang.String,io.bootique.jetty.server.FilterFactory>]" +
                 "[idleThreadTimeout:int]" +
                 "[maxFormContentSize:int]" +
