@@ -28,7 +28,6 @@
 	<properties>
 		<jetty-version>9.3.6.v20151106</jetty-version>
 		<bootique-version>${project.version}</bootique-version>
-		<bootique-metrics-version>${project.version}</bootique-metrics-version>
 	</properties>
 
 	<scm>
@@ -70,7 +69,7 @@
 			<dependency>
 				<groupId>io.bootique.metrics</groupId>
 				<artifactId>bootique-metrics</artifactId>
-				<version>${bootique-metrics-version}</version>
+				<version>${bootique-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
