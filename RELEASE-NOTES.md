@@ -1,7 +1,3 @@
-## 0.25
-
-* #64 jetty-instrumented: handle RequestTimer within the servlet spec
-
 ## 0.24
 
 * #61 Support for maxFormContentSize and maxFormKeys

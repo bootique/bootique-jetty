@@ -271,7 +271,7 @@ public class JettyModule extends ConfigModule {
 
     @Singleton
     @Provides
-    ServerFactory providerServerFactory(ConfigurationFactory configFactory) {
+    ServerFactory createServerFactory(ConfigurationFactory configFactory) {
         return configFactory.config(ServerFactory.class, configPrefix);
     }
 }
