@@ -1,3 +1,7 @@
+## 0.25
+
+* #65 Log request execution time outside of jetty-instrumented
+
 ## 0.24
 
 * #61 Support for maxFormContentSize and maxFormKeys

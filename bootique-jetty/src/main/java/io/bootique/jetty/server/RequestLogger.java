@@ -13,5 +13,6 @@ public class RequestLogger extends Slf4jRequestLog {
     public RequestLogger() {
         setLoggerName(getClass().getName());
         setExtended(true);
+        setLogLatency(true);
     }
 }
