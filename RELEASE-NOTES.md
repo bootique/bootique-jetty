@@ -1,6 +1,7 @@
 ## 0.25
 
 * #65 Log request execution time outside of jetty-instrumented
+* #66 Support for listener ordering
 
 ## 0.24
 

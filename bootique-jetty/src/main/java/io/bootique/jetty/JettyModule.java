@@ -226,11 +226,14 @@ public class JettyModule extends ConfigModule {
                         Set<Filter> filters,
                         Set<MappedFilter> mappedFilters,
                         Set<EventListener> listeners,
+                        Set<MappedListener> mappedListeners,
                         BootLogger bootLogger,
                         ShutdownManager shutdownManager) {
 
-        Server server = factory.createServer(allServlets(servlets, mappedServlets), allFilters(filters, mappedFilters),
-                listeners);
+        Server server = factory.createServer(
+                allServlets(servlets, mappedServlets),
+                allFilters(filters, mappedFilters),
+                allListeners(listeners, mappedListeners));
 
         shutdownManager.addShutdownHook(() -> {
             bootLogger.trace(() -> "stopping Jetty...");
@@ -267,6 +270,20 @@ public class JettyModule extends ConfigModule {
                 filter -> mappeFiltersClone.add(mappedFilterFactory.toMappedFilter(filter, order.getAndIncrement())));
 
         return mappeFiltersClone;
+    }
+
+    private Set<MappedListener> allListeners(Set<EventListener> listeners, Set<MappedListener> mappedListeners) {
+        if (listeners.isEmpty()) {
+            return mappedListeners;
+        }
+
+        Set<MappedListener> mappedListenersClone = new HashSet<>(mappedListeners);
+
+        //  Integer.MAX_VALUE means placing bare unordered listeners after (== inside) mapped listeners
+        listeners.forEach(
+                listener -> mappedListenersClone.add(new MappedListener<>(listener, Integer.MAX_VALUE)));
+
+        return mappedListenersClone;
     }
 
     @Singleton

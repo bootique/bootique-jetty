@@ -4,6 +4,7 @@ import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
+import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,7 +71,7 @@ public class ServerFactory {
         this.compression = true;
     }
 
-    public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<EventListener> listeners) {
+    public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<MappedListener> listeners) {
 
         ThreadPool threadPool = createThreadPool();
         Server server = new Server(threadPool);
@@ -107,8 +107,9 @@ public class ServerFactory {
         return server;
     }
 
-    protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters,
-                                    Set<EventListener> listeners) {
+    protected Handler createHandler(Set<MappedServlet> servlets,
+                                    Set<MappedFilter> filters,
+                                    Set<MappedListener> listeners) {
 
         int options = 0;
 
@@ -177,18 +178,22 @@ public class ServerFactory {
         return factory != null ? factory : new FilterFactory();
     }
 
-    protected void installListeners(ServletContextHandler handler, Set<EventListener> listeners) {
+    protected void installListeners(ServletContextHandler handler, Set<MappedListener> listeners) {
+
+        if(listeners.isEmpty()) {
+            return;
+        }
 
         Optional<SessionHandler> sessionHandler = sessions
                 ? Optional.of(handler.getSessionHandler()) : Optional.empty();
 
-        listeners.forEach(listener -> {
+        sortedListeners(listeners).forEach(listener -> {
 
             LOGGER.info("Adding listener {}", listener.getClass().getName());
             // context handler and session handler would do their own listener filtering
             // passing every listener down to them without trying to second guess
-            handler.addEventListener(listener);
-            sessionHandler.ifPresent(sh -> sh.addEventListener(listener));
+            handler.addEventListener(listener.getListener());
+            sessionHandler.ifPresent(sh -> sh.addEventListener(listener.getListener()));
         });
     }
 
@@ -196,6 +201,13 @@ public class ServerFactory {
         List<MappedFilter> sorted = new ArrayList<>(unsorted);
 
         Collections.sort(sorted, Comparator.comparing(MappedFilter::getOrder));
+        return sorted;
+    }
+
+    private List<MappedListener> sortedListeners(Set<MappedListener> unsorted) {
+        List<MappedListener> sorted = new ArrayList<>(unsorted);
+
+        Collections.sort(sorted, Comparator.comparing(MappedListener::getOrder));
         return sorted;
     }
 

@@ -25,9 +25,11 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     private Multibinder<Filter> filters;
     private Multibinder<Servlet> servlets;
+    private Multibinder<EventListener> listeners;
+
     private Multibinder<MappedFilter> mappedFilters;
     private Multibinder<MappedServlet> mappedServlets;
-    private Multibinder<EventListener> listeners;
+    private Multibinder<MappedListener> mappedListeners;
 
     public JettyModuleExtender(Binder binder) {
         super(binder);
@@ -43,9 +45,11 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     public JettyModuleExtender initAllExtensions() {
         contributeFilters();
         contributeServlets();
+        contributeListeners();
+
         contributeMappedFilters();
         contributeMappedServlets();
-        contributeListeners();
+        contributeMappedListeners();
 
         return this;
     }
@@ -58,6 +62,38 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     public JettyModuleExtender addListener(Class<? extends EventListener> listenerType) {
         contributeListeners().addBinding().to(listenerType);
         return this;
+    }
+
+    /**
+     * @param mappedListener
+     * @param <T>
+     * @return
+     * @since 0.25
+     */
+    public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
+        contributeMappedListeners().addBinding().toInstance(mappedListener);
+        return this;
+    }
+
+    /**
+     * @param mappedListenerKey
+     * @param <T>
+     * @return
+     * @since 0.25
+     */
+    public <T extends EventListener> JettyModuleExtender addMappedListener(Key<MappedListener<T>> mappedListenerKey) {
+        contributeMappedListeners().addBinding().to(mappedListenerKey);
+        return this;
+    }
+
+    /**
+     * @param mappedListenerType
+     * @param <T>
+     * @return
+     * @since 0.25
+     */
+    public <T extends EventListener> JettyModuleExtender addMappedListener(TypeLiteral<MappedListener<T>> mappedListenerType) {
+        return addMappedListener(Key.get(mappedListenerType));
     }
 
     public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
@@ -150,6 +186,10 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         return servlets != null ? servlets : (servlets = newSet(Servlet.class));
     }
 
+    protected Multibinder<EventListener> contributeListeners() {
+        return listeners != null ? listeners : (listeners = newSet(EventListener.class));
+    }
+
     protected Multibinder<MappedFilter> contributeMappedFilters() {
         return mappedFilters != null ? mappedFilters : (mappedFilters = newSet(MappedFilter.class));
     }
@@ -158,7 +198,9 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         return mappedServlets != null ? mappedServlets : (mappedServlets = newSet(MappedServlet.class));
     }
 
-    protected Multibinder<EventListener> contributeListeners() {
-        return listeners != null ? listeners : (listeners = newSet(EventListener.class));
+    protected Multibinder<MappedListener> contributeMappedListeners() {
+        return mappedListeners != null ? mappedListeners : (mappedListeners = newSet(MappedListener.class));
     }
+
+
 }
