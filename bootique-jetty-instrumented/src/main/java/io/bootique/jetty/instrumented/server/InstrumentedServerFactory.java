@@ -1,15 +1,9 @@
 package io.bootique.jetty.instrumented.server;
 
 import com.codahale.metrics.MetricRegistry;
-import io.bootique.jetty.MappedFilter;
-import io.bootique.jetty.MappedListener;
-import io.bootique.jetty.MappedServlet;
-import io.bootique.jetty.instrumented.request.RequestTimer;
 import io.bootique.jetty.server.ServerFactory;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -27,11 +21,5 @@ public class InstrumentedServerFactory extends ServerFactory {
 	public InstrumentedServerFactory initMetricRegistry(MetricRegistry metricRegistry) {
 		this.metricRegistry = metricRegistry;
 		return this;
-	}
-
-    @Override
-    protected Handler createHandler(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<MappedListener> listeners) {
-		Handler delegate =  super.createHandler(servlets, filters, listeners);
-		return new RequestTimer(metricRegistry, delegate);
 	}
 }

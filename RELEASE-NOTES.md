@@ -1,5 +1,6 @@
 ## 0.25
 
+* #64 jetty-instrumented: handle RequestTimer within the servlet spec
 * #65 Log request execution time outside of jetty-instrumented
 * #66 Support for listener ordering
 
