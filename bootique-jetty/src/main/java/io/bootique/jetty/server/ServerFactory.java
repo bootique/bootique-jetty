@@ -190,7 +190,7 @@ public class ServerFactory {
         sortedListeners(listeners).forEach(listener -> {
 
             LOGGER.info("Adding listener {}", listener.getListener().getClass().getName());
-            
+
             // context handler and session handler would do their own listener filtering
             // passing every listener down to them without trying to second guess
             handler.addEventListener(listener.getListener());
