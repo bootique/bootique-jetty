@@ -21,12 +21,12 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
  */
 public class InstrumentedJettyModule extends ConfigModule {
 
-    // the value should be low enough to ensure we wrap most normal listeners, yet allow insertion other wrappers
-    // around the timer
-    public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
+    // TX ID listener is usually the outermost listener in any app. It is a good idea to order your other listeners
+    // relative to this one , using higher ordering values.
+    public static final int BUSINESS_TX_LISTENER_ORDER = Integer.MIN_VALUE + 800;
 
-    // the value wrap around request timer
-    public static final int BUSINESS_TX_LISTENER_ORDER = REQUEST_TIMER_LISTENER_ORDER - 1;
+    // goes inside BUSINESS_TX_LISTENER
+    public static final int REQUEST_TIMER_LISTENER_ORDER = BUSINESS_TX_LISTENER_ORDER + 200;
 
     public InstrumentedJettyModule() {
         // reusing overridden module prefix
