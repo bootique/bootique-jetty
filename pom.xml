@@ -72,6 +72,11 @@
 				<version>${bootique-version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.bootique.metrics</groupId>
+				<artifactId>bootique-metrics-healthchecks</artifactId>
+				<version>${bootique-version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
