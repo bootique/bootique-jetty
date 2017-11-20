@@ -38,6 +38,9 @@ public class ServerCommand extends CommandWithMetadata {
 
             // interruption of a running Jetty daemon is a normal event, so unless we get shutdown errors, return success
             try {
+                // TODO: probably redundant. The server will be stopped again in the shutdown thread.
+                // see https://github.com/bootique/bootique/issues/197 : we may want to implement this using
+                // "start and get out" strategy...
                 server.stop();
             } catch (Exception se) {
                 return CommandOutcome.failed(1, se);
