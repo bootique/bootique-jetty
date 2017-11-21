@@ -32,28 +32,6 @@ public class ServerFactoryConnectorsIT {
     private Client client = ClientBuilder.newClient();
 
     @Test
-    public void testMultipleConnectors_WithDeprecated() {
-        BQRuntime runtime = app.start(new UnitModule(),
-                "--config=classpath:io/bootique/jetty/server/connectors-deprecated.yml");
-
-        // deprecated default connector must NOT be started
-        Connector[] connectors = runtime.getInstance(Server.class).getConnectors();
-        assertEquals(3, connectors.length);
-
-        Response r1LegacyConnector = client.target("http://localhost:14001/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r1LegacyConnector.getStatus());
-        assertEquals(OUT_CONTENT, r1LegacyConnector.readEntity(String.class));
-
-        Response r2NormalConnector = client.target("http://localhost:14002/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r2NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r2NormalConnector.readEntity(String.class));
-
-        Response r3NormalConnector = client.target("http://localhost:14003/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r3NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r3NormalConnector.readEntity(String.class));
-    }
-
-    @Test
     public void testMultipleConnectors() {
 
         BQRuntime runtime = app.start(new UnitModule(),
