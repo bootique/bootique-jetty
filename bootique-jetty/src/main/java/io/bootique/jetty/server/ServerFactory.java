@@ -38,8 +38,6 @@ public class ServerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
 
-    @Deprecated
-    protected ConnectorFactory connector;
     protected List<ConnectorFactory> connectors;
     protected String context;
     protected int idleThreadTimeout;
@@ -215,11 +213,6 @@ public class ServerFactory {
     protected Collection<ConnectorFactory> connectorFactories(Server server) {
         Collection<ConnectorFactory> connectorFactories = new ArrayList<>();
 
-        if (this.connector != null) {
-            LOGGER.warn("Using deprecated 'connector' property. Consider changing configuration to 'connectors'");
-            connectorFactories.add(this.connector);
-        }
-
         if (this.connectors != null) {
             connectorFactories.addAll(this.connectors);
         }
@@ -279,27 +272,6 @@ public class ServerFactory {
     @BQConfigProperty("A map of servlet Filter configurations by filter name.")
     public void setFilters(Map<String, FilterFactory> filters) {
         this.filters = filters;
-    }
-
-    /**
-     * @return an object containing properties of the web connector and acting
-     * as connector factory.
-     * @since 0.15
-     * @deprecated since 0.18 in favor of "connectors" property.
-     */
-    @Deprecated
-    public ConnectorFactory getConnector() {
-        return connector;
-    }
-
-    /**
-     * @param connector connector factory
-     * @deprecated since 0.18 in favor of "connectors" property.
-     */
-    @Deprecated
-    public void setConnector(ConnectorFactory connector) {
-        LOGGER.warn("'connector' property is deprecated. Use 'connectors' instead.");
-        this.connector = connector;
     }
 
     /**
