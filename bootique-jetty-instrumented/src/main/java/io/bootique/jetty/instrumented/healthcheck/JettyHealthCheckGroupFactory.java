@@ -13,6 +13,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @since 0.25
@@ -56,21 +57,29 @@ public class JettyHealthCheckGroupFactory {
     }
 
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
-
-        Gauge<Double> gauge = findGauge(Double.class, "utilization", registry);
+        Supplier<Double> deferredGauge = valueFromGauge(registry, resolveMetricName("utilization"));
         DoubleRange range = getPoolUtilizationThreshold();
-        return new ValueRangeCheck<>(range, gauge::getValue);
+        return new ValueRangeCheck<>(range, deferredGauge::get);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {
-        Gauge<Integer> gauge = findGauge(Integer.class, "queued-requests", registry);
+        Supplier<Integer> deferredGauge = valueFromGauge(registry, resolveMetricName("queued-requests"));
         IntRange range = getQueuedRequestsThreshold();
-        return new ValueRangeCheck<>(range, gauge::getValue);
+        return new ValueRangeCheck<>(range, deferredGauge::get);
     }
 
-    private <T> Gauge<T> findGauge(Class<T> type, String label, MetricRegistry registry) {
+    private String resolveMetricName(String metricLabel) {
+        return MetricRegistry.name(QueuedThreadPool.class, "bootique-http", metricLabel);
+    }
 
-        String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
+    private <T> Supplier<T> valueFromGauge(MetricRegistry registry, String name) {
+
+        // using deferred gauge resolving to allow health checks against the system with misconfigured metrics,
+        // or Jetty not yet up during health check creation
+        return () -> (T) findGauge(registry, name).getValue();
+    }
+
+    private <T> Gauge<T> findGauge(MetricRegistry registry, String name) {
 
         Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
         switch (gauges.size()) {
