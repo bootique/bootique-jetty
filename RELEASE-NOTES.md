@@ -4,6 +4,7 @@
 * #65 Log request execution time outside of jetty-instrumented
 * #66 Support for listener ordering
 * #67 Integrate "business transaction" ids in jetty-instrumented requests
+* #68 Thread pool state health check
 * #69 Slight change in health check format output 
 * #70 Support YAML configuration of per-connector acceptor/selector threads
 * #71 Change "utilization" metric definition, deprecate "utilization-max"

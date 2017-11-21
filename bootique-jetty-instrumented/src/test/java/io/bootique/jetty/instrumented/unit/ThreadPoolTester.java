@@ -1,8 +1,7 @@
-package io.bootique.jetty.instrumented.server;
+package io.bootique.jetty.instrumented.unit;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertTrue;
  * Helps to build an assembly with a testable thread pool state. Specifically allows to freeze some request threads in
  * the middle of a request, so that the tests can check reported pool statistics.
  */
-class ThreadPoolTester {
+public class ThreadPoolTester {
 
     private InstrumentedJettyApp app;
     private int unblockAfterInProgressRequests;

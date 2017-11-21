@@ -9,10 +9,12 @@ import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedListener;
+import io.bootique.jetty.instrumented.healthcheck.JettyHealthCheckGroup;
 import io.bootique.jetty.instrumented.request.RequestMDCManager;
 import io.bootique.jetty.instrumented.request.RequestTimer;
 import io.bootique.jetty.instrumented.server.InstrumentedServerFactory;
 import io.bootique.jetty.server.ServerFactory;
+import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 
@@ -44,10 +46,17 @@ public class InstrumentedJettyModule extends ConfigModule {
                 })
                 .addMappedListener(new TypeLiteral<MappedListener<RequestMDCManager>>() {
                 });
+
+        HealthCheckModule.extend(binder).addHealthCheckGroup(JettyHealthCheckGroup.class);
     }
 
     @Provides
-    ServerFactory providerServerFactory(ConfigurationFactory configFactory, MetricRegistry metricRegistry) {
+    ServerFactory providerServerFactory(InstrumentedServerFactory serverFactory) {
+        return serverFactory;
+    }
+
+    @Provides
+    InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory, MetricRegistry metricRegistry) {
         return configFactory.config(InstrumentedServerFactory.class, configPrefix).initMetricRegistry(metricRegistry);
     }
 
@@ -63,5 +72,11 @@ public class InstrumentedJettyModule extends ConfigModule {
     MappedListener<RequestMDCManager> provideRequestMDCManager(TransactionIdGenerator generator, TransactionIdMDC mdc) {
         RequestMDCManager mdcManager = new RequestMDCManager(generator, mdc);
         return new MappedListener<>(mdcManager, BUSINESS_TX_LISTENER_ORDER);
+    }
+
+    @Singleton
+    @Provides
+    JettyHealthCheckGroup provideHealthCheckGroup(InstrumentedServerFactory serverFactory) {
+        return serverFactory.createHealthCheckGroup();
     }
 }

@@ -52,7 +52,6 @@ public class RequestTimerIT {
 	}
 
 	static class TestServlet extends HttpServlet {
-		private static final long serialVersionUID = -3190255883516320766L;
 
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

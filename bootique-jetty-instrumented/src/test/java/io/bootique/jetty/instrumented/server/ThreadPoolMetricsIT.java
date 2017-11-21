@@ -4,6 +4,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
+import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.Rule;
 import org.junit.Test;
