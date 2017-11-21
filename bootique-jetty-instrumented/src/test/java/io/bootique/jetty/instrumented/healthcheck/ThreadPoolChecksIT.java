@@ -1,6 +1,7 @@
 package io.bootique.jetty.instrumented.healthcheck;
 
 import io.bootique.BQRuntime;
+import io.bootique.jetty.instrumented.unit.AssertExtras;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import io.bootique.metrics.health.HealthCheckOutcome;
@@ -62,13 +63,19 @@ public class ThreadPoolChecksIT {
 
     private void testUtilizationCheck(BQRuntime runtime, HealthCheckStatus expectedStatus) {
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
-        HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.THREAD_POOL_UTILIZATION_CHECK);
-        assertEquals(result.toString(), expectedStatus, result.getStatus());
+
+        AssertExtras.assertWithRetry(() -> {
+            HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.THREAD_POOL_UTILIZATION_CHECK);
+            assertEquals(result.toString(), expectedStatus, result.getStatus());
+        });
     }
 
     private void testQueuedCheck(BQRuntime runtime, HealthCheckStatus expectedStatus) {
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
-        HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.QUEUED_REQUESTS_CHECK);
-        assertEquals(result.toString(), expectedStatus, result.getStatus());
+
+        AssertExtras.assertWithRetry(() -> {
+            HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.QUEUED_REQUESTS_CHECK);
+            assertEquals(result.toString(), expectedStatus, result.getStatus());
+        });
     }
 }

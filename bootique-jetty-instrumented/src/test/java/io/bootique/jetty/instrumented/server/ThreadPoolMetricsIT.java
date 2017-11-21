@@ -3,13 +3,12 @@ package io.bootique.jetty.instrumented.server;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
+import io.bootique.jetty.instrumented.unit.AssertExtras;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -17,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 
 public class ThreadPoolMetricsIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolMetricsIT.class);
 
     @Rule
     public InstrumentedJettyApp app = new InstrumentedJettyApp();
@@ -68,7 +66,7 @@ public class ThreadPoolMetricsIT {
 
     private void checkQueued(BQRuntime runtime, int frozenRequests) {
         Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
-        assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
+        AssertExtras.assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
     }
 
     private void checkUtilization(BQRuntime runtime, int frozenRequests) {
@@ -76,29 +74,7 @@ public class ThreadPoolMetricsIT {
 
         // utilization = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001));
-    }
-
-    private void assertWithRetry(Runnable test) {
-
-        int maxRetries = 4;
-        for (int i = maxRetries; i > 0; i--) {
-
-            try {
-                test.run();
-                return;
-            } catch (AssertionError e) {
-                LOGGER.info("Test condition hasn't been reached, will retry {} more time(s)", i);
-                try {
-                    // sleep a bit longer every time
-                    Thread.sleep(100 * (maxRetries - i + 1));
-                } catch (InterruptedException e1) {
-                }
-            }
-        }
-
-        // fail for real
-        test.run();
+        AssertExtras.assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001));
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
