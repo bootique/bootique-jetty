@@ -3,7 +3,7 @@ package io.bootique.jetty;
 import io.bootique.test.junit.BQModuleProviderChecker;
 import org.junit.Test;
 
-public class JettyModuleProviderIT {
+public class JettyModuleProviderTest {
 
 	@Test
 	public void testPresentInJar() {
