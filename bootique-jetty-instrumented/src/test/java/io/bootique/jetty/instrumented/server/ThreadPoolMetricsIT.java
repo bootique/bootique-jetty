@@ -112,8 +112,10 @@ public class ThreadPoolMetricsIT {
 
         // there is a small chance a thread becomes inactive between 'activeCount' and 'enumerate' calls,
         // resulting in null threads in the array.. remove null threads from the result
-        Arrays.stream(active).filter(t -> t != null && t.getName().startsWith("bootique-http")).map(t -> t.getName() + ":" + t.getState())
-                .forEach(s -> System.out.println(s));
+        Arrays.stream(active).filter(t -> t != null && t.getName()
+                .startsWith("bootique-http"))
+                .map(t -> t.getName() + ":" + t.getState())
+                .forEach(System.out::println);
     }
 
     static class TestServlet extends HttpServlet {
