@@ -1,5 +1,5 @@
 jetty:
-  maxThreads: 30
+  maxThreads: 20
   connectors:
-    - acceptorThreads: 3
-      selectorThreads: 4
+    - acceptorThreads: 2
+      selectorThreads: 3

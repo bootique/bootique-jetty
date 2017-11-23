@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -84,7 +85,7 @@ public class ThreadPoolMetricsIT {
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((3 + 4 + 0) / 30d, utilizationVsMax.getValue(), 0.0001);
+        assertEquals((2 + 3 + 0) / 20d, utilizationVsMax.getValue(), 0.0001);
 
         for (int i = 0; i < 2; i++) {
             clientPool.submit(() -> client.path("/").request().get());
@@ -94,8 +95,23 @@ public class ThreadPoolMetricsIT {
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((3 + 4 + 2) / 30d , utilizationVsMax.getValue(), 0.0001);
-        Thread.dumpStack();
+        dumpJettyThreads();
+        assertEquals((2 + 3 + 2) / 20d, utilizationVsMax.getValue(), 0.0001);
+    }
+
+    private void dumpJettyThreads() {
+        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+        while (tg.getParent() != null) {
+            tg = tg.getParent();
+        }
+
+        Thread[] active = new Thread[tg.activeCount()];
+        tg.enumerate(active);
+
+        // there is a small chance a thread becomes inactive between 'activeCount' and 'enumerate' calls,
+        // resulting in null threads in the array.. remove null threads from the result
+        Arrays.stream(active).filter(t -> t != null && t.getName().startsWith("bootique-http")).map(t -> t.getName() + ":" + t.getState())
+                .forEach(s -> System.out.println(s));
     }
 
     static class TestServlet extends HttpServlet {
