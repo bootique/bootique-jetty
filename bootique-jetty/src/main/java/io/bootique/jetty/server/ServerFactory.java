@@ -178,7 +178,7 @@ public class ServerFactory {
 
     protected void installListeners(ServletContextHandler handler, Set<MappedListener> listeners) {
 
-        if(listeners.isEmpty()) {
+        if (listeners.isEmpty()) {
             return;
         }
 
@@ -456,8 +456,8 @@ public class ServerFactory {
     }
 
     /**
-     * @since 0.24
      * @return a potentially null map of error pages configuration.
+     * @since 0.24
      */
     public Map<Integer, String> getErrorPages() {
         return errorPages;

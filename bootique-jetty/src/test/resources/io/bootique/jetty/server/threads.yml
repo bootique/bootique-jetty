@@ -1,0 +1,6 @@
+jetty:
+  connectors:
+    - port: 14001
+      acceptorThreads: 3
+      selectorThreads: 4
+    - port: 14002

@@ -9,7 +9,6 @@ import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
@@ -25,6 +24,8 @@ import java.util.Objects;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = HttpConnectorFactory.class)
 public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
+    private int acceptorThreads;
+    private int selectorThreads;
     private int port;
     private String host;
     private int responseHeaderSize;
@@ -36,7 +37,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         this.responseHeaderSize = 8 * 1024;
     }
 
-    public NetworkConnector createConnector(Server server) {
+    public ServerConnector createConnector(Server server) {
 
         // a few things are hardcoded for now... if needed we can turn these
         // into properties
@@ -45,12 +46,23 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         ConnectionFactory[] connectionFactories = buildHttpConnectionFactories(httpConfig);
         Scheduler scheduler = new ScheduledExecutorScheduler();
         ByteBufferPool bufferPool = buildBufferPool();
-        int selectorThreads = Runtime.getRuntime().availableProcessors();
-        int acceptorThreads = Math.max(1, selectorThreads / 2);
+
+        // "-1" is Jetty default for acceptor and selector threads that triggers default init algorithm based on
+        // the number of machine cores
+        int acceptorThreads = this.acceptorThreads > 0 ? this.acceptorThreads : -1;
+        int selectorThreads = this.selectorThreads > 0 ? this.selectorThreads : -1;
+
         ThreadPool threadPool = Objects.requireNonNull(server.getThreadPool());
 
-        ServerConnector connector = new ServerConnector(server, threadPool, scheduler, bufferPool, acceptorThreads,
-                selectorThreads, connectionFactories);
+        ServerConnector connector = new ServerConnector(
+                server,
+                threadPool,
+                scheduler,
+                bufferPool,
+                acceptorThreads,
+                selectorThreads,
+                connectionFactories);
+
         connector.setPort(getPort());
         connector.setIdleTimeout(30 * 1000);
         connector.setHost(getHost());
@@ -154,5 +166,41 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
     @BQConfigProperty
     public void setResponseHeaderSize(int responseHeaderSize) {
         this.responseHeaderSize = responseHeaderSize;
+    }
+
+    /**
+     * @return a configured number of acceptor threads.
+     * @since 0.25
+     */
+    public int getAcceptorThreads() {
+        return acceptorThreads;
+    }
+
+    /**
+     * @param acceptorThreads A desired number of acceptor threads.
+     * @since 0.25
+     */
+    @BQConfigProperty("A desired number of acceptor threads. If not provided, Jetty will calculate an optimal value based " +
+            "on the number of available processor cores.")
+    public void setAcceptorThreads(int acceptorThreads) {
+        this.acceptorThreads = acceptorThreads;
+    }
+
+    /**
+     * @return a configured number of selector threads.
+     * @since 0.25
+     */
+    public int getSelectorThreads() {
+        return selectorThreads;
+    }
+
+    /**
+     * @param selectorThreads A desired number of selector threads.
+     * @since 0.25
+     */
+    @BQConfigProperty("A desired number of selector threads. If not provided, Jetty will calculate an optimal" +
+            " value based on the number of available processor cores.")
+    public void setSelectorThreads(int selectorThreads) {
+        this.selectorThreads = selectorThreads;
     }
 }

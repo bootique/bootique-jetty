@@ -5,6 +5,7 @@
 * #66 Support for listener ordering
 * #67 Integrate "business transaction" ids in jetty-instrumented requests
 * #69 Slight change in health check format output 
+* #70 Support YAML configuration of per-connector acceptor/selector threads
 
 ## 0.24
 

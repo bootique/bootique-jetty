@@ -16,8 +16,8 @@ public class JettyApp extends BQDaemonTestFactory {
         after();
     }
 
-    public void start(String... args) {
-        start(b -> {
+    public BQRuntime start(String... args) {
+        return start(b -> {
         }, args);
     }
 
