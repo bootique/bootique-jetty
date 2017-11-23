@@ -60,6 +60,13 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
                     }
                 });
 
+        // utilization-max is:
+        //     (all_acceptor_t + all_selector_t + active_request_t) / maxT
+        // This is not readily apparent from the Jetty API below. So explaining it here:
+        //     getThreads()                    == all_acceptor_t + all_selector_t + active_request_t + idle_request_t
+        // hence
+        //     getThreads() - getIdleThreads() == all_acceptor_t + all_selector_t + active_request_t
+
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization-max"),
                 new RatioGauge() {
                     @Override
