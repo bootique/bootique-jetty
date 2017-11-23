@@ -100,6 +100,8 @@ public class ThreadPoolMetricsIT {
     }
 
     private void dumpJettyThreads() {
+
+        // debugging travis failures...
         ThreadGroup tg = Thread.currentThread().getThreadGroup();
         while (tg.getParent() != null) {
             tg = tg.getParent();
