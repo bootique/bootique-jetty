@@ -89,7 +89,7 @@ public class HealthCheckServletTest {
         Mockito.verify(mockResponse).setStatus(500);
         assertEquals("* h1: OK\n"
                 + "* h2: OK - I am healthy\n"
-                + "! h3: ERROR - I am not healthy\n", writer.toString());
+                + "! h3: CRITICAL - I am not healthy\n", writer.toString());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class HealthCheckServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         Mockito.verify(mockResponse).setStatus(500);
-        assertTrue(writer.toString().startsWith("! h4: ERROR - Test exception\n" +
+        assertTrue(writer.toString().startsWith("! h4: CRITICAL - Test exception\n" +
                 "\n" +
                 "java.lang.RuntimeException: Test exception\n"));
     }
