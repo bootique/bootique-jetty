@@ -52,8 +52,8 @@ public class HealthCheckServletTest {
     public void testDoGet_Success() throws ServletException, IOException {
 
         Map<String, HealthCheckOutcome> testResults = new HashMap<>();
-        testResults.put("h1", HealthCheckOutcome.healthy());
-        testResults.put("h2", HealthCheckOutcome.healthy("I am healthy"));
+        testResults.put("h1", HealthCheckOutcome.ok());
+        testResults.put("h2", HealthCheckOutcome.ok("I am healthy"));
 
         Mockito.when(mockRegistry.runHealthChecks()).thenReturn(testResults);
 
@@ -73,9 +73,9 @@ public class HealthCheckServletTest {
     public void testDoGet_Mixed() throws ServletException, IOException {
 
         Map<String, HealthCheckOutcome> testResults = new HashMap<>();
-        testResults.put("h1", HealthCheckOutcome.healthy());
-        testResults.put("h2", HealthCheckOutcome.healthy("I am healthy"));
-        testResults.put("h3", HealthCheckOutcome.unhealthy("I am not healthy"));
+        testResults.put("h1", HealthCheckOutcome.ok());
+        testResults.put("h2", HealthCheckOutcome.ok("I am healthy"));
+        testResults.put("h3", HealthCheckOutcome.critical("I am not healthy"));
 
         Mockito.when(mockRegistry.runHealthChecks()).thenReturn(testResults);
 

@@ -2,6 +2,7 @@ package io.bootique.jetty.metrics;
 
 import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.HealthCheckRegistry;
+import io.bootique.metrics.health.HealthCheckStatus;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +31,7 @@ public class HealthCheckServlet extends HttpServlet {
 
     private static boolean isAllHealthy(Map<String, HealthCheckOutcome> results) {
         for (HealthCheckOutcome result : results.values()) {
-            if (!result.isHealthy()) {
+            if (result.getStatus() != HealthCheckStatus.OK) {
                 return false;
             }
         }
@@ -65,7 +66,7 @@ public class HealthCheckServlet extends HttpServlet {
 
         results.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey())).forEach(e -> {
             HealthCheckOutcome result = e.getValue();
-            if (result.isHealthy()) {
+            if (result.getStatus() == HealthCheckStatus.OK) {
                 if (result.getMessage() != null) {
                     writer.format("* %s: OK - %s\n", e.getKey(), result.getMessage());
                 } else {
@@ -73,7 +74,7 @@ public class HealthCheckServlet extends HttpServlet {
                 }
             } else {
                 if (result.getMessage() != null) {
-                    writer.format("! %s: ERROR - %s\n", e.getKey(), result.getMessage());
+                    writer.format("! %s: %s - %s\n", e.getKey(), result.getStatus().name(), result.getMessage());
                 }
 
                 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
