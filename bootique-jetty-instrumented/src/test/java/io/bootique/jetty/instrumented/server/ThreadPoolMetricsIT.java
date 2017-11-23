@@ -95,6 +95,7 @@ public class ThreadPoolMetricsIT {
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
         assertEquals((3 + 4 + 2) / 30d , utilizationVsMax.getValue(), 0.0001);
+        Thread.dumpStack();
     }
 
     static class TestServlet extends HttpServlet {
