@@ -46,9 +46,13 @@ public class ThreadPoolMetricsIT {
     }
 
     @After
-    public void after() {
-        clientPool.shutdownNow();
+    public void after() throws InterruptedException {
         serverLock.unlock();
+        clientPool.shutdownNow();
+
+        // allowing hung servlets to finish after the unlock above. Otherwise following
+        // tests may get incorrect thread state
+        Thread.sleep(200);
     }
 
     private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
@@ -61,12 +65,12 @@ public class ThreadPoolMetricsIT {
         String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
 
         Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
-        assertEquals("Unxpected number of gauges for " + name, 1, gauges.size());
+        assertEquals("Unexpected number of gauges for " + name, 1, gauges.size());
         return gauges.iterator().next();
     }
 
     @Test
-    public void testInitParametersPassed() throws InterruptedException {
+    public void testUtilizationVsMax() throws InterruptedException {
 
         serverLock.lock();
         CountDownLatch clientLatch = new CountDownLatch(2);
