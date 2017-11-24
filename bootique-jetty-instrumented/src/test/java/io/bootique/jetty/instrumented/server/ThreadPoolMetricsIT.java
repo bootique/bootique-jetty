@@ -28,8 +28,8 @@ public class ThreadPoolMetricsIT {
         new ThreadPoolTester(app)
                 .startRequests(2)
                 .unblockAfter(2)
-                .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
-                .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 2))
+                .checkAfterStartup(r -> checkUtilizationVsMax(r, 0))
+                .checkWithRequestsFrozen(r -> checkUtilizationVsMax(r, 2))
                 .run("classpath:threads20.yml");
     }
 
@@ -39,8 +39,8 @@ public class ThreadPoolMetricsIT {
         new ThreadPoolTester(app)
                 .startRequests(1)
                 .unblockAfter(1)
-                .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
-                .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 1))
+                .checkAfterStartup(r -> checkUtilizationVsMax(r, 0))
+                .checkWithRequestsFrozen(r -> checkUtilizationVsMax(r, 1))
                 .run("classpath:threads20.yml");
     }
 
@@ -50,8 +50,8 @@ public class ThreadPoolMetricsIT {
         new ThreadPoolTester(app)
                 .startRequests(4)
                 .unblockAfter(3)
-                .checkAfterStartup(this::checkQueuedRequests_OnStartup)
-                .checkWithRequestsFrozen(r -> checkQueued_WithRequestsFrozen(r, 1))
+                .checkAfterStartup(r -> checkQueued(r, 0))
+                .checkWithRequestsFrozen(r -> checkQueued(r, 1))
                 .run("classpath:threads7.yml");
     }
 
@@ -61,17 +61,12 @@ public class ThreadPoolMetricsIT {
         new ThreadPoolTester(app)
                 .startRequests(7)
                 .unblockAfter(3)
-                .checkAfterStartup(this::checkQueuedRequests_OnStartup)
-                .checkWithRequestsFrozen(r -> checkQueued_WithRequestsFrozen(r, 4))
+                .checkAfterStartup(r -> checkQueued(r, 0))
+                .checkWithRequestsFrozen(r -> checkQueued(r, 4))
                 .run("classpath:threads7.yml");
     }
 
-    private void checkQueuedRequests_OnStartup(BQRuntime runtime) {
-        Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
-        assertEquals(Integer.valueOf(0), gauge.getValue());
-    }
-
-    private void checkQueued_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
+    private void checkQueued(BQRuntime runtime, int frozenRequests) {
 
         Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
 
@@ -79,15 +74,7 @@ public class ThreadPoolMetricsIT {
         assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
     }
 
-    private void checkUtilizationVsMax_OnStartup(BQRuntime runtime) {
-        Gauge<Double> gauge = findUtilizationVsMaxGauge(runtime);
-
-        // utilizationMax = (acceptorTh + selectorTh + active) / max
-        // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((2 + 3 + 0) / 20d, gauge.getValue(), 0.0001);
-    }
-
-    private void checkUtilizationVsMax_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
+    private void checkUtilizationVsMax(BQRuntime runtime, int frozenRequests) {
         Gauge<Double> gauge = findUtilizationVsMaxGauge(runtime);
 
         // debug race conditions (we saw some on Travis)
