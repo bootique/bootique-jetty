@@ -3,8 +3,8 @@ package io.bootique.jetty.instrumented.server;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
-import org.junit.Test;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -53,57 +53,54 @@ class ThreadPoolTester {
         return this;
     }
 
-    @Test
-    public void test(String config) throws InterruptedException {
+    public void run(String config) throws InterruptedException {
 
-        ExecutorService clientPool = Executors.newFixedThreadPool(parallelRequests);
+        Locks locks = new Locks(parallelRequests);
 
-        Lock requestFreezeLock = new ReentrantLock();
-        CountDownLatch releaseOnRequestQueuedUpLatch = new CountDownLatch(parallelRequests);
-        CountDownLatch releaseAfterRequestLatch = new CountDownLatch(parallelRequests);
+        BQRuntime runtime = startRuntime(config, new FreezePoolServlet(locks));
+        runChecksAfterStartup(runtime);
+        new RequestRunner(runtime, locks).run();
+    }
 
-        BQRuntime runtime = app.start(
-                b -> JettyModule.extend(b).addServlet(new TestServlet(requestFreezeLock,
-                        releaseOnRequestQueuedUpLatch,
-                        releaseAfterRequestLatch), "s1", "/*"),
+    private BQRuntime startRuntime(String config, Servlet servlet) {
+        return app.start(
+                b -> JettyModule.extend(b).addServlet(servlet, "s1", "/*"),
                 "-c",
                 config);
+    }
 
+    private void runChecksAfterStartup(BQRuntime runtime) {
         if (checkAfterStartup != null) {
             checkAfterStartup.accept(runtime);
         }
+    }
 
-        // start requests
-        requestFreezeLock.lock();
-        WebTarget target = ClientBuilder.newClient().target("http://localhost:8080").path("/");
-        try {
-            for (int i = 0; i < parallelRequests; i++) {
-                clientPool.submit(() -> target.request().get());
-            }
+    private void runChecksWithRequestsFrozen(BQRuntime runtime) {
 
-            assertTrue("Requests failed to queue up in 1 sec", releaseOnRequestQueuedUpLatch.await(1, TimeUnit.SECONDS));
-
-            if (checkWithRequestsFrozen != null) {
-                checkWithRequestsFrozen.accept(runtime);
-            }
-
-        } finally {
-            requestFreezeLock.unlock();
-            clientPool.shutdownNow();
-            assertTrue("Queued requests failed to clear in 1 sec", releaseAfterRequestLatch.await(1, TimeUnit.SECONDS));
+        if (checkWithRequestsFrozen != null) {
+            checkWithRequestsFrozen.accept(runtime);
         }
     }
 
-    static class TestServlet extends HttpServlet {
+    static class Locks {
 
-        private Lock requestFreezeLock;
-        private CountDownLatch releaseOnRequestFinish;
-        private CountDownLatch releaseOnRequestQueuedUp;
+        Lock requestFreezeLock;
+        CountDownLatch releaseOnRequestQueuedUp;
+        CountDownLatch releaseAfterRequestLatch;
 
-        public TestServlet(Lock requestFreezeLock, CountDownLatch releaseOnRequestQueuedUp, CountDownLatch releaseOnRequestFinish) {
-            this.requestFreezeLock = requestFreezeLock;
-            this.releaseOnRequestQueuedUp = releaseOnRequestQueuedUp;
-            this.releaseOnRequestFinish = releaseOnRequestFinish;
+        public Locks(int parallelRequests) {
+            requestFreezeLock = new ReentrantLock();
+            releaseOnRequestQueuedUp = new CountDownLatch(parallelRequests);
+            releaseAfterRequestLatch = new CountDownLatch(parallelRequests);
+        }
+    }
+
+    static class FreezePoolServlet extends HttpServlet {
+
+        private Locks locks;
+
+        public FreezePoolServlet(Locks locks) {
+            this.locks = locks;
         }
 
         @Override
@@ -112,26 +109,67 @@ class ThreadPoolTester {
             // handle locks...
 
             // 1. let the container know  that the client request has arrived
-            releaseOnRequestQueuedUp.countDown();
+            locks.releaseOnRequestQueuedUp.countDown();
 
             // 2. but don't proceed until allowed by the caller, effectively freezing the state so that we can count thread stats
-            requestFreezeLock.lock();
+            locks.requestFreezeLock.lock();
 
             try {
                 sendResponse(response);
             } finally {
 
                 // 3. let the container know that we are done
-                releaseOnRequestFinish.countDown();
+                locks.releaseAfterRequestLatch.countDown();
 
                 // 4. since we locked it, we must unlock
-                requestFreezeLock.unlock();
+                locks.requestFreezeLock.unlock();
             }
         }
 
         private void sendResponse(HttpServletResponse response) throws IOException {
             response.setContentType("text/plain");
             response.getWriter().print("Hi!");
+        }
+    }
+
+    class RequestRunner {
+
+        private BQRuntime runtime;
+        private Locks locks;
+
+        public RequestRunner(BQRuntime runtime, Locks locks) {
+            this.runtime = runtime;
+            this.locks = locks;
+        }
+
+        public void run() throws InterruptedException {
+
+            ExecutorService clientPool = Executors.newFixedThreadPool(parallelRequests);
+
+            try {
+                runWithClientPool(clientPool);
+            } finally {
+                clientPool.shutdownNow();
+            }
+        }
+
+        private void runWithClientPool(ExecutorService clientPool) throws InterruptedException {
+            locks.requestFreezeLock.lock();
+            WebTarget target = ClientBuilder.newClient().target("http://localhost:8080").path("/");
+
+            try {
+                for (int i = 0; i < parallelRequests; i++) {
+                    clientPool.submit(() -> target.request().get());
+                }
+
+                assertTrue("Requests failed to queue up in 1 sec", locks.releaseOnRequestQueuedUp.await(1, TimeUnit.SECONDS));
+
+                runChecksWithRequestsFrozen(runtime);
+
+            } finally {
+                locks.requestFreezeLock.unlock();
+                assertTrue("Queued requests failed to clear in 1 sec", locks.releaseAfterRequestLatch.await(1, TimeUnit.SECONDS));
+            }
         }
     }
 }

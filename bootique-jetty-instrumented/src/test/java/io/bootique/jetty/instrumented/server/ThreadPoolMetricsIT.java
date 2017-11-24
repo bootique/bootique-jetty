@@ -19,13 +19,23 @@ public class ThreadPoolMetricsIT {
     public InstrumentedJettyApp app = new InstrumentedJettyApp();
 
     @Test
-    public void testUtilizationVsMax() throws InterruptedException {
+    public void testUtilizationVsMax_2() throws InterruptedException {
 
         new ThreadPoolTester(app)
                 .parallelRequests(2)
                 .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
-                .checkWithRequestsFrozen(this::checkUtilizationVsMax_WithTwoRequests)
-                .test("classpath:threads.yml");
+                .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 2))
+                .run("classpath:threads.yml");
+    }
+
+    @Test
+    public void testUtilizationVsMax_1() throws InterruptedException {
+
+        new ThreadPoolTester(app)
+                .parallelRequests(1)
+                .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
+                .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 1))
+                .run("classpath:threads.yml");
     }
 
     private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
@@ -50,7 +60,7 @@ public class ThreadPoolMetricsIT {
         assertEquals((2 + 3 + 0) / 20d, utilizationVsMax.getValue(), 0.0001);
     }
 
-    private void checkUtilizationVsMax_WithTwoRequests(BQRuntime runtime) {
+    private void checkUtilizationVsMax_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
         Gauge<Double> utilizationVsMax = findUtilizationVsMaxGauge(runtime);
 
         // debug race conditions (we saw some on Travis)
@@ -58,7 +68,7 @@ public class ThreadPoolMetricsIT {
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((2 + 3 + 2) / 20d, utilizationVsMax.getValue(), 0.0001);
+        assertEquals((2 + 3 + frozenRequests) / 20d, utilizationVsMax.getValue(), 0.0001);
     }
 
     private void dumpJettyThreads() {
