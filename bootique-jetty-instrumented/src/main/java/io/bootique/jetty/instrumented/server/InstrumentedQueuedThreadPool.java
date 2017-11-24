@@ -109,7 +109,7 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
 
     protected double getUtilization() {
 
-        // utilization-max is:
+        // utilization is:
         //     (all_acceptor_t + all_selector_t + active_request_t) / maxT
 
         // This is not readily apparent from the Jetty API below. An explanation:
