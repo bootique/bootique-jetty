@@ -4,10 +4,14 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 
 public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstrumentedQueuedThreadPool.class);
 
     private MetricRegistry metricRegistry;
 
@@ -71,17 +75,18 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
 
         super.doStart();
 
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization"),
-                (Gauge<Double>) this::getUtilization);
-
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization-max"),
-                (Gauge<Double>) this::getUtilizationMax);
-
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "size"),
                 (Gauge<Integer>) this::getThreads);
 
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "queued-requests"),
                 (Gauge<Integer>) this::getQueuedRequests);
+
+        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization"),
+                (Gauge<Double>) this::getUtilization);
+
+        // deprecated metrics
+        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization-max"),
+                createUtilizationMaxGauge());
     }
 
     protected int getQueuedRequests() {
@@ -90,12 +95,19 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
         return getQueue().size();
     }
 
-    protected double getUtilization() {
-        int threads = getThreads();
-        return RatioGauge.Ratio.of(threads - getIdleThreads(), threads).getValue();
+    /**
+     * @return a new Gauge for util metrics.
+     * @deprecated since 0.25
+     */
+    @Deprecated
+    private Gauge<Double> createUtilizationMaxGauge() {
+        return () -> {
+            LOGGER.warn("Using deprecated \"utilization-max\" metric. Use \"utilization\" metric instead.");
+            return this.getUtilization();
+        };
     }
 
-    protected double getUtilizationMax() {
+    protected double getUtilization() {
 
         // utilization-max is:
         //     (all_acceptor_t + all_selector_t + active_request_t) / maxT

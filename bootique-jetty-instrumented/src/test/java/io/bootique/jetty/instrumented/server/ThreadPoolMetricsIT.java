@@ -71,7 +71,7 @@ public class ThreadPoolMetricsIT {
     }
 
     private void checkUtilizationVsMax(BQRuntime runtime, int frozenRequests) {
-        Gauge<Double> gauge = findUtilizationVsMaxGauge(runtime);
+        Gauge<Double> gauge = findUtilizationGauge(runtime);
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
@@ -100,8 +100,8 @@ public class ThreadPoolMetricsIT {
         test.run();
     }
 
-    private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
-        return findGauge(Double.class, runtime, "utilization-max");
+    private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
+        return findGauge(Double.class, runtime, "utilization");
     }
 
     private Gauge<Integer> findQueuedRequestsGauge(BQRuntime runtime) {

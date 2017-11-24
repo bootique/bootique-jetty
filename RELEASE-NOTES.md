@@ -6,6 +6,7 @@
 * #67 Integrate "business transaction" ids in jetty-instrumented requests
 * #69 Slight change in health check format output 
 * #70 Support YAML configuration of per-connector acceptor/selector threads
+* #71 Change "utilization" metric definition, deprecate "utilization-max"
 
 ## 0.24
 
