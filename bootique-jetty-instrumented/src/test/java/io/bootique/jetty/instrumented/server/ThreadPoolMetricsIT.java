@@ -7,6 +7,8 @@ import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +16,8 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 
 public class ThreadPoolMetricsIT {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadPoolMetricsIT.class);
 
     @Rule
     public InstrumentedJettyApp app = new InstrumentedJettyApp();
@@ -47,7 +51,7 @@ public class ThreadPoolMetricsIT {
                 .startRequests(4)
                 .unblockAfter(3)
                 .checkAfterStartup(this::checkQueuedRequests_OnStartup)
-                .checkWithRequestsFrozen(r -> checkQueuedRequests_WithRequestsFrozen(r, 1))
+                .checkWithRequestsFrozen(r -> checkQueued_WithRequestsFrozen(r, 1))
                 .run("classpath:threads7.yml");
     }
 
@@ -58,7 +62,7 @@ public class ThreadPoolMetricsIT {
                 .startRequests(7)
                 .unblockAfter(3)
                 .checkAfterStartup(this::checkQueuedRequests_OnStartup)
-                .checkWithRequestsFrozen(r -> checkQueuedRequests_WithRequestsFrozen(r, 4))
+                .checkWithRequestsFrozen(r -> checkQueued_WithRequestsFrozen(r, 4))
                 .run("classpath:threads7.yml");
     }
 
@@ -67,9 +71,12 @@ public class ThreadPoolMetricsIT {
         assertEquals(Integer.valueOf(0), gauge.getValue());
     }
 
-    private void checkQueuedRequests_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
+    private void checkQueued_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
+
         Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
-        assertEquals(Integer.valueOf(frozenRequests), gauge.getValue());
+
+        // we don't have a latch to wait till requests queuing is done, so assert and wait and assert again.
+        assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
     }
 
     private void checkUtilizationVsMax_OnStartup(BQRuntime runtime) {
@@ -91,6 +98,26 @@ public class ThreadPoolMetricsIT {
         assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001);
     }
 
+    private void assertWithRetry(Runnable test) {
+
+        for (int i = 2; i > 0; i--) {
+
+            try {
+                test.run();
+                return;
+            } catch (AssertionError e) {
+                LOGGER.info("Test condition hasn't been reached, will retry {} more time(s)", i);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e1) {
+                }
+            }
+        }
+
+        // fail for real
+        test.run();
+    }
+
     private void dumpJettyThreads() {
 
         // debugging travis failures...
@@ -107,7 +134,7 @@ public class ThreadPoolMetricsIT {
         Arrays.stream(active).filter(t -> t != null && t.getName()
                 .startsWith("bootique-http"))
                 .map(t -> t.getName() + " - " + t.getState())
-                .forEach(System.out::println);
+                .forEach(LOGGER::info);
     }
 
     private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
