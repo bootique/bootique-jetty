@@ -80,7 +80,8 @@ public class ThreadPoolMetricsIT {
 
     private void assertWithRetry(Runnable test) {
 
-        for (int i = 2; i > 0; i--) {
+        int maxRetries = 4;
+        for (int i = maxRetries; i > 0; i--) {
 
             try {
                 test.run();
@@ -88,7 +89,8 @@ public class ThreadPoolMetricsIT {
             } catch (AssertionError e) {
                 LOGGER.info("Test condition hasn't been reached, will retry {} more time(s)", i);
                 try {
-                    Thread.sleep(100);
+                    // sleep a bit longer every time
+                    Thread.sleep(100 * (maxRetries - i + 1));
                 } catch (InterruptedException e1) {
                 }
             }
