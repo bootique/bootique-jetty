@@ -29,17 +29,24 @@ import static org.junit.Assert.assertTrue;
 class ThreadPoolTester {
 
     private InstrumentedJettyApp app;
-    private int parallelRequests;
+    private int unblockAfter;
+    private int startRequests;
     private Consumer<BQRuntime> checkAfterStartup;
     private Consumer<BQRuntime> checkWithRequestsFrozen;
 
     public ThreadPoolTester(InstrumentedJettyApp app) {
         this.app = app;
-        this.parallelRequests = 2;
+        this.unblockAfter = 2;
+        this.startRequests = 2;
     }
 
-    public ThreadPoolTester parallelRequests(int count) {
-        this.parallelRequests = count;
+    public ThreadPoolTester unblockAfter(int count) {
+        this.unblockAfter = count;
+        return this;
+    }
+
+    public ThreadPoolTester startRequests(int count) {
+        this.startRequests = count;
         return this;
     }
 
@@ -55,7 +62,7 @@ class ThreadPoolTester {
 
     public void run(String config) throws InterruptedException {
 
-        Locks locks = new Locks(parallelRequests);
+        Locks locks = new Locks(startRequests, unblockAfter);
 
         BQRuntime runtime = startRuntime(config, new FreezePoolServlet(locks));
         runChecksAfterStartup(runtime);
@@ -88,10 +95,10 @@ class ThreadPoolTester {
         CountDownLatch releaseOnRequestQueuedUp;
         CountDownLatch releaseAfterRequestLatch;
 
-        public Locks(int parallelRequests) {
+        public Locks(int startRequests, int unblockAfter) {
             requestFreezeLock = new ReentrantLock();
-            releaseOnRequestQueuedUp = new CountDownLatch(parallelRequests);
-            releaseAfterRequestLatch = new CountDownLatch(parallelRequests);
+            releaseOnRequestQueuedUp = new CountDownLatch(unblockAfter);
+            releaseAfterRequestLatch = new CountDownLatch(startRequests);
         }
     }
 
@@ -144,7 +151,7 @@ class ThreadPoolTester {
 
         public void run() throws InterruptedException {
 
-            ExecutorService clientPool = Executors.newFixedThreadPool(parallelRequests);
+            ExecutorService clientPool = Executors.newCachedThreadPool();
 
             try {
                 runWithClientPool(clientPool);
@@ -154,11 +161,12 @@ class ThreadPoolTester {
         }
 
         private void runWithClientPool(ExecutorService clientPool) throws InterruptedException {
+
             locks.requestFreezeLock.lock();
             WebTarget target = ClientBuilder.newClient().target("http://localhost:8080").path("/");
 
             try {
-                for (int i = 0; i < parallelRequests; i++) {
+                for (int i = 0; i < startRequests; i++) {
                     clientPool.submit(() -> target.request().get());
                 }
 

@@ -22,53 +22,73 @@ public class ThreadPoolMetricsIT {
     public void testUtilizationVsMax_2() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .parallelRequests(2)
+                .startRequests(2)
+                .unblockAfter(2)
                 .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
                 .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 2))
-                .run("classpath:threads.yml");
+                .run("classpath:threads20.yml");
     }
 
     @Test
     public void testUtilizationVsMax_1() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .parallelRequests(1)
+                .startRequests(1)
+                .unblockAfter(1)
                 .checkAfterStartup(this::checkUtilizationVsMax_OnStartup)
                 .checkWithRequestsFrozen(r -> checkUtilizationVsMax_WithRequestsFrozen(r, 1))
-                .run("classpath:threads.yml");
+                .run("classpath:threads20.yml");
     }
 
-    private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
-        return findGauge(Double.class, runtime, "utilization-max");
+    @Test
+    public void testQueuedRequests_1() throws InterruptedException {
+
+        new ThreadPoolTester(app)
+                .startRequests(4)
+                .unblockAfter(3)
+                .checkAfterStartup(this::checkQueuedRequests_OnStartup)
+                .checkWithRequestsFrozen(r -> checkQueuedRequests_WithRequestsFrozen(r, 1))
+                .run("classpath:threads7.yml");
     }
 
-    private <T> Gauge<T> findGauge(Class<T> type, BQRuntime runtime, String label) {
+    @Test
+    public void testQueuedRequests_4() throws InterruptedException {
 
-        MetricRegistry registry = runtime.getInstance(MetricRegistry.class);
-        String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
+        new ThreadPoolTester(app)
+                .startRequests(7)
+                .unblockAfter(3)
+                .checkAfterStartup(this::checkQueuedRequests_OnStartup)
+                .checkWithRequestsFrozen(r -> checkQueuedRequests_WithRequestsFrozen(r, 4))
+                .run("classpath:threads7.yml");
+    }
 
-        Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
-        assertEquals("Unexpected number of gauges for " + name, 1, gauges.size());
-        return gauges.iterator().next();
+    private void checkQueuedRequests_OnStartup(BQRuntime runtime) {
+        Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
+        assertEquals(Integer.valueOf(0), gauge.getValue());
+    }
+
+    private void checkQueuedRequests_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
+        Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
+        assertEquals(Integer.valueOf(frozenRequests), gauge.getValue());
     }
 
     private void checkUtilizationVsMax_OnStartup(BQRuntime runtime) {
-        Gauge<Double> utilizationVsMax = findUtilizationVsMaxGauge(runtime);
+        Gauge<Double> gauge = findUtilizationVsMaxGauge(runtime);
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((2 + 3 + 0) / 20d, utilizationVsMax.getValue(), 0.0001);
+        assertEquals((2 + 3 + 0) / 20d, gauge.getValue(), 0.0001);
     }
 
     private void checkUtilizationVsMax_WithRequestsFrozen(BQRuntime runtime, int frozenRequests) {
-        Gauge<Double> utilizationVsMax = findUtilizationVsMaxGauge(runtime);
+        Gauge<Double> gauge = findUtilizationVsMaxGauge(runtime);
 
         // debug race conditions (we saw some on Travis)
         dumpJettyThreads();
 
         // utilizationMax = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        assertEquals((2 + 3 + frozenRequests) / 20d, utilizationVsMax.getValue(), 0.0001);
+        assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001);
     }
 
     private void dumpJettyThreads() {
@@ -88,5 +108,23 @@ public class ThreadPoolMetricsIT {
                 .startsWith("bootique-http"))
                 .map(t -> t.getName() + " - " + t.getState())
                 .forEach(System.out::println);
+    }
+
+    private Gauge<Double> findUtilizationVsMaxGauge(BQRuntime runtime) {
+        return findGauge(Double.class, runtime, "utilization-max");
+    }
+
+    private Gauge<Integer> findQueuedRequestsGauge(BQRuntime runtime) {
+        return findGauge(Integer.class, runtime, "queued-requests");
+    }
+
+    private <T> Gauge<T> findGauge(Class<T> type, BQRuntime runtime, String label) {
+
+        MetricRegistry registry = runtime.getInstance(MetricRegistry.class);
+        String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
+
+        Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
+        assertEquals("Unexpected number of gauges for " + name, 1, gauges.size());
+        return gauges.iterator().next();
     }
 }
