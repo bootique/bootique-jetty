@@ -22,24 +22,24 @@ public class ThreadPoolMetricsIT {
     public InstrumentedJettyApp app = new InstrumentedJettyApp();
 
     @Test
-    public void testUtilizationVsMax_2() throws InterruptedException {
+    public void testUtilization_2() throws InterruptedException {
 
         new ThreadPoolTester(app)
                 .sendRequests(2)
                 .unblockAfterInProgressRequests(2)
-                .afterStartup(r -> checkUtilizationVsMax(r, 0))
-                .afterRequestsFrozen(r -> checkUtilizationVsMax(r, 2))
+                .afterStartup(r -> checkUtilization(r, 0))
+                .afterRequestsFrozen(r -> checkUtilization(r, 2))
                 .run("classpath:threads20.yml");
     }
 
     @Test
-    public void testUtilizationVsMax_1() throws InterruptedException {
+    public void testUtilization_1() throws InterruptedException {
 
         new ThreadPoolTester(app)
                 .sendRequests(1)
                 .unblockAfterInProgressRequests(1)
-                .afterStartup(r -> checkUtilizationVsMax(r, 0))
-                .afterRequestsFrozen(r -> checkUtilizationVsMax(r, 1))
+                .afterStartup(r -> checkUtilization(r, 0))
+                .afterRequestsFrozen(r -> checkUtilization(r, 1))
                 .run("classpath:threads20.yml");
     }
 
@@ -70,10 +70,10 @@ public class ThreadPoolMetricsIT {
         assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
     }
 
-    private void checkUtilizationVsMax(BQRuntime runtime, int frozenRequests) {
+    private void checkUtilization(BQRuntime runtime, int frozenRequests) {
         Gauge<Double> gauge = findUtilizationGauge(runtime);
 
-        // utilizationMax = (acceptorTh + selectorTh + active) / max
+        // utilization = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
         assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001));
     }
