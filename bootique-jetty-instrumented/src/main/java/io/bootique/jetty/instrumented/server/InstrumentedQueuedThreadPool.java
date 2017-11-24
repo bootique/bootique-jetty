@@ -81,12 +81,12 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
                 (Gauge<Integer>) this::getThreads);
 
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "queued-requests"),
-                // This assumes the QueuedThreadPool is using a BlockingArrayQueue or ArrayBlockingQueue for its queue,
-                // and is therefore a constant-time operation.
                 (Gauge<Integer>) this::getQueuedRequests);
     }
 
     protected int getQueuedRequests() {
+        // This assumes the QueuedThreadPool is using a BlockingArrayQueue or ArrayBlockingQueue for its queue,
+        // and is therefore a constant-time operation.
         return getQueue().size();
     }
 
