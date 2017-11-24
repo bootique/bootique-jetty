@@ -25,10 +25,10 @@ public class ThreadPoolMetricsIT {
     public void testUtilizationVsMax_2() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .startRequests(2)
-                .unblockAfter(2)
-                .checkAfterStartup(r -> checkUtilizationVsMax(r, 0))
-                .checkWithRequestsFrozen(r -> checkUtilizationVsMax(r, 2))
+                .sendRequests(2)
+                .unblockAfterInProgressRequests(2)
+                .afterStartup(r -> checkUtilizationVsMax(r, 0))
+                .afterRequestsFrozen(r -> checkUtilizationVsMax(r, 2))
                 .run("classpath:threads20.yml");
     }
 
@@ -36,10 +36,10 @@ public class ThreadPoolMetricsIT {
     public void testUtilizationVsMax_1() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .startRequests(1)
-                .unblockAfter(1)
-                .checkAfterStartup(r -> checkUtilizationVsMax(r, 0))
-                .checkWithRequestsFrozen(r -> checkUtilizationVsMax(r, 1))
+                .sendRequests(1)
+                .unblockAfterInProgressRequests(1)
+                .afterStartup(r -> checkUtilizationVsMax(r, 0))
+                .afterRequestsFrozen(r -> checkUtilizationVsMax(r, 1))
                 .run("classpath:threads20.yml");
     }
 
@@ -47,10 +47,10 @@ public class ThreadPoolMetricsIT {
     public void testQueuedRequests_1() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .startRequests(4)
-                .unblockAfter(3)
-                .checkAfterStartup(r -> checkQueued(r, 0))
-                .checkWithRequestsFrozen(r -> checkQueued(r, 1))
+                .sendRequests(4)
+                .unblockAfterInProgressRequests(3)
+                .afterStartup(r -> checkQueued(r, 0))
+                .afterRequestsFrozen(r -> checkQueued(r, 1))
                 .run("classpath:threads7.yml");
     }
 
@@ -58,10 +58,10 @@ public class ThreadPoolMetricsIT {
     public void testQueuedRequests_4() throws InterruptedException {
 
         new ThreadPoolTester(app)
-                .startRequests(7)
-                .unblockAfter(3)
-                .checkAfterStartup(r -> checkQueued(r, 0))
-                .checkWithRequestsFrozen(r -> checkQueued(r, 4))
+                .sendRequests(7)
+                .unblockAfterInProgressRequests(3)
+                .afterStartup(r -> checkQueued(r, 0))
+                .afterRequestsFrozen(r -> checkQueued(r, 4))
                 .run("classpath:threads7.yml");
     }
 

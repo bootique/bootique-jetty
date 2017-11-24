@@ -29,40 +29,40 @@ import static org.junit.Assert.assertTrue;
 class ThreadPoolTester {
 
     private InstrumentedJettyApp app;
-    private int unblockAfter;
-    private int startRequests;
-    private Consumer<BQRuntime> checkAfterStartup;
-    private Consumer<BQRuntime> checkWithRequestsFrozen;
+    private int unblockAfterInProgressRequests;
+    private int sendRequests;
+    private Consumer<BQRuntime> afterStartup;
+    private Consumer<BQRuntime> afterRequestsFrozen;
 
     public ThreadPoolTester(InstrumentedJettyApp app) {
         this.app = app;
-        this.unblockAfter = 2;
-        this.startRequests = 2;
+        this.unblockAfterInProgressRequests = 2;
+        this.sendRequests = 2;
     }
 
-    public ThreadPoolTester unblockAfter(int count) {
-        this.unblockAfter = count;
+    public ThreadPoolTester unblockAfterInProgressRequests(int count) {
+        this.unblockAfterInProgressRequests = count;
         return this;
     }
 
-    public ThreadPoolTester startRequests(int count) {
-        this.startRequests = count;
+    public ThreadPoolTester sendRequests(int count) {
+        this.sendRequests = count;
         return this;
     }
 
-    public ThreadPoolTester checkAfterStartup(Consumer<BQRuntime> task) {
-        this.checkAfterStartup = task;
+    public ThreadPoolTester afterStartup(Consumer<BQRuntime> task) {
+        this.afterStartup = task;
         return this;
     }
 
-    public ThreadPoolTester checkWithRequestsFrozen(Consumer<BQRuntime> task) {
-        this.checkWithRequestsFrozen = task;
+    public ThreadPoolTester afterRequestsFrozen(Consumer<BQRuntime> task) {
+        this.afterRequestsFrozen = task;
         return this;
     }
 
     public void run(String config) throws InterruptedException {
 
-        Locks locks = new Locks(startRequests, unblockAfter);
+        Locks locks = new Locks(sendRequests, unblockAfterInProgressRequests);
 
         BQRuntime runtime = startRuntime(config, new FreezePoolServlet(locks));
         runChecksAfterStartup(runtime);
@@ -77,15 +77,14 @@ class ThreadPoolTester {
     }
 
     private void runChecksAfterStartup(BQRuntime runtime) {
-        if (checkAfterStartup != null) {
-            checkAfterStartup.accept(runtime);
+        if (afterStartup != null) {
+            afterStartup.accept(runtime);
         }
     }
 
     private void runChecksWithRequestsFrozen(BQRuntime runtime) {
-
-        if (checkWithRequestsFrozen != null) {
-            checkWithRequestsFrozen.accept(runtime);
+        if (afterRequestsFrozen != null) {
+            afterRequestsFrozen.accept(runtime);
         }
     }
 
@@ -166,7 +165,7 @@ class ThreadPoolTester {
             WebTarget target = ClientBuilder.newClient().target("http://localhost:8080").path("/");
 
             try {
-                for (int i = 0; i < startRequests; i++) {
+                for (int i = 0; i < sendRequests; i++) {
                     clientPool.submit(() -> target.request().get());
                 }
 
