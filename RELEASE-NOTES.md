@@ -8,6 +8,7 @@
 * #69 Slight change in health check format output 
 * #70 Support YAML configuration of per-connector acceptor/selector threads
 * #71 Change "utilization" metric definition, deprecate "utilization-max"
+* #72 Non-blocking ServerCommand
 
 ## 0.24
 

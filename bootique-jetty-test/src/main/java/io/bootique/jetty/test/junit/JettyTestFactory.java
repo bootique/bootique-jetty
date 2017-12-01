@@ -29,7 +29,10 @@ import java.util.function.Function;
  * </pre>
  *
  * @since 0.13
+ * @deprecated since 0.25 use faster generic test factory:
+ * <code>BQTestFactory.app("-s").autoLoadModule().createRuntime().run()</code>
  */
+@Deprecated
 public class JettyTestFactory extends BQDaemonTestFactory {
 
     /**
