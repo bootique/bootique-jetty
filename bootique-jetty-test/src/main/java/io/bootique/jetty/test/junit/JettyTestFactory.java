@@ -30,7 +30,8 @@ import java.util.function.Function;
  *
  * @since 0.13
  * @deprecated since 0.25 use faster generic test factory:
- * <code>BQTestFactory.app("-s").autoLoadModule().createRuntime().run()</code>
+ * <code>BQTestFactory.app("-s").autoLoadModule().createRuntime().run()</code> or
+ * <code>BQTestFactory.app("-s").autoLoadModule().run()</code>
  */
 @Deprecated
 public class JettyTestFactory extends BQDaemonTestFactory {
