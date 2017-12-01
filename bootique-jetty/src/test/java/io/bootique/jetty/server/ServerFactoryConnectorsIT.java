@@ -4,7 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.junit.Rule;
@@ -27,15 +27,18 @@ public class ServerFactoryConnectorsIT {
     private static final String OUT_CONTENT = "xcontent_stream_content_stream";
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Client client = ClientBuilder.newClient();
 
     @Test
     public void testMultipleConnectors() {
 
-        BQRuntime runtime = app.start(new UnitModule(),
-                "--config=classpath:io/bootique/jetty/server/connectors.yml");
+        BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/connectors.yml")
+                .module(new UnitModule())
+                .createRuntime();
+
+        runtime.run();
 
         // deprecated default connector must NOT be started
         Connector[] connectors = runtime.getInstance(Server.class).getConnectors();

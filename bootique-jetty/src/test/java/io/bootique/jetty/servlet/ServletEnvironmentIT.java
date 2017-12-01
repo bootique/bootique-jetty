@@ -6,7 +6,7 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class ServletEnvironmentIT {
 	private Runnable assertion;
 
 	@Rule
-	public JettyApp app = new JettyApp();
+	public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
 	@After
 	public void after() {
@@ -39,8 +39,8 @@ public class ServletEnvironmentIT {
 	}
 
 	@Test
-	public void testServletContatinerState() throws Exception {
-		app.start(new ServletCheckingModule());
+	public void testServletContatinerState() {
+		testFactory.app("-s").module(new ServletCheckingModule()).createRuntime().run();
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

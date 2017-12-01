@@ -4,7 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,84 +25,99 @@ import static org.junit.Assert.assertNull;
 
 public class CompressionIT {
 
-	// must be big enough.. compression on small strings is skipped
-	private static final String OUT_CONTENT = "content_stream_content_stream";
+    // must be big enough.. compression on small strings is skipped
+    private static final String OUT_CONTENT = "content_stream_content_stream";
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	private WebTarget gzipTarget = ClientBuilder.newClient().register(GZipEncoder.class)
-			.target("http://localhost:8080/cs/");
+    private WebTarget gzipTarget = ClientBuilder
+            .newClient()
+            .register(GZipEncoder.class)
+            .target("http://localhost:8080/cs/");
 
-	@Test
-	public void testCompression_Flat() throws Exception {
-		app.start(new ServletModule());
+    @Test
+    public void testCompression_Flat()  {
 
-		Response flatResponse = gzipTarget.request().get();
-		assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
-		assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
-		assertNull(flatResponse.getHeaderString("Content-Encoding"));
-	}
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-	@Test
-	public void testCompression_GzipDeflate() throws Exception {
-		app.start(new ServletModule());
+        Response flatResponse = gzipTarget.request().get();
+        assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
+        assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
+        assertNull(flatResponse.getHeaderString("Content-Encoding"));
+    }
 
-		Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
-		assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
-		assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
-		assertEquals("gzip", gzipDeflateResponse.getHeaderString("Content-Encoding"));
-	}
+    @Test
+    public void testCompression_GzipDeflate() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-	@Test
-	public void testCompression_Gzip() throws Exception {
-		app.start(new ServletModule());
+        Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
+        assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
+        assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
+        assertEquals("gzip", gzipDeflateResponse.getHeaderString("Content-Encoding"));
+    }
 
-		Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
-		assertEquals(Status.OK.getStatusCode(), gzipResponse.getStatus());
-		assertEquals(OUT_CONTENT, gzipResponse.readEntity(String.class));
-		assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
-	}
+    @Test
+    public void testCompression_Gzip() throws Exception {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-	@Test
-	public void testUncompressed() throws Exception {
-		app.start(new ServletModule(),
-				"--config=src/test/resources/io/bootique/jetty/server/NoCompressionIT.yml");
+        Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
+        assertEquals(Status.OK.getStatusCode(), gzipResponse.getStatus());
+        assertEquals(OUT_CONTENT, gzipResponse.readEntity(String.class));
+        assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
+    }
 
-		Response flatResponse = gzipTarget.request().get();
-		assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
-		assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
-		assertNull(flatResponse.getHeaderString("Content-Encoding"));
+    @Test
+    public void testUncompressed() {
 
-		Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
-		assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
-		assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
-		assertNull(gzipDeflateResponse.getHeaderString("Content-Encoding"));
-	}
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/NoCompressionIT.yml")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-	class ServletModule implements Module {
+        Response flatResponse = gzipTarget.request().get();
+        assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
+        assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
+        assertNull(flatResponse.getHeaderString("Content-Encoding"));
 
-		@Override
-		public void configure(Binder binder) {
-			JettyModule.extend(binder).addServlet(ContentServlet.class);
-		}
+        Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
+        assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
+        assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
+        assertNull(gzipDeflateResponse.getHeaderString("Content-Encoding"));
+    }
 
-		@Provides
-		ContentServlet createAnnotatedServlet() {
-			return new ContentServlet();
-		}
+    class ServletModule implements Module {
 
-		@WebServlet(urlPatterns = "/cs/*")
-		class ContentServlet extends HttpServlet {
+        @Override
+        public void configure(Binder binder) {
+            JettyModule.extend(binder).addServlet(ContentServlet.class);
+        }
 
-			private static final long serialVersionUID = -8896839263652092254L;
+        @Provides
+        ContentServlet createAnnotatedServlet() {
+            return new ContentServlet();
+        }
 
-			@Override
-			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-					throws ServletException, IOException {
-				resp.getWriter().append(OUT_CONTENT);
-			}
-		}
-	}
+        @WebServlet(urlPatterns = "/cs/*")
+        class ContentServlet extends HttpServlet {
+
+            private static final long serialVersionUID = -8896839263652092254L;
+
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                    throws ServletException, IOException {
+                resp.getWriter().append(OUT_CONTENT);
+            }
+        }
+    }
 
 }

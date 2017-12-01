@@ -1,7 +1,9 @@
 package io.bootique.jetty;
 
+import com.google.inject.Module;
 import io.bootique.BQCoreModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.BQRuntime;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,14 +36,14 @@ import static org.mockito.Mockito.verify;
 
 public class JettyModuleIT {
 
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory();
+
     private Servlet mockServlet1;
     private Servlet mockServlet2;
     private Filter mockFilter1;
     private Filter mockFilter2;
     private Filter mockFilter3;
-
-    @Rule
-    public JettyApp app = new JettyApp();
 
     @Before
     public void before() {
@@ -54,13 +56,25 @@ public class JettyModuleIT {
         this.mockFilter3 = mock(Filter.class);
     }
 
+    private BQRuntime startApp(Module module) {
+        BQRuntime runtime = testFactory.app("-s")
+                .autoLoadModules()
+                .module(module)
+                .createRuntime();
+
+        runtime.run();
+
+        return runtime;
+    }
+
     @Test
     public void testContributeMappedServlets() throws Exception {
 
         MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
         MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
 
-        app.start(binder -> JettyModule.extend(binder).addMappedServlet(mappedServlet1).addMappedServlet(mappedServlet2));
+        BQRuntime runtime = startApp(b ->
+                JettyModule.extend(b).addMappedServlet(mappedServlet1).addMappedServlet(mappedServlet2));
 
         verify(mockServlet1).init(any());
         verify(mockServlet2).init(any());
@@ -82,7 +96,7 @@ public class JettyModuleIT {
         verify(mockServlet1, times(2)).service(any(), any());
         verify(mockServlet2).service(any(), any());
 
-        app.stop();
+        runtime.shutdown();
         verify(mockServlet1).destroy();
         verify(mockServlet2).destroy();
     }
@@ -94,7 +108,7 @@ public class JettyModuleIT {
         MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
         MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
-        app.start(binder -> JettyModule.extend(binder)
+        BQRuntime runtime = startApp(b -> JettyModule.extend(b)
                 .addMappedFilter(mf1)
                 .addMappedFilter(mf2)
                 .addMappedFilter(mf3));
@@ -107,12 +121,12 @@ public class JettyModuleIT {
             }
         });
 
-        app.stop();
+        runtime.shutdown();
         Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> verify(f).destroy());
     }
 
     @Test
-    public void testConfitributeFilters_Ordering() throws Exception {
+    public void testContributeFilters_Ordering() throws Exception {
 
         Filter[] mockFilters = new Filter[]{mockFilter1, mockFilter2, mockFilter3};
 
@@ -137,16 +151,12 @@ public class JettyModuleIT {
         MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
         MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
 
-        MappedServlet mappedServlet = new MappedServlet(mockServlet1, Collections.singleton("/a/*"));
-
-        app.start(binder ->
-                JettyModule.extend(binder)
-                        .addMappedFilter(mf1)
-                        .addMappedFilter(mf2)
-                        .addMappedFilter(mf3)
-                        // must have a servlet behind the filter chain...
-                        .addServlet(mockServlet1, "last", "/a/*")
-        );
+        startApp(b -> JettyModule.extend(b)
+                .addMappedFilter(mf1)
+                .addMappedFilter(mf2)
+                .addMappedFilter(mf3)
+                // must have a servlet behind the filter chain...
+                .addServlet(mockServlet1, "last", "/a/*"));
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -161,14 +171,12 @@ public class JettyModuleIT {
 
         ServletContextListener scListener = mock(ServletContextListener.class);
 
-        app.start(binder -> {
-            JettyModule.extend(binder).addListener(scListener);
-        });
+        BQRuntime runtime = startApp(b -> JettyModule.extend(b).addListener(scListener));
 
         verify(scListener).contextInitialized(any());
         verify(scListener, times(0)).contextDestroyed(any());
 
-        app.stop();
+        runtime.shutdown();
         verify(scListener).contextInitialized(any());
         verify(scListener).contextDestroyed(any());
     }
@@ -178,7 +186,7 @@ public class JettyModuleIT {
 
         ServletRequestListener srListener = mock(ServletRequestListener.class);
 
-        app.start(binder -> JettyModule.extend(binder).addListener(srListener));
+        startApp(b -> JettyModule.extend(b).addListener(srListener));
 
         verify(srListener, times(0)).requestInitialized(any());
         verify(srListener, times(0)).requestDestroyed(any());
@@ -215,11 +223,9 @@ public class JettyModuleIT {
 
         HttpSessionListener sessionListener = mock(HttpSessionListener.class);
 
-        app.start(binder -> {
-            JettyModule.extend(binder)
-                    .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
-                    .addListener(sessionListener);
-        });
+        startApp(b -> JettyModule.extend(b)
+                .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
+                .addListener(sessionListener));
 
         verify(sessionListener, times(0)).sessionCreated(any());
         verify(sessionListener, times(0)).sessionDestroyed(any());
@@ -258,12 +264,11 @@ public class JettyModuleIT {
 
         HttpSessionListener sessionListener = mock(HttpSessionListener.class);
 
-        app.start(binder -> {
-
-            JettyModule.extend(binder)
+        startApp(b -> {
+            JettyModule.extend(b)
                     .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
                     .addListener(sessionListener);
-            BQCoreModule.extend(binder).setProperty("bq.jetty.sessions", "false");
+            BQCoreModule.extend(b).setProperty("bq.jetty.sessions", "false");
         });
 
         verify(sessionListener, times(0)).sessionCreated(any());

@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,64 +29,66 @@ import static org.mockito.Mockito.mock;
 
 public class FilterInitParametersIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory();
 
-	private MappedServlet endOfChainServlet;
+    private MappedServlet endOfChainServlet;
 
-	@Before
-	public void before() {
-		Servlet mockServlet = mock(Servlet.class);
-		endOfChainServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/*")));
-	}
+    @Before
+    public void before() {
+        Servlet mockServlet = mock(Servlet.class);
+        endOfChainServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/*")));
+    }
 
-	@Test
-	public void testInitParametersPassed() {
+    @Test
+    public void testInitParametersPassed() {
 
-		Map<String, String> params = new HashMap<>();
-		params.put("a", "af1");
-		params.put("b", "bf2");
+        Map<String, String> params = new HashMap<>();
+        params.put("a", "af1");
+        params.put("b", "bf2");
 
-		MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5);
+        MappedFilter mf = new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5);
 
-		app.start(binder -> {
-			JettyModule.extend(binder).addMappedFilter(mf).addMappedServlet(endOfChainServlet);
-		} , "--config=src/test/resources/io/bootique/jetty/FilterInitParametersIT.yml");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/FilterInitParametersIT.yml")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addMappedFilter(mf).addMappedServlet(endOfChainServlet))
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r1 = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        Response r1 = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-		assertEquals("f1_af1_bf2", r1.readEntity(String.class));
-	}
+        assertEquals("f1_af1_bf2", r1.readEntity(String.class));
+    }
 
-	static class TestFilter implements Filter {
+    static class TestFilter implements Filter {
 
-		private FilterConfig config;
+        private FilterConfig config;
 
-		@Override
-		public void init(FilterConfig filterConfig) throws ServletException {
-			this.config = filterConfig;
-		}
+        @Override
+        public void init(FilterConfig filterConfig) throws ServletException {
+            this.config = filterConfig;
+        }
 
-		@Override
-		public void destroy() {
-			// do nothing...
-		}
+        @Override
+        public void destroy() {
+            // do nothing...
+        }
 
-		@Override
-		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-				throws IOException, ServletException {
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                throws IOException, ServletException {
 
-			HttpServletResponse resp = (HttpServletResponse) response;
+            HttpServletResponse resp = (HttpServletResponse) response;
 
-			resp.setContentType("text/plain");
+            resp.setContentType("text/plain");
 
-			resp.getWriter().print(config.getFilterName());
-			resp.getWriter().print("_" + config.getInitParameter("a"));
-			resp.getWriter().print("_" + config.getInitParameter("b"));
-		}
-	}
+            resp.getWriter().print(config.getFilterName());
+            resp.getWriter().print("_" + config.getInitParameter("a"));
+            resp.getWriter().print("_" + config.getInitParameter("b"));
+        }
+    }
 
 }

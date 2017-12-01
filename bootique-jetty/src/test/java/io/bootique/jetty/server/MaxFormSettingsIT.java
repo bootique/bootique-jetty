@@ -1,7 +1,7 @@
 package io.bootique.jetty.server;
 
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class MaxFormSettingsIT {
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory();
 
     private WebTarget target = ClientBuilder.newClient().register(GZipEncoder.class)
             .target("http://localhost:8080/");
@@ -31,8 +31,11 @@ public class MaxFormSettingsIT {
     @Test
     public void testMaxFormContentSize() {
 
-        app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
-                "-c", "classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .createRuntime()
+                .run();
 
         Response belowThreshold = target
                 .request()

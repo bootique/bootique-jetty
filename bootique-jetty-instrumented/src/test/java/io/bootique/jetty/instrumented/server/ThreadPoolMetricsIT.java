@@ -4,8 +4,8 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.instrumented.unit.AssertExtras;
-import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
+import io.bootique.test.junit.BQTestFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,14 +16,13 @@ import static org.junit.Assert.assertEquals;
 
 public class ThreadPoolMetricsIT {
 
-
     @Rule
-    public InstrumentedJettyApp app = new InstrumentedJettyApp();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testUtilization_2() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(2)
                 .unblockAfterInProgressRequests(2)
                 .afterStartup(r -> checkUtilization(r, 0))
@@ -34,7 +33,7 @@ public class ThreadPoolMetricsIT {
     @Test
     public void testUtilization_1() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(1)
                 .unblockAfterInProgressRequests(1)
                 .afterStartup(r -> checkUtilization(r, 0))
@@ -45,7 +44,7 @@ public class ThreadPoolMetricsIT {
     @Test
     public void testQueuedRequests_1() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(4)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkQueued(r, 0))
@@ -56,7 +55,7 @@ public class ThreadPoolMetricsIT {
     @Test
     public void testQueuedRequests_4() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(7)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkQueued(r, 0))

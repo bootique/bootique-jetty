@@ -4,7 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -23,55 +23,60 @@ import static org.junit.Assert.assertEquals;
 
 public class AnnotatedServlet_ParamsIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	@Test
-	public void testAnnotationParams() throws Exception {
-		app.start(new ServletModule());
+    @Test
+    public void testAnnotationParams() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r = base.path("/b").request().get();
-		assertEquals("p1_v1_p2_v2", r.readEntity(String.class));
-	}
+        Response r = base.path("/b").request().get();
+        assertEquals("p1_v1_p2_v2", r.readEntity(String.class));
+    }
 
-	@Test
-	public void testConfig_Override() throws Exception {
+    @Test
+    public void testConfig_Override() {
 
-		app.start(new ServletModule(),
-				"--config=classpath:io/bootique/jetty/servlet/AnnotatedServletIT2.yml");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedServletIT2.yml")
+                .module(new ServletModule())
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r = base.path("/b").request().get();
-		assertEquals("p1_v3_p2_v4", r.readEntity(String.class));
-	}
+        Response r = base.path("/b").request().get();
+        assertEquals("p1_v3_p2_v4", r.readEntity(String.class));
+    }
 
-	class ServletModule implements Module {
+    class ServletModule implements Module {
 
-		@Override
-		public void configure(Binder binder) {
-			JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
-		}
+        @Override
+        public void configure(Binder binder) {
+            JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
+        }
 
-		@Provides
-		AnnotatedServlet createAnnotatedServlet() {
-			return new AnnotatedServlet();
-		}
+        @Provides
+        AnnotatedServlet createAnnotatedServlet() {
+            return new AnnotatedServlet();
+        }
 
-		@WebServlet(name = "s1", urlPatterns = "/b/*", initParams = { @WebInitParam(name = "p1", value = "v1"),
-				@WebInitParam(name = "p2", value = "v2") })
-		class AnnotatedServlet extends HttpServlet {
+        @WebServlet(name = "s1", urlPatterns = "/b/*", initParams = {@WebInitParam(name = "p1", value = "v1"),
+                @WebInitParam(name = "p2", value = "v2")})
+        class AnnotatedServlet extends HttpServlet {
 
-			private static final long serialVersionUID = -8896839263652092254L;
+            private static final long serialVersionUID = -8896839263652092254L;
 
-			@Override
-			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-					throws ServletException, IOException {
-				resp.getWriter().append("p1_" + getInitParameter("p1") + "_p2_" + getInitParameter("p2"));
-			}
-		}
-	}
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                    throws ServletException, IOException {
+                resp.getWriter().append("p1_" + getInitParameter("p1") + "_p2_" + getInitParameter("p2"));
+            }
+        }
+    }
 
 }

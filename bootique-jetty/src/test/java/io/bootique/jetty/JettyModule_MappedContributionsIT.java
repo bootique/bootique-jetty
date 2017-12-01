@@ -2,10 +2,11 @@ package io.bootique.jetty;
 
 import com.google.inject.Binder;
 import com.google.inject.Key;
+import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -30,13 +31,17 @@ import static org.junit.Assert.assertEquals;
 public class JettyModule_MappedContributionsIT {
 
     @ClassRule
-    public static JettyApp JETTY_FACTORY = new JettyApp();
+    public static BQTestFactory TEST_FACTORY = new BQTestFactory();
 
     private static WebTarget BASE;
 
     @BeforeClass
     public static void start() {
-        JETTY_FACTORY.start(new Module());
+        TEST_FACTORY.app("-s")
+                .autoLoadModules()
+                .module(new TestModule())
+                .createRuntime()
+                .run();
         BASE = ClientBuilder.newClient().target("http://localhost:8080");
     }
 
@@ -64,7 +69,7 @@ public class JettyModule_MappedContributionsIT {
         assertEquals("f3_s3r", r1.readEntity(String.class));
     }
 
-    public static class Module implements com.google.inject.Module {
+    public static class TestModule implements Module {
 
         @Override
         public void configure(Binder binder) {

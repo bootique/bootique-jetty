@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -21,65 +21,71 @@ import static org.junit.Assert.assertNotNull;
 
 public class SessionsIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory();
 
-	@Test
-	public void testSessions() {
+    @Test
+    public void testSessions() {
 
-		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"));
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+                .autoLoadModules()
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r1 = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
-		assertEquals("count: 1", r1.readEntity(String.class));
-		NewCookie sessionId = r1.getCookies().get("JSESSIONID");
+        Response r1 = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("count: 1", r1.readEntity(String.class));
+        NewCookie sessionId = r1.getCookies().get("JSESSIONID");
 
-		assertNotNull(sessionId);
+        assertNotNull(sessionId);
 
-		Response r2 = base.path("/").request().cookie(sessionId).get();
-		assertEquals(Status.OK.getStatusCode(), r2.getStatus());
-		assertEquals("count: 2", r2.readEntity(String.class));
-	}
+        Response r2 = base.path("/").request().cookie(sessionId).get();
+        assertEquals(Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("count: 2", r2.readEntity(String.class));
+    }
 
-	@Test
-	public void testNoSessions() {
+    @Test
+    public void testNoSessions() {
 
-		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"),
-				"--config=src/test/resources/io/bootique/jetty/nosessions.yml");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/nosessions.yml")
+                .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+                .autoLoadModules()
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r1 = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
-		assertEquals("nosessions", r1.readEntity(String.class));
-	}
+        Response r1 = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("nosessions", r1.readEntity(String.class));
+    }
 
-	static class TestServlet extends HttpServlet {
-		private static final long serialVersionUID = -3190255883516320766L;
+    static class TestServlet extends HttpServlet {
 
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-			String message;
+            String message;
 
-			try {
+            try {
 
-				// this throws if sessions are disabled
-				HttpSession session = req.getSession(true);
+                // this throws if sessions are disabled
+                HttpSession session = req.getSession(true);
 
-				Integer count = (Integer) session.getAttribute("count");
-				count = count != null ? count + 1 : 1;
-				session.setAttribute("count", count);
-				message = "count: " + count;
-			} catch (IllegalStateException e) {
-				message = "nosessions";
-			}
+                Integer count = (Integer) session.getAttribute("count");
+                count = count != null ? count + 1 : 1;
+                session.setAttribute("count", count);
+                message = "count: " + count;
+            } catch (IllegalStateException e) {
+                message = "nosessions";
+            }
 
-			resp.setContentType("text/plain");
-			resp.getWriter().print(message);
-		}
-	}
+            resp.setContentType("text/plain");
+            resp.getWriter().print(message);
+        }
+    }
 
 }

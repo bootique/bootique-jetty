@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,10 +21,9 @@ import static org.mockito.Mockito.verify;
 
 public class MappedServletIT {
 
-    private Servlet mockServlet;
-
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    private Servlet mockServlet;
 
     @Before
     public void before() {
@@ -36,7 +35,10 @@ public class MappedServletIT {
 
         MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 
-        app.start(binder -> JettyModule.extend(binder).addMappedServlet(mappedServlet));
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -55,11 +57,15 @@ public class MappedServletIT {
     @Test
     public void testMappedConfig_Override() throws Exception {
 
-        MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")),
+        MappedServlet mappedServlet = new MappedServlet(
+                mockServlet,
+                new HashSet<>(Arrays.asList("/a/*", "/b/*")),
                 "s1");
 
-        app.start(binder -> JettyModule.extend(binder).addMappedServlet(mappedServlet),
-                "--config=classpath:io/bootique/jetty/MappedServletIT1.yml");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/MappedServletIT1.yml")
+                .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

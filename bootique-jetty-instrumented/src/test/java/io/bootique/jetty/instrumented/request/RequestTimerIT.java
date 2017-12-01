@@ -4,7 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -23,41 +23,44 @@ import static org.junit.Assert.assertEquals;
 
 public class RequestTimerIT {
 
-	@Rule
-	public InstrumentedJettyApp app = new InstrumentedJettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	@Test
-	public void testInitParametersPassed() {
+    @Test
+    public void testInitParametersPassed() {
 
-		BQRuntime runtime = app.start(
-				binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"));
+        BQRuntime runtime = testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+                .createRuntime();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        runtime.run();
 
-		Response r1 = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		assertEquals("test_servlet", r1.readEntity(String.class));
+        Response r1 = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-		MetricRegistry metrics = runtime.getInstance(MetricRegistry.class);
+        assertEquals("test_servlet", r1.readEntity(String.class));
 
-		Collection<Timer> timers = metrics.getTimers().values();
-		assertEquals(1, timers.size());
+        MetricRegistry metrics = runtime.getInstance(MetricRegistry.class);
 
-		Timer timer = timers.iterator().next();
-		assertEquals(1, timer.getCount());
+        Collection<Timer> timers = metrics.getTimers().values();
+        assertEquals(1, timers.size());
 
-		base.path("/").request().get().close();
-		assertEquals(2, timer.getCount());
-	}
+        Timer timer = timers.iterator().next();
+        assertEquals(1, timer.getCount());
 
-	static class TestServlet extends HttpServlet {
+        base.path("/").request().get().close();
+        assertEquals(2, timer.getCount());
+    }
 
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			resp.setContentType("text/plain");
-			resp.getWriter().print("test_servlet");
-		}
-	}
+    static class TestServlet extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            resp.setContentType("text/plain");
+            resp.getWriter().print("test_servlet");
+        }
+    }
 
 }

@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 public class MappedListenerIT {
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Servlet mockServlet1;
 
@@ -29,14 +29,15 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_Ordering1() throws Exception {
+    public void testAddMappedListener_Ordering1() {
 
-        app.start(binder ->
-                JettyModule.extend(binder)
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b)
                         .addServlet(mockServlet1, "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 1))
-                        .addMappedListener(new MappedListener<>(new RL2(), 2))
-        );
+                        .addMappedListener(new MappedListener<>(new RL2(), 2)))
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         assertEquals(200, base.path("/").request().get().getStatus());
@@ -44,14 +45,15 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_Ordering2() throws Exception {
+    public void testAddMappedListener_Ordering2() {
 
-        app.start(binder ->
-                JettyModule.extend(binder)
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b)
                         .addServlet(mockServlet1, "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 2))
-                        .addMappedListener(new MappedListener<>(new RL2(), 1))
-        );
+                        .addMappedListener(new MappedListener<>(new RL2(), 1)))
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         assertEquals(200, base.path("/").request().get().getStatus());
@@ -59,15 +61,17 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_OrderingVsUnmapped() throws Exception {
+    public void testAddMappedListener_OrderingVsUnmapped() {
 
-        app.start(binder ->
-                JettyModule.extend(binder)
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b)
                         .addServlet(mockServlet1, "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 2))
                         .addListener(new RL3())
                         .addMappedListener(new MappedListener<>(new RL2(), 1))
-        );
+                )
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         assertEquals(200, base.path("/").request().get().getStatus());

@@ -1,7 +1,7 @@
 package io.bootique.jetty.server;
 
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class HttpsConnectorIT {
     private static final String SERVICE_URL = "https://localhost:14001/";
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory();
 
     private WebTarget createHttpsClient(String keystore) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
@@ -44,8 +44,12 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
-                "--config=classpath:io/bootique/jetty/server/HttpsConnector.yml");
+
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/HttpsConnector.yml")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .createRuntime()
+                .run();
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());
@@ -54,8 +58,12 @@ public class HttpsConnectorIT {
 
     @Test
     public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
-        app.start(b -> JettyModule.extend(b).addServlet(ContentServlet.class),
-                "--config=classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml");
+
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .createRuntime()
+                .run();
 
         // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
 

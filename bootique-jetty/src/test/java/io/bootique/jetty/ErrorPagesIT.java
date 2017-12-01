@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -18,24 +18,21 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Demonstrates how one can define custom error handlers.
- *
- * @author Lukasz Bachman
  */
 public class ErrorPagesIT {
 
     static final String CUSTOM_404_RESPONSE = "custom 404 response";
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory();
 
     @Test
     public void errorPagesHandlerCaptures404Request() {
-        app.start(binder -> JettyModule.extend(binder).addServlet(
-                new CustomErrorHandler(),
-                "error-handler",
-                "/not-found-handler"),
-                "--config=src/test/resources/io/bootique/jetty/error-pages.yml"
-        );
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/error-pages.yml")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(new CustomErrorHandler(), "error-handler", "/not-found-handler"))
+                .createRuntime()
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

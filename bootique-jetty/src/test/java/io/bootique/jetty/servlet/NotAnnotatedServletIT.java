@@ -3,8 +3,9 @@ package io.bootique.jetty.servlet;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.ProvisionException;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -16,36 +17,34 @@ import java.io.IOException;
 
 public class NotAnnotatedServletIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	@Test(expected = RuntimeException.class)
-	public void testServletContatinerState() throws Exception {
-		app.start(new ServletModule());
-	}
+    @Test(expected = ProvisionException.class)
+    public void testServletContainerState() {
+        testFactory.app("-s").module(new ServletModule()).createRuntime().run();
+    }
 
-	class ServletModule implements Module {
+    class ServletModule implements Module {
 
-		@Override
-		public void configure(Binder binder) {
-			JettyModule.extend(binder).addServlet(NotAnnotatedServlet.class);
-		}
+        @Override
+        public void configure(Binder binder) {
+            JettyModule.extend(binder).addServlet(NotAnnotatedServlet.class);
+        }
 
-		@Provides
-		NotAnnotatedServlet createAnnotatedServlet() {
-			return new NotAnnotatedServlet();
-		}
+        @Provides
+        NotAnnotatedServlet createAnnotatedServlet() {
+            return new NotAnnotatedServlet();
+        }
 
-		class NotAnnotatedServlet extends HttpServlet {
+        class NotAnnotatedServlet extends HttpServlet {
 
-			private static final long serialVersionUID = -8896839263652092254L;
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                    throws ServletException, IOException {
 
-			@Override
-			protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-					throws ServletException, IOException {
-
-			}
-		}
-	}
+            }
+        }
+    }
 
 }

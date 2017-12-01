@@ -2,11 +2,11 @@ package io.bootique.jetty.instrumented.healthcheck;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.instrumented.unit.AssertExtras;
-import io.bootique.jetty.instrumented.unit.InstrumentedJettyApp;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.HealthCheckRegistry;
 import io.bootique.metrics.health.HealthCheckStatus;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -15,12 +15,12 @@ import static org.junit.Assert.assertEquals;
 public class ThreadPoolChecksIT {
 
     @Rule
-    public InstrumentedJettyApp app = new InstrumentedJettyApp();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testUtilization_2() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(2)
                 .unblockAfterInProgressRequests(2)
                 .afterStartup(r -> testUtilizationCheck(r, HealthCheckStatus.OK))
@@ -31,7 +31,7 @@ public class ThreadPoolChecksIT {
     @Test
     public void testUtilization_3() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(3)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testUtilizationCheck(r, HealthCheckStatus.OK))
@@ -42,7 +42,7 @@ public class ThreadPoolChecksIT {
     @Test
     public void testQueuedRequests_5() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(5)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testQueuedCheck(r, HealthCheckStatus.OK))
@@ -53,7 +53,7 @@ public class ThreadPoolChecksIT {
     @Test
     public void testQueuedRequests_6() throws InterruptedException {
 
-        new ThreadPoolTester(app)
+        new ThreadPoolTester(testFactory)
                 .sendRequests(6)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testQueuedCheck(r, HealthCheckStatus.OK))

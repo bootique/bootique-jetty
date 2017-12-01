@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -21,39 +21,42 @@ import static org.junit.Assert.assertEquals;
 
 public class ContextInitParametersIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory();
 
-	@Test
-	public void testInitParametersPassed() {
+    @Test
+    public void testInitParametersPassed() {
 
-		Map<String, String> params = new HashMap<>();
-		params.put("a", "a1");
-		params.put("b", "b2");
+        Map<String, String> params = new HashMap<>();
+        params.put("a", "a1");
+        params.put("b", "b2");
 
-		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"),
-				"--config=src/test/resources/io/bootique/jetty/ContextInitParametersIT.yml");
+        testFactory.app("-c", "classpath:io/bootique/jetty/ContextInitParametersIT.yml", "-s")
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+                .createRuntime()
+                .run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-		Response r1 = base.path("/").request().get();
-		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        Response r1 = base.path("/").request().get();
+        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-		assertEquals("s1_a1_b2", r1.readEntity(String.class));
-	}
+        assertEquals("s1_a1_b2", r1.readEntity(String.class));
+    }
 
-	static class TestServlet extends HttpServlet {
-		private static final long serialVersionUID = -3190255883516320766L;
+    static class TestServlet extends HttpServlet {
+        private static final long serialVersionUID = -3190255883516320766L;
 
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			resp.setContentType("text/plain");
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            resp.setContentType("text/plain");
 
-			ServletConfig config = getServletConfig();
+            ServletConfig config = getServletConfig();
 
-			resp.getWriter().print(config.getServletName());
-			resp.getWriter().print("_" + config.getServletContext().getInitParameter("a"));
-			resp.getWriter().print("_" + config.getServletContext().getInitParameter("b"));
-		}
-	}
+            resp.getWriter().print(config.getServletName());
+            resp.getWriter().print("_" + config.getServletContext().getInitParameter("a"));
+            resp.getWriter().print("_" + config.getServletContext().getInitParameter("b"));
+        }
+    }
 }

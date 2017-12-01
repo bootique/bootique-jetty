@@ -4,7 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -26,65 +26,72 @@ import static org.junit.Assert.assertEquals;
 
 public class AnnotatedFilter_ParamsIT {
 
-	@Rule
-	public JettyApp app = new JettyApp();
+    @Rule
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	@Test
-	public void testAnnotationParams() throws Exception {
-		app.start(new FilterModule());
+    @Test
+    public void testAnnotationParams() {
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        testFactory.app("-s")
+                .module(new FilterModule())
+                .createRuntime()
+                .run();
 
-		Response r = base.path("/b/").request().get();
-		assertEquals("p1_v1_p2_v2", r.readEntity(String.class));
-	}
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-	@Test
-	public void testConfig_Override() throws Exception {
+        Response r = base.path("/b/").request().get();
+        assertEquals("p1_v1_p2_v2", r.readEntity(String.class));
+    }
 
-		app.start(new FilterModule(), "--config=classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml");
+    @Test
+    public void testConfig_Override() {
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml")
+                .module(new FilterModule())
+                .createRuntime()
+                .run();
 
-		Response r = base.path("/b/").request().get();
-		assertEquals("p1_v3_p2_v4", r.readEntity(String.class));
-	}
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
-	class FilterModule implements Module {
+        Response r = base.path("/b/").request().get();
+        assertEquals("p1_v3_p2_v4", r.readEntity(String.class));
+    }
 
-		@Override
-		public void configure(Binder binder) {
-			JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
-		}
+    class FilterModule implements Module {
 
-		@Provides
-		private AnnotatedFilter provideFilter() {
-			return new AnnotatedFilter();
-		}
+        @Override
+        public void configure(Binder binder) {
+            JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
+        }
 
-		@WebFilter(filterName = "f1", urlPatterns = "/b/*", initParams = { @WebInitParam(name = "p1", value = "v1"),
-				@WebInitParam(name = "p2", value = "v2") })
-		class AnnotatedFilter implements Filter {
+        @Provides
+        private AnnotatedFilter provideFilter() {
+            return new AnnotatedFilter();
+        }
 
-			private FilterConfig config;
+        @WebFilter(filterName = "f1", urlPatterns = "/b/*", initParams = {@WebInitParam(name = "p1", value = "v1"),
+                @WebInitParam(name = "p2", value = "v2")})
+        class AnnotatedFilter implements Filter {
 
-			@Override
-			public void init(FilterConfig filterConfig) throws ServletException {
-				this.config = filterConfig;
-			}
+            private FilterConfig config;
 
-			@Override
-			public void destroy() {
-				// do nothing
-			}
+            @Override
+            public void init(FilterConfig filterConfig) throws ServletException {
+                this.config = filterConfig;
+            }
 
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-					throws IOException, ServletException {
-				((HttpServletResponse) response).getWriter()
-						.append("p1_" + config.getInitParameter("p1") + "_p2_" + config.getInitParameter("p2"));
-			}
-		}
-	}
+            @Override
+            public void destroy() {
+                // do nothing
+            }
+
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                    throws IOException, ServletException {
+                ((HttpServletResponse) response).getWriter()
+                        .append("p1_" + config.getInitParameter("p1") + "_p2_" + config.getInitParameter("p2"));
+            }
+        }
+    }
 
 }

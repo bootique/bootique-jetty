@@ -1,6 +1,6 @@
 package io.bootique.jetty;
 
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -20,13 +20,16 @@ import static org.junit.Assert.assertEquals;
 public class ServletInitParametersIT {
 
 	@Rule
-	public JettyApp app = new JettyApp();
+	public BQTestFactory testFactory = new BQTestFactory();
 
 	@Test
 	public void testInitParametersPassed() {
 
-		app.start(binder -> JettyModule.extend(binder).addServlet(new TestServlet(), "s1", "/*"),
-				"--config=src/test/resources/io/bootique/jetty/ServletInitParametersIT.yml");
+		testFactory.app("-s", "-c", "classpath:io/bootique/jetty/ServletInitParametersIT.yml")
+				.autoLoadModules()
+				.module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+				.createRuntime()
+				.run();
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -37,7 +40,6 @@ public class ServletInitParametersIT {
 	}
 
 	static class TestServlet extends HttpServlet {
-		private static final long serialVersionUID = -3190255883516320766L;
 
 		@Override
 		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

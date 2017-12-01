@@ -1,7 +1,7 @@
 package io.bootique.jetty.server;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.unit.JettyApp;
+import io.bootique.test.junit.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -14,12 +14,16 @@ import static org.junit.Assert.assertTrue;
 public class ThreadsIT {
 
     @Rule
-    public JettyApp app = new JettyApp();
+    public BQTestFactory testFactory = new BQTestFactory();
 
     @Test
     public void testAcceptorSelectorThreads() {
 
-        BQRuntime runtime = app.start("--config=classpath:io/bootique/jetty/server/threads.yml");
+        BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/threads.yml")
+                .autoLoadModules()
+                .createRuntime();
+
+        runtime.run();
 
         Connector[] connectors = runtime.getInstance(Server.class).getConnectors();
         ServerConnector c1 = (ServerConnector) connectors[0];

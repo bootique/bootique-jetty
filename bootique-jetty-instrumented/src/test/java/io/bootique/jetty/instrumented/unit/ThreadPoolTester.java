@@ -2,6 +2,7 @@ package io.bootique.jetty.instrumented.unit;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
+import io.bootique.test.junit.BQTestFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -27,13 +28,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class ThreadPoolTester {
 
-    private InstrumentedJettyApp app;
+    private BQTestFactory app;
     private int unblockAfterInProgressRequests;
     private int sendRequests;
     private Consumer<BQRuntime> afterStartup;
     private Consumer<BQRuntime> afterRequestsFrozen;
 
-    public ThreadPoolTester(InstrumentedJettyApp app) {
+    public ThreadPoolTester(BQTestFactory app) {
         this.app = app;
         this.unblockAfterInProgressRequests = 2;
         this.sendRequests = 2;
@@ -69,10 +70,13 @@ public class ThreadPoolTester {
     }
 
     private BQRuntime startRuntime(String config, Servlet servlet) {
-        return app.start(
-                b -> JettyModule.extend(b).addServlet(servlet, "s1", "/*"),
-                "-c",
-                config);
+        BQRuntime runtime = app.app("-s", "-c", config)
+                .module(
+                b -> JettyModule.extend(b).addServlet(servlet, "s1", "/*"))
+                .createRuntime();
+
+        runtime.run();
+        return runtime;
     }
 
     private void runChecksAfterStartup(BQRuntime runtime) {
