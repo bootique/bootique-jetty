@@ -27,27 +27,14 @@ public class ServerCommand extends CommandWithMetadata {
 
         Server server = serverProvider.get();
         try {
+            // this blocks until a successful start or an error, then releases current thread, while Jetty
+            // stays running on the background
             server.start();
         } catch (Exception e) {
             return CommandOutcome.failed(1, e);
         }
 
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException ie) {
-
-            // interruption of a running Jetty daemon is a normal event, so unless we get shutdown errors, return success
-            try {
-                // TODO: probably redundant. The server will be stopped again in the shutdown thread.
-                // see https://github.com/bootique/bootique/issues/197 : we may want to implement this using
-                // "start and get out" strategy...
-                server.stop();
-            } catch (Exception se) {
-                return CommandOutcome.failed(1, se);
-            }
-        }
-
-        return CommandOutcome.succeeded();
+        return CommandOutcome.succeededAndForkedToBackground();
     }
 
 }
