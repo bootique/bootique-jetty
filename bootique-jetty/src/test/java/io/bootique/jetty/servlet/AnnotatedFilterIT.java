@@ -39,7 +39,6 @@ public class AnnotatedFilterIT {
     public void testServletContainerState() {
         testFactory.app("-s")
                 .module(new FilterModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -63,7 +62,6 @@ public class AnnotatedFilterIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedFilterIT1.yml")
                 .module(new FilterModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

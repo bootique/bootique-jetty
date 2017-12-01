@@ -52,7 +52,6 @@ public class FilterInitParametersIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/FilterInitParametersIT.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addMappedFilter(mf).addMappedServlet(endOfChainServlet))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

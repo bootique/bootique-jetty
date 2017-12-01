@@ -36,7 +36,6 @@ public class MappedListenerIT {
                         .addServlet(mockServlet1, "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 1))
                         .addMappedListener(new MappedListener<>(new RL2(), 2)))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -52,7 +51,6 @@ public class MappedListenerIT {
                         .addServlet(mockServlet1, "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 2))
                         .addMappedListener(new MappedListener<>(new RL2(), 1)))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -70,7 +68,6 @@ public class MappedListenerIT {
                         .addListener(new RL3())
                         .addMappedListener(new MappedListener<>(new RL2(), 1))
                 )
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

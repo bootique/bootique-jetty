@@ -37,7 +37,6 @@ public class MappedServletIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -64,7 +63,6 @@ public class MappedServletIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/MappedServletIT1.yml")
                 .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

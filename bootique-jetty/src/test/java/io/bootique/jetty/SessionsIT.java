@@ -30,7 +30,6 @@ public class SessionsIT {
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
                 .autoLoadModules()
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -53,7 +52,6 @@ public class SessionsIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/nosessions.yml")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
                 .autoLoadModules()
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

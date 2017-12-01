@@ -34,7 +34,6 @@ public class MaxFormSettingsIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
-                .createRuntime()
                 .run();
 
         Response belowThreshold = target

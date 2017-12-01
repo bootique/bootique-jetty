@@ -28,7 +28,6 @@ public class ServletInitParametersIT {
 		testFactory.app("-s", "-c", "classpath:io/bootique/jetty/ServletInitParametersIT.yml")
 				.autoLoadModules()
 				.module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
-				.createRuntime()
 				.run();
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

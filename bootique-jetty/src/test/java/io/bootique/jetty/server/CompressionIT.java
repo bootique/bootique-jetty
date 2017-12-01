@@ -41,7 +41,6 @@ public class CompressionIT {
 
         testFactory.app("-s")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         Response flatResponse = gzipTarget.request().get();
@@ -54,7 +53,6 @@ public class CompressionIT {
     public void testCompression_GzipDeflate() {
         testFactory.app("-s")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
@@ -67,7 +65,6 @@ public class CompressionIT {
     public void testCompression_Gzip() throws Exception {
         testFactory.app("-s")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
@@ -81,7 +78,6 @@ public class CompressionIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/NoCompressionIT.yml")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         Response flatResponse = gzipTarget.request().get();

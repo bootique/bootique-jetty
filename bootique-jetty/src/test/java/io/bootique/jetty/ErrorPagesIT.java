@@ -31,7 +31,6 @@ public class ErrorPagesIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/error-pages.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(new CustomErrorHandler(), "error-handler", "/not-found-handler"))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

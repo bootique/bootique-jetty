@@ -34,7 +34,6 @@ public class ContextInitParametersIT {
         testFactory.app("-c", "classpath:io/bootique/jetty/ContextInitParametersIT.yml", "-s")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

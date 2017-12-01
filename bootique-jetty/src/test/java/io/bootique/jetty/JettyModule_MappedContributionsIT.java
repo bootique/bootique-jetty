@@ -40,7 +40,6 @@ public class JettyModule_MappedContributionsIT {
         TEST_FACTORY.app("-s")
                 .autoLoadModules()
                 .module(new TestModule())
-                .createRuntime()
                 .run();
         BASE = ClientBuilder.newClient().target("http://localhost:8080");
     }

@@ -32,10 +32,7 @@ public class AnnotatedFilter_ParamsIT {
     @Test
     public void testAnnotationParams() {
 
-        testFactory.app("-s")
-                .module(new FilterModule())
-                .createRuntime()
-                .run();
+        testFactory.app("-s").module(new FilterModule()).run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -48,7 +45,6 @@ public class AnnotatedFilter_ParamsIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml")
                 .module(new FilterModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

@@ -34,7 +34,7 @@ public class AnnotatedServletIT {
 
     @Test
     public void testServletContainerState() {
-        testFactory.app("-s").module(new ServletModule()).createRuntime().run();
+        testFactory.app("-s").module(new ServletModule()).run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -57,7 +57,6 @@ public class AnnotatedServletIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedServletIT1.yml")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

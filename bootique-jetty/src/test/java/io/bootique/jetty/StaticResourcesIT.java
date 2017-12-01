@@ -21,7 +21,7 @@ public class StaticResourcesIT {
 
     @Test
     public void testDisabled() {
-        testFactory.app("-s").createRuntime().run();
+        testFactory.app("-s").run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
@@ -32,7 +32,7 @@ public class StaticResourcesIT {
     public void testEnabled_ButNoBase() {
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).useDefaultServlet())
-                .createRuntime().run();
+                .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
@@ -89,7 +89,6 @@ public class StaticResourcesIT {
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "classpath:io/bootique/jetty/StaticResourcesIT_docroot");
                 })
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -108,7 +107,6 @@ public class StaticResourcesIT {
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
                 })
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -127,7 +125,6 @@ public class StaticResourcesIT {
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "./src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
                 })
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -142,7 +139,6 @@ public class StaticResourcesIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/StaticResourcesIT_FilePath.yml")
                 .module(b -> JettyModule.extend(b).useDefaultServlet())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -160,7 +156,6 @@ public class StaticResourcesIT {
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
                 })
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

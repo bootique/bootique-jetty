@@ -22,7 +22,7 @@ public class NotAnnotatedServletIT {
 
     @Test(expected = ProvisionException.class)
     public void testServletContainerState() {
-        testFactory.app("-s").module(new ServletModule()).createRuntime().run();
+        testFactory.app("-s").module(new ServletModule()).run();
     }
 
     class ServletModule implements Module {

@@ -33,7 +33,6 @@ public class MappedFilterIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -55,7 +54,6 @@ public class MappedFilterIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/MappedFilterIT1.yml")
                 .module(b -> JettyModule.extend(b).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"))
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

@@ -30,7 +30,6 @@ public class AnnotatedServlet_ParamsIT {
     public void testAnnotationParams() {
         testFactory.app("-s")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -44,7 +43,6 @@ public class AnnotatedServlet_ParamsIT {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedServletIT2.yml")
                 .module(new ServletModule())
-                .createRuntime()
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

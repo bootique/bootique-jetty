@@ -48,7 +48,6 @@ public class HttpsConnectorIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/HttpsConnector.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
-                .createRuntime()
                 .run();
 
         Response r1HTTPS = createHttpsClient("testkeystore").request().get();
@@ -62,7 +61,6 @@ public class HttpsConnectorIT {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/HttpsMultiCertConnector.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
-                .createRuntime()
                 .run();
 
         // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
