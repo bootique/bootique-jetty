@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 public class JettyModuleIT {
 
     @Rule
-    public BQTestFactory testFactory = new BQTestFactory();
+    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Servlet mockServlet1;
     private Servlet mockServlet2;
@@ -58,12 +58,9 @@ public class JettyModuleIT {
 
     private BQRuntime startApp(Module module) {
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
                 .module(module)
                 .createRuntime();
-
         runtime.run();
-
         return runtime;
     }
 
@@ -102,7 +99,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeFilters_InitDestroy() throws Exception {
+    public void testContributeFilters_InitDestroy() {
 
         MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
         MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
@@ -167,7 +164,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeListeners_ServletContextListener() throws Exception {
+    public void testContributeListeners_ServletContextListener() {
 
         ServletContextListener scListener = mock(ServletContextListener.class);
 
