@@ -6,8 +6,8 @@ import org.junit.Test;
 public class JettyModuleProviderTest {
 
 	@Test
-	public void testPresentInJar() {
-		BQModuleProviderChecker.testPresentInJar(JettyModuleProvider.class);
+	public void testAutoLoadable() {
+		BQModuleProviderChecker.testAutoLoadable(JettyModuleProvider.class);
 	}
 
 	@Test

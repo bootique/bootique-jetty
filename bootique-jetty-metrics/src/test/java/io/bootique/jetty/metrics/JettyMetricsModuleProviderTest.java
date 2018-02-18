@@ -15,8 +15,8 @@ public class JettyMetricsModuleProviderTest {
     public BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testAutoLoad() {
-        BQModuleProviderChecker.testPresentInJar(JettyMetricsModuleProvider.class);
+    public void testAutoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(JettyMetricsModuleProvider.class);
     }
 
     @Test
