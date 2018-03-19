@@ -9,6 +9,7 @@
 * #70 Support YAML configuration of per-connector acceptor/selector threads
 * #71 Change "utilization" metric definition, deprecate "utilization-max"
 * #72 Non-blocking ServerCommand
+* #73 Upgrade to bootique-modules-parent 0.8
 
 ## 0.24
 
