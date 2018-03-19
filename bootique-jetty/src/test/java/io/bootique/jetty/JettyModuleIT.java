@@ -132,9 +132,9 @@ public class JettyModuleIT {
             String responseString = Integer.toString(i);
             doAnswer(inv -> {
 
-                HttpServletRequest request = inv.getArgumentAt(0, HttpServletRequest.class);
-                HttpServletResponse response = inv.getArgumentAt(1, HttpServletResponse.class);
-                FilterChain chain = inv.getArgumentAt(2, FilterChain.class);
+                HttpServletRequest request = inv.getArgument(0);
+                HttpServletResponse response = inv.getArgument(1);
+                FilterChain chain = inv.getArgument(2);
 
                 response.setStatus(200);
                 response.getWriter().append(responseString);
@@ -213,7 +213,7 @@ public class JettyModuleIT {
         // TODO: test session destroy event...
 
         doAnswer(i -> {
-            HttpServletRequest request = (HttpServletRequest) i.getArgumentAt(0, ServletRequest.class);
+            HttpServletRequest request = (HttpServletRequest) i.getArgument(0);
             request.getSession(true);
             return null;
         }).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));
@@ -250,7 +250,7 @@ public class JettyModuleIT {
     public void testContributeListeners_SessionListener_SessionsDisabled() throws Exception {
 
         doAnswer(i -> {
-            HttpServletRequest request = (HttpServletRequest) i.getArgumentAt(0, ServletRequest.class);
+            HttpServletRequest request = (HttpServletRequest) i.getArgument(0);
             try {
                 request.getSession(true);
             } catch (IllegalStateException e) {
