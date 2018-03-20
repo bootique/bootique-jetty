@@ -127,11 +127,11 @@ public class ThreadPoolTester {
                 sendResponse(response);
             } finally {
 
-                // 3. let the container know that we are done
-                locks.releaseAfterRequestLatch.countDown();
-
-                // 4. since we locked it, we must unlock
+                // 3. since we locked it, we must unlock
                 locks.requestFreezeLock.unlock();
+
+                // 4. let the container know that we are done
+                locks.releaseAfterRequestLatch.countDown();
             }
         }
 
@@ -165,7 +165,7 @@ public class ThreadPoolTester {
         private void runWithClientPool(ExecutorService clientPool) throws InterruptedException {
 
             locks.requestFreezeLock.lock();
-            WebTarget target = ClientBuilder.newClient().target("http://localhost:8080").path("/");
+            WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
             try {
                 for (int i = 0; i < sendRequests; i++) {
