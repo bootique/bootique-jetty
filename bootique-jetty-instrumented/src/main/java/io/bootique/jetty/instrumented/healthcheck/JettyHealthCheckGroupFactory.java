@@ -5,8 +5,9 @@ import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.metrics.health.HealthCheck;
-import io.bootique.metrics.health.check.DoubleRange;
-import io.bootique.metrics.health.check.IntRange;
+import io.bootique.metrics.health.check.DoubleValueRangeFactory;
+import io.bootique.metrics.health.check.IntValueRangeFactory;
+import io.bootique.metrics.health.check.ValueRange;
 import io.bootique.metrics.health.check.ValueRangeCheck;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
@@ -24,25 +25,52 @@ public class JettyHealthCheckGroupFactory {
     static final String THREAD_POOL_UTILIZATION_CHECK = "bq.jetty.threadPool.utilization";
     static final String QUEUED_REQUESTS_CHECK = "bq.jetty.threadPool.queuedRequests";
 
-    private IntRange queuedRequestsThreshold;
-    private DoubleRange poolUtilizationThreshold;
+    private IntValueRangeFactory queuedRequestsThresholds;
+    private DoubleValueRangeFactory poolUtilizationThresholds;
 
-    protected IntRange getQueuedRequestsThreshold() {
-        return queuedRequestsThreshold != null ? queuedRequestsThreshold : new IntRange(3, 15);
+    public JettyHealthCheckGroupFactory() {
+        // by default init minimums...
+
+    }
+
+    protected ValueRange<Integer> getQueuedRequestsThresholds() {
+
+        // init min if it wasn't set...
+        if (queuedRequestsThresholds != null) {
+            if (queuedRequestsThresholds.getMin() == null) {
+                queuedRequestsThresholds.setMin(0);
+            }
+
+            return queuedRequestsThresholds.createRange();
+        }
+
+        // TODO: what is the default max queued requests for our Jetty?
+        return ValueRange.builder(Integer.class).min(0).warning(3).critical(15).build();
     }
 
     @BQConfigProperty
-    public void setQueuedRequestsThreshold(IntRange queuedRequestsThreshold) {
-        this.queuedRequestsThreshold = queuedRequestsThreshold;
+    public void setQueuedRequestsThresholds(IntValueRangeFactory queuedRequestsThresholds) {
+        this.queuedRequestsThresholds = queuedRequestsThresholds;
     }
 
-    protected DoubleRange getPoolUtilizationThreshold() {
-        return poolUtilizationThreshold != null ? poolUtilizationThreshold : new DoubleRange(0.7, 0.9);
+    protected ValueRange<Double> getPoolUtilizationThresholds() {
+
+        // init min if it wasn't set...
+        if (poolUtilizationThresholds != null) {
+            if (poolUtilizationThresholds.getMin() == null) {
+                poolUtilizationThresholds.setMin(0);
+            }
+
+            return poolUtilizationThresholds.createRange();
+        }
+
+        // TODO: replace Double with some kind of Percent object
+        return ValueRange.builder(Double.class).min(0.).warning(0.7).critical(0.9).max(1.).build();
     }
 
     @BQConfigProperty
-    public void setPoolUtilizationThreshold(DoubleRange poolUtilizationThreshold) {
-        this.poolUtilizationThreshold = poolUtilizationThreshold;
+    public void setPoolUtilizationThresholds(DoubleValueRangeFactory poolUtilizationThresholds) {
+        this.poolUtilizationThresholds = poolUtilizationThresholds;
     }
 
     public JettyHealthCheckGroup createHealthCheckGroup(MetricRegistry registry) {
@@ -58,13 +86,13 @@ public class JettyHealthCheckGroupFactory {
 
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
         Supplier<Double> deferredGauge = valueFromGauge(registry, resolveMetricName("utilization"));
-        DoubleRange range = getPoolUtilizationThreshold();
+        ValueRange<Double> range = getPoolUtilizationThresholds();
         return new ValueRangeCheck<>(range, deferredGauge::get);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {
         Supplier<Integer> deferredGauge = valueFromGauge(registry, resolveMetricName("queued-requests"));
-        IntRange range = getQueuedRequestsThreshold();
+        ValueRange<Integer> range = getQueuedRequestsThresholds();
         return new ValueRangeCheck<>(range, deferredGauge::get);
     }
 

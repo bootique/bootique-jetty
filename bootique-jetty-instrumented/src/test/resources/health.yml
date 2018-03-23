@@ -4,5 +4,9 @@ jetty:
     - acceptorThreads: 2
       selectorThreads: 2
   health:
-    queuedRequestsThreshold: "2 3"
-    poolUtilizationThreshold: "0.6 0.9"
+    queuedRequestsThresholds:
+      warning: 2
+      critical: 3
+    poolUtilizationThresholds:
+      warning: 0.6
+      critical: 0.9
