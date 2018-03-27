@@ -68,7 +68,6 @@ public class ServerFactory {
         this.idleThreadTimeout = 60000;
         this.sessions = true;
         this.compression = true;
-        this.compactPath = false;
     }
 
     public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<MappedListener> listeners) {

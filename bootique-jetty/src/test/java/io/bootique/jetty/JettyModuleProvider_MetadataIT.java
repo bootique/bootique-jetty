@@ -78,6 +78,7 @@ public class JettyModuleProvider_MetadataIT {
         });
 
         assertEquals("jetty" +
+                "[compactPath:boolean]" +
                 "[compression:boolean]" +
                 "[list:connectors<io.bootique.jetty.connector.ConnectorFactory>]" +
                 "[context:java.lang.String]" +
