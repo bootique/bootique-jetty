@@ -1,3 +1,7 @@
+## 0.26
+
+* #74 Add a @BQConfigProperty for 'compactPath' in ContextHandler
+
 ## 0.25
 
 * #64 jetty-instrumented: handle RequestTimer within the servlet spec
