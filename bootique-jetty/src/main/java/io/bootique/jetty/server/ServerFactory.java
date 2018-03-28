@@ -50,6 +50,7 @@ public class ServerFactory {
     private Map<String, String> params;
     private FolderResourceFactory staticResourceBase;
     private boolean compression;
+    private boolean compactPath;
     // defined as "int" in Jetty, so we should not exceed max int
     private int maxFormContentSize;
     private int maxFormKeys;
@@ -117,6 +118,7 @@ public class ServerFactory {
 
         ServletContextHandler handler = new ServletContextHandler(options);
         handler.setContextPath(context);
+        handler.setCompactPath(compactPath);
         if (params != null) {
             params.forEach((k, v) -> handler.setInitParameter(k, v));
         }
@@ -432,6 +434,15 @@ public class ServerFactory {
     public void setCompression(boolean compression) {
         this.compression = compression;
     }
+
+    /**
+     * Compact URLs with multiple '/'s with a single '/'.
+     *
+     * @param compactPath Compact URLs with multiple '/'s with a single '/'. Default value is 'false'
+     * @since 0.26
+     */
+    @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
+    public void setCompactPath(boolean compactPath) { this.compactPath = compactPath; }
 
     /**
      * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).

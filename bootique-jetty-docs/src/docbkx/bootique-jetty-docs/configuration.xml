@@ -122,6 +122,11 @@
                                 >Jetty default servlet docs</link>.</para>
                     </td>
                 </tr>
+                <tr>
+                    <td><code>compactPath</code></td>
+                    <td><code>false</code></td>
+                    <td>True if URLs are compacted to replace multiple '/'s with a single '/'</td>
+                </tr>
         </tbody>
     </table>
     </section>
