@@ -76,6 +76,9 @@ public class HealthCheckServlet extends HttpServlet {
                 if (result.getMessage() != null) {
                     writer.format("! %s: %s - %s\n", e.getKey(), result.getStatus().name(), result.getMessage());
                 }
+                else {
+                    writer.format("! %s: %s\n", e.getKey(), result.getStatus().name());
+                }
 
                 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
                 Throwable error = result.getError();

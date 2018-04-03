@@ -99,7 +99,7 @@ public class HealthCheckServletTest {
         try {
             throw new RuntimeException("Test exception");
         } catch (RuntimeException e) {
-            testResults.put("h4", HealthCheckOutcome.unhealthy(e));
+            testResults.put("h4", HealthCheckOutcome.critical(e));
         }
 
         Mockito.when(mockRegistry.runHealthChecks()).thenReturn(testResults);
@@ -112,7 +112,8 @@ public class HealthCheckServletTest {
         servlet.doGet(mockRequest, mockResponse);
 
         Mockito.verify(mockResponse).setStatus(500);
-        assertTrue(writer.toString().startsWith("! h4: CRITICAL - Test exception\n" +
+        String result = writer.toString();
+        assertTrue("[" + result + "]", result.startsWith("! h4: CRITICAL\n" +
                 "\n" +
                 "java.lang.RuntimeException: Test exception\n"));
     }
