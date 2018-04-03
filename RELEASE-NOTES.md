@@ -1,6 +1,7 @@
 ## 0.26
 
 * #74 Add a @BQConfigProperty for 'compactPath' in ContextHandler
+* #75 Cleaning up APIs deprecated since <= 0.25
 
 ## 0.25
 

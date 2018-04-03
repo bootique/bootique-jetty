@@ -83,10 +83,6 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
 
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization"),
                 (Gauge<Double>) this::getUtilization);
-
-        // deprecated metrics
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization-max"),
-                createUtilizationMaxGauge());
     }
 
     protected int getQueuedRequests() {
@@ -95,17 +91,6 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
         return getQueue().size();
     }
 
-    /**
-     * @return a new Gauge for util metrics.
-     * @deprecated since 0.25
-     */
-    @Deprecated
-    private Gauge<Double> createUtilizationMaxGauge() {
-        return () -> {
-            LOGGER.warn("Using deprecated \"utilization-max\" metric. Use \"utilization\" metric instead.");
-            return this.getUtilization();
-        };
-    }
 
     protected double getUtilization() {
 
