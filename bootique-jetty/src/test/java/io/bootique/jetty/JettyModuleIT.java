@@ -213,7 +213,7 @@ public class JettyModuleIT {
         // TODO: test session destroy event...
 
         doAnswer(i -> {
-            HttpServletRequest request = (HttpServletRequest) i.getArgument(0);
+            HttpServletRequest request = i.getArgument(0);
             request.getSession(true);
             return null;
         }).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));

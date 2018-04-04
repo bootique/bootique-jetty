@@ -47,7 +47,7 @@ public class MaxFormSettingsIT {
                 .request()
                 .post(Entity.entity("a=123456789", MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-        assertEquals(500, aboveThreshold.getStatus());
+        assertEquals(400, aboveThreshold.getStatus());
 
         // the size limit includes the full form with keys and "=" signs...
         Response atThreshold = target
