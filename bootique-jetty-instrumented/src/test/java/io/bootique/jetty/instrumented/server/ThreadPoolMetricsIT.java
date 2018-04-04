@@ -49,7 +49,7 @@ public class ThreadPoolMetricsIT {
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkQueued(r, 0))
                 .afterRequestsFrozen(r -> checkQueued(r, 1))
-                .run("classpath:threads7.yml");
+                .run("classpath:threads8.yml");
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ThreadPoolMetricsIT {
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkQueued(r, 0))
                 .afterRequestsFrozen(r -> checkQueued(r, 4))
-                .run("classpath:threads7.yml");
+                .run("classpath:threads8.yml");
     }
 
     private void checkQueued(BQRuntime runtime, int frozenRequests) {
@@ -73,7 +73,12 @@ public class ThreadPoolMetricsIT {
 
         // utilization = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
-        AssertExtras.assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.0001));
+
+        // note that Jetty since 9.4 has a number of internal tasks that block threads, so getting an exact utilization
+        // number predictably is not possible... So using a huge delta so that plus or minus a busy thread does not
+        // fail the test.
+
+        AssertExtras.assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.1));
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {

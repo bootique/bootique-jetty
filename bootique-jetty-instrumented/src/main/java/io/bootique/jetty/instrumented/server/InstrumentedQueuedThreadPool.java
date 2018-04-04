@@ -4,14 +4,10 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 
 public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstrumentedQueuedThreadPool.class);
 
     private MetricRegistry metricRegistry;
 
@@ -79,18 +75,11 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
                 (Gauge<Integer>) this::getThreads);
 
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "queued-requests"),
-                (Gauge<Integer>) this::getQueuedRequests);
+                (Gauge<Integer>) this::getQueueSize);
 
         metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization"),
                 (Gauge<Double>) this::getUtilization);
     }
-
-    protected int getQueuedRequests() {
-        // This assumes the QueuedThreadPool is using a BlockingArrayQueue or ArrayBlockingQueue for its queue,
-        // and is therefore a constant-time operation.
-        return getQueue().size();
-    }
-
 
     protected double getUtilization() {
 

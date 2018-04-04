@@ -25,7 +25,7 @@ public class ThreadPoolChecksIT {
                 .unblockAfterInProgressRequests(2)
                 .afterStartup(r -> testUtilizationCheck(r, HealthCheckStatus.OK))
                 .afterRequestsFrozen(r -> testUtilizationCheck(r, HealthCheckStatus.WARNING))
-                .run("classpath:health.yml");
+                .run("classpath:health8.yml");
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ThreadPoolChecksIT {
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testUtilizationCheck(r, HealthCheckStatus.OK))
                 .afterRequestsFrozen(r -> testUtilizationCheck(r, HealthCheckStatus.CRITICAL))
-                .run("classpath:health.yml");
+                .run("classpath:health8.yml");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ThreadPoolChecksIT {
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testQueuedCheck(r, HealthCheckStatus.OK))
                 .afterRequestsFrozen(r -> testQueuedCheck(r, HealthCheckStatus.WARNING))
-                .run("classpath:health.yml");
+                .run("classpath:health8.yml");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ThreadPoolChecksIT {
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> testQueuedCheck(r, HealthCheckStatus.OK))
                 .afterRequestsFrozen(r -> testQueuedCheck(r, HealthCheckStatus.CRITICAL))
-                .run("classpath:health.yml");
+                .run("classpath:health8.yml");
     }
 
     private void testUtilizationCheck(BQRuntime runtime, HealthCheckStatus expectedStatus) {
