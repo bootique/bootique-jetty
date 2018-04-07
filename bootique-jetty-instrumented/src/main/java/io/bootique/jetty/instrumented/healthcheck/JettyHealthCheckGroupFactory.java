@@ -87,13 +87,13 @@ public class JettyHealthCheckGroupFactory {
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
         Supplier<Double> deferredGauge = valueFromGauge(registry, resolveMetricName("utilization"));
         ValueRange<Double> range = getPoolUtilizationThresholds();
-        return new ValueRangeCheck<>(range, deferredGauge::get);
+        return new ValueRangeCheck<>(range, deferredGauge);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {
         Supplier<Integer> deferredGauge = valueFromGauge(registry, resolveMetricName("queued-requests"));
         ValueRange<Integer> range = getQueuedRequestsThresholds();
-        return new ValueRangeCheck<>(range, deferredGauge::get);
+        return new ValueRangeCheck<>(range, deferredGauge);
     }
 
     private String resolveMetricName(String metricLabel) {
