@@ -82,14 +82,14 @@ public class ThreadPoolMetricsIT {
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
-        return findGauge(Double.class, runtime, "utilization");
+        return findGauge(runtime, "utilization");
     }
 
     private Gauge<Integer> findQueuedRequestsGauge(BQRuntime runtime) {
-        return findGauge(Integer.class, runtime, "queued-requests");
+        return findGauge(runtime, "queued-requests");
     }
 
-    private <T> Gauge<T> findGauge(Class<T> type, BQRuntime runtime, String label) {
+    private <T> Gauge<T> findGauge(BQRuntime runtime, String label) {
 
         MetricRegistry registry = runtime.getInstance(MetricRegistry.class);
         String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
