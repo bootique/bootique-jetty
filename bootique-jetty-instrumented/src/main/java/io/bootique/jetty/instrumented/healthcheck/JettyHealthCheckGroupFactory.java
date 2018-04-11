@@ -5,10 +5,11 @@ import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.metrics.health.HealthCheck;
-import io.bootique.metrics.health.check.DoubleValueRangeFactory;
 import io.bootique.metrics.health.check.IntValueRangeFactory;
+import io.bootique.metrics.health.check.PercentValueRangeFactory;
 import io.bootique.metrics.health.check.ValueRange;
 import io.bootique.metrics.health.check.ValueRangeCheck;
+import io.bootique.value.Percent;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.Collection;
@@ -26,12 +27,7 @@ public class JettyHealthCheckGroupFactory {
     static final String QUEUED_REQUESTS_CHECK = "bq.jetty.threadPool.queuedRequests";
 
     private IntValueRangeFactory queuedRequestsThresholds;
-    private DoubleValueRangeFactory poolUtilizationThresholds;
-
-    public JettyHealthCheckGroupFactory() {
-        // by default init minimums...
-
-    }
+    private PercentValueRangeFactory poolUtilizationThresholds;
 
     protected ValueRange<Integer> getQueuedRequestsThresholds() {
 
@@ -53,23 +49,22 @@ public class JettyHealthCheckGroupFactory {
         this.queuedRequestsThresholds = queuedRequestsThresholds;
     }
 
-    protected ValueRange<Double> getPoolUtilizationThresholds() {
+    protected ValueRange<Percent> getPoolUtilizationThresholds() {
 
-        // init min if it wasn't set...
         if (poolUtilizationThresholds != null) {
-            if (poolUtilizationThresholds.getMin() == null) {
-                poolUtilizationThresholds.setMin(0);
-            }
-
             return poolUtilizationThresholds.createRange();
         }
 
-        // TODO: replace Double with some kind of Percent object
-        return ValueRange.builder(Double.class).min(0.).warning(0.7).critical(0.9).max(1.).build();
+        // default range
+        return ValueRange.builder(Percent.class)
+                .min(Percent.ZERO)
+                .warning(new Percent(70))
+                .critical(new Percent(90))
+                .max(Percent.HUNDRED).build();
     }
 
     @BQConfigProperty
-    public void setPoolUtilizationThresholds(DoubleValueRangeFactory poolUtilizationThresholds) {
+    public void setPoolUtilizationThresholds(PercentValueRangeFactory poolUtilizationThresholds) {
         this.poolUtilizationThresholds = poolUtilizationThresholds;
     }
 
@@ -86,8 +81,9 @@ public class JettyHealthCheckGroupFactory {
 
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
         Supplier<Double> deferredGauge = valueFromGauge(registry, resolveMetricName("utilization"));
-        ValueRange<Double> range = getPoolUtilizationThresholds();
-        return new ValueRangeCheck<>(range, deferredGauge);
+        Supplier<Percent> deferedPctGauge = () -> new Percent(deferredGauge.get() * 100.);
+        ValueRange<Percent> range = getPoolUtilizationThresholds();
+        return new ValueRangeCheck<>(range, deferedPctGauge);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {

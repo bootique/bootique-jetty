@@ -8,5 +8,5 @@ jetty:
       warning: 2
       critical: 3
     poolUtilizationThresholds:
-      warning: 0.6
-      critical: 0.9
+      warning: 60%
+      critical: 90%
