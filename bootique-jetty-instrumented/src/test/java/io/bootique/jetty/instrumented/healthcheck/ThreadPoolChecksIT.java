@@ -65,7 +65,7 @@ public class ThreadPoolChecksIT {
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
 
         AssertExtras.assertWithRetry(() -> {
-            HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.THREAD_POOL_UTILIZATION_CHECK);
+            HealthCheckOutcome result = registry.runHealthCheck(JettyHealthCheckGroupFactory.POOL_UTILIZATION_CHECK);
             assertEquals(result.toString(), expectedStatus, result.getStatus());
         });
     }

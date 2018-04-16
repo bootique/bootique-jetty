@@ -5,8 +5,8 @@ import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.metrics.health.HealthCheck;
-import io.bootique.metrics.health.check.IntValueRangeFactory;
-import io.bootique.metrics.health.check.PercentValueRangeFactory;
+import io.bootique.metrics.health.check.IntRangeFactory;
+import io.bootique.metrics.health.check.PercentRangeFactory;
 import io.bootique.metrics.health.check.ValueRange;
 import io.bootique.metrics.health.check.ValueRangeCheck;
 import io.bootique.value.Percent;
@@ -23,11 +23,11 @@ import java.util.function.Supplier;
 @BQConfig("Configures Jetty-related health checks.")
 public class JettyHealthCheckGroupFactory {
 
-    static final String THREAD_POOL_UTILIZATION_CHECK = "bq.jetty.threadPool.utilization";
+    static final String POOL_UTILIZATION_CHECK = "bq.jetty.threadPool.utilization";
     static final String QUEUED_REQUESTS_CHECK = "bq.jetty.threadPool.queuedRequests";
 
-    private IntValueRangeFactory queuedRequestsThresholds;
-    private PercentValueRangeFactory poolUtilizationThresholds;
+    private PercentRangeFactory poolUtilizationThresholds;
+    private IntRangeFactory queuedRequestsThresholds;
 
     protected ValueRange<Integer> getQueuedRequestsThresholds() {
 
@@ -45,7 +45,7 @@ public class JettyHealthCheckGroupFactory {
     }
 
     @BQConfigProperty
-    public void setQueuedRequestsThresholds(IntValueRangeFactory queuedRequestsThresholds) {
+    public void setQueuedRequestsThresholds(IntRangeFactory queuedRequestsThresholds) {
         this.queuedRequestsThresholds = queuedRequestsThresholds;
     }
 
@@ -64,7 +64,7 @@ public class JettyHealthCheckGroupFactory {
     }
 
     @BQConfigProperty
-    public void setPoolUtilizationThresholds(PercentValueRangeFactory poolUtilizationThresholds) {
+    public void setPoolUtilizationThresholds(PercentRangeFactory poolUtilizationThresholds) {
         this.poolUtilizationThresholds = poolUtilizationThresholds;
     }
 
@@ -74,7 +74,7 @@ public class JettyHealthCheckGroupFactory {
 
     protected Map<String, HealthCheck> createHealthChecksMap(MetricRegistry registry) {
         Map<String, HealthCheck> checks = new HashMap<>(3);
-        checks.put(THREAD_POOL_UTILIZATION_CHECK, createThreadPoolUtilizationCheck(registry));
+        checks.put(POOL_UTILIZATION_CHECK, createThreadPoolUtilizationCheck(registry));
         checks.put(QUEUED_REQUESTS_CHECK, createQueuedRequestsCheck(registry));
         return checks;
     }

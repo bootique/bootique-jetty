@@ -24,7 +24,7 @@ public class JettyHealthCheckGroupIT {
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
         Map<String, HealthCheckOutcome> results = registry.runHealthChecks();
 
-        assertTrue(results.containsKey(JettyHealthCheckGroupFactory.THREAD_POOL_UTILIZATION_CHECK));
+        assertTrue(results.containsKey(JettyHealthCheckGroupFactory.POOL_UTILIZATION_CHECK));
         assertTrue(results.containsKey(JettyHealthCheckGroupFactory.QUEUED_REQUESTS_CHECK));
     }
 }
