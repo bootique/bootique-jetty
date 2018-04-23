@@ -65,7 +65,7 @@ public class JettyInstrumentedModule extends ConfigModule {
     @Provides
     @Singleton
     MappedListener<RequestTimer> provideRequestTimer(MetricRegistry metricRegistry) {
-        String name = MetricNaming.name(JettyInstrumentedModule.class, "Request", "Time");
+        String name = MetricNaming.forModule(JettyInstrumentedModule.class).name("Request", "Time");
         Timer timer = metricRegistry.timer(name);
         RequestTimer requestTimer = new RequestTimer(timer);
         return new MappedListener<>(requestTimer, REQUEST_TIMER_LISTENER_ORDER);
