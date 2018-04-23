@@ -15,11 +15,11 @@ import static java.util.Arrays.asList;
 /**
  * @since 0.11
  */
-public class InstrumentedJettyModuleProvider implements BQModuleProvider {
+public class JettyInstrumentedModuleProvider implements BQModuleProvider {
 
     @Override
     public Module module() {
-        return new InstrumentedJettyModule();
+        return new JettyInstrumentedModule();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -14,6 +15,7 @@ import io.bootique.jetty.instrumented.request.RequestMDCManager;
 import io.bootique.jetty.instrumented.request.RequestTimer;
 import io.bootique.jetty.instrumented.server.InstrumentedServerFactory;
 import io.bootique.jetty.server.ServerFactory;
+import io.bootique.metrics.MetricNaming;
 import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
@@ -21,7 +23,7 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
 /**
  * @since 0.11
  */
-public class InstrumentedJettyModule extends ConfigModule {
+public class JettyInstrumentedModule extends ConfigModule {
 
     // TX ID listener is usually the outermost listener in any app. It is a good idea to order your other listeners
     // relative to this one , using higher ordering values.
@@ -30,12 +32,12 @@ public class InstrumentedJettyModule extends ConfigModule {
     // goes inside BUSINESS_TX_LISTENER
     public static final int REQUEST_TIMER_LISTENER_ORDER = BUSINESS_TX_LISTENER_ORDER + 200;
 
-    public InstrumentedJettyModule() {
+    public JettyInstrumentedModule() {
         // reusing overridden module prefix
         super("jetty");
     }
 
-    public InstrumentedJettyModule(String configPrefix) {
+    public JettyInstrumentedModule(String configPrefix) {
         super(configPrefix);
     }
 
@@ -63,8 +65,10 @@ public class InstrumentedJettyModule extends ConfigModule {
     @Provides
     @Singleton
     MappedListener<RequestTimer> provideRequestTimer(MetricRegistry metricRegistry) {
-        RequestTimer timer = new RequestTimer(metricRegistry);
-        return new MappedListener<>(timer, REQUEST_TIMER_LISTENER_ORDER);
+        String name = MetricNaming.name(JettyInstrumentedModule.class, "Request", "Time");
+        Timer timer = metricRegistry.timer(name);
+        RequestTimer requestTimer = new RequestTimer(timer);
+        return new MappedListener<>(requestTimer, REQUEST_TIMER_LISTENER_ORDER);
     }
 
     @Provides

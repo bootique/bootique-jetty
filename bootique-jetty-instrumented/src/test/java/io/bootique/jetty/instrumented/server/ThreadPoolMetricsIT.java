@@ -6,7 +6,6 @@ import io.bootique.BQRuntime;
 import io.bootique.jetty.instrumented.unit.AssertExtras;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import io.bootique.test.junit.BQTestFactory;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -82,20 +81,18 @@ public class ThreadPoolMetricsIT {
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
-        return findGauge(runtime, "utilization");
+        return findGauge(runtime, InstrumentedQueuedThreadPool.utilizationMetric());
     }
 
     private Gauge<Integer> findQueuedRequestsGauge(BQRuntime runtime) {
-        return findGauge(runtime, "queued-requests");
+        return findGauge(runtime, InstrumentedQueuedThreadPool.queuedRequestsMetric());
     }
 
-    private <T> Gauge<T> findGauge(BQRuntime runtime, String label) {
+    private <T> Gauge<T> findGauge(BQRuntime runtime, String metricName) {
 
         MetricRegistry registry = runtime.getInstance(MetricRegistry.class);
-        String name = MetricRegistry.name(QueuedThreadPool.class, "bootique-http", label);
-
-        Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
-        assertEquals("Unexpected number of gauges for " + name, 1, gauges.size());
+        Collection<Gauge> gauges = registry.getGauges((n, m) -> metricName.equals(n)).values();
+        assertEquals("Unexpected number of gauges for " + metricName, 1, gauges.size());
         return gauges.iterator().next();
     }
 }

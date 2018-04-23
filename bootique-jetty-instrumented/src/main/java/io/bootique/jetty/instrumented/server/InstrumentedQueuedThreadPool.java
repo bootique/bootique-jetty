@@ -3,11 +3,25 @@ package io.bootique.jetty.instrumented.server;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
+import io.bootique.jetty.instrumented.JettyInstrumentedModule;
+import io.bootique.metrics.MetricNaming;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.concurrent.BlockingQueue;
 
 public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
+
+    // for now assuming a single thread pool, so we can hardcode its name
+    private static final String sizeMetric;
+    private static final String queuedRequestsMetric;
+    private static final String utilization;
+
+    static {
+        MetricNaming naming = MetricNaming.forModule(JettyInstrumentedModule.class);
+        sizeMetric = naming.name("ThreadPool", "Size");
+        queuedRequestsMetric = naming.name("ThreadPool", "QueuedRequests");
+        utilization = naming.name("ThreadPool", "Utilization");
+    }
 
     private MetricRegistry metricRegistry;
 
@@ -66,19 +80,26 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
         this.metricRegistry = metricRegistry;
     }
 
+    public static String sizeMetric() {
+        return sizeMetric;
+    }
+
+    public static String queuedRequestsMetric() {
+        return queuedRequestsMetric;
+    }
+
+    public static String utilizationMetric() {
+        return utilization;
+    }
+
     @Override
     protected void doStart() throws Exception {
 
         super.doStart();
 
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "size"),
-                (Gauge<Integer>) this::getThreads);
-
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "queued-requests"),
-                (Gauge<Integer>) this::getQueueSize);
-
-        metricRegistry.register(MetricRegistry.name(QueuedThreadPool.class, getName(), "utilization"),
-                (Gauge<Double>) this::getUtilization);
+        metricRegistry.register(sizeMetric(), (Gauge<Integer>) this::getThreads);
+        metricRegistry.register(queuedRequestsMetric(), (Gauge<Integer>) this::getQueueSize);
+        metricRegistry.register(utilizationMetric(), (Gauge<Double>) this::getUtilization);
     }
 
     protected double getUtilization() {

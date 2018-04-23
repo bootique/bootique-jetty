@@ -4,6 +4,7 @@
 * #75 Cleaning up APIs deprecated since <= 0.25
 * #76 Upgrade Jetty to 9.4
 * #77 Use percentage metric for thread pool utilization check
+* #78 Metrics renaming to follow naming convention
 
 ## 0.25
 

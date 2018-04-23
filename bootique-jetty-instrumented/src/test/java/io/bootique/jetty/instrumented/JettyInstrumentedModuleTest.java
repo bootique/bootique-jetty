@@ -7,21 +7,21 @@ import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
 
-public class InstrumentedJettyModuleTest {
+public class JettyInstrumentedModuleTest {
 
 	@Test
 	public void testDefaultConstructor() {
-		InstrumentedJettyModule m = new InstrumentedJettyModule();
+		JettyInstrumentedModule m = new JettyInstrumentedModule();
 		assertEquals("jetty", getConfigPrefix(m));
 	}
 
 	@Test
 	public void testPrefixConstructor() {
-		InstrumentedJettyModule m = new InstrumentedJettyModule("xyz");
+		JettyInstrumentedModule m = new JettyInstrumentedModule("xyz");
 		assertEquals("xyz", getConfigPrefix(m));
 	}
 
-	private static String getConfigPrefix(InstrumentedJettyModule module) {
+	private static String getConfigPrefix(JettyInstrumentedModule module) {
 
 		try {
 			Field f = ConfigModule.class.getDeclaredField("configPrefix");

@@ -1,6 +1,5 @@
 package io.bootique.jetty.instrumented.request;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,8 @@ public class RequestTimer implements ServletRequestListener {
 
     private Timer requestTimer;
 
-    public RequestTimer(MetricRegistry metricRegistry) {
-        this.requestTimer = metricRegistry.timer(MetricRegistry.name(RequestTimer.class, "request-timer"));
+    public RequestTimer(Timer requestTimer) {
+        this.requestTimer = requestTimer;
     }
 
     @Override

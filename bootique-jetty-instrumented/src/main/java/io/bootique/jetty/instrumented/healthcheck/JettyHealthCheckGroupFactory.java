@@ -4,13 +4,13 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.jetty.instrumented.server.InstrumentedQueuedThreadPool;
 import io.bootique.metrics.health.HealthCheck;
 import io.bootique.metrics.health.check.IntRangeFactory;
 import io.bootique.metrics.health.check.PercentRangeFactory;
 import io.bootique.metrics.health.check.ValueRange;
 import io.bootique.metrics.health.check.ValueRangeCheck;
 import io.bootique.value.Percent;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,20 +80,16 @@ public class JettyHealthCheckGroupFactory {
     }
 
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
-        Supplier<Double> deferredGauge = valueFromGauge(registry, resolveMetricName("utilization"));
+        Supplier<Double> deferredGauge = valueFromGauge(registry, InstrumentedQueuedThreadPool.utilizationMetric());
         Supplier<Percent> deferedPctGauge = () -> new Percent(deferredGauge.get());
         ValueRange<Percent> range = getPoolUtilizationThresholds();
         return new ValueRangeCheck<>(range, deferedPctGauge);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {
-        Supplier<Integer> deferredGauge = valueFromGauge(registry, resolveMetricName("queued-requests"));
+        Supplier<Integer> deferredGauge = valueFromGauge(registry, InstrumentedQueuedThreadPool.queuedRequestsMetric());
         ValueRange<Integer> range = getQueuedRequestsThresholds();
         return new ValueRangeCheck<>(range, deferredGauge);
-    }
-
-    private String resolveMetricName(String metricLabel) {
-        return MetricRegistry.name(QueuedThreadPool.class, "bootique-http", metricLabel);
     }
 
     private <T> Supplier<T> valueFromGauge(MetricRegistry registry, String name) {

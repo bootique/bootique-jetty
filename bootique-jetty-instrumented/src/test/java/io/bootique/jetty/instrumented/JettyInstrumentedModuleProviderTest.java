@@ -10,19 +10,19 @@ import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class InstrumentedJettyModuleProviderTest {
+public class JettyInstrumentedModuleProviderTest {
 
     @Rule
     public BQTestFactory testFactory = new BQTestFactory();
 
     @Test
     public void testAutoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(InstrumentedJettyModuleProvider.class);
+        BQModuleProviderChecker.testAutoLoadable(JettyInstrumentedModuleProvider.class);
     }
 
     @Test
     public void testModuleDeclaresDependencies() {
-        final BQRuntime bqRuntime = testFactory.app().module(new InstrumentedJettyModuleProvider()).createRuntime();
+        final BQRuntime bqRuntime = testFactory.app().module(new JettyInstrumentedModuleProvider()).createRuntime();
         BQRuntimeChecker.testModulesLoaded(bqRuntime,
                 JettyModule.class,
                 HealthCheckModule.class,
