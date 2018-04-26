@@ -19,17 +19,6 @@ public class ThreadPoolMetricsIT {
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testUtilization_2() throws InterruptedException {
-
-        new ThreadPoolTester(testFactory)
-                .sendRequests(2)
-                .unblockAfterInProgressRequests(2)
-                .afterStartup(r -> checkUtilization(r, 0))
-                .afterRequestsFrozen(r -> checkUtilization(r, 2))
-                .run("classpath:threads20.yml");
-    }
-
-    @Test
     public void testUtilization_1() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
@@ -37,6 +26,17 @@ public class ThreadPoolMetricsIT {
                 .unblockAfterInProgressRequests(1)
                 .afterStartup(r -> checkUtilization(r, 0))
                 .afterRequestsFrozen(r -> checkUtilization(r, 1))
+                .run("classpath:threads20.yml");
+    }
+
+    @Test
+    public void testUtilization_2() throws InterruptedException {
+
+        new ThreadPoolTester(testFactory)
+                .sendRequests(2)
+                .unblockAfterInProgressRequests(2)
+                .afterStartup(r -> checkUtilization(r, 0))
+                .afterRequestsFrozen(r -> checkUtilization(r, 2))
                 .run("classpath:threads20.yml");
     }
 
@@ -73,11 +73,18 @@ public class ThreadPoolMetricsIT {
         // utilization = (acceptorTh + selectorTh + active) / max
         // see more detailed explanation in InstrumentedQueuedThreadPool
 
+        final int acceptors = 2;
+        final int selectors = 3;
+
         // note that Jetty since 9.4 has a number of internal tasks that block threads, so getting an exact utilization
         // number predictably is not possible... So using a huge delta so that plus or minus a busy thread does not
         // fail the test.
 
-        AssertExtras.assertWithRetry(() -> assertEquals((2 + 3 + frozenRequests) / 20d, gauge.getValue(), 0.1));
+        AssertExtras.assertWithRetry(() -> {
+            double v = gauge.getValue();
+            assertEquals("Actual frozen: " + (int) (v * 20d - acceptors - selectors) + " vs expected " + frozenRequests,
+                    (acceptors + selectors + frozenRequests) / 20d, v, 0.1);
+        });
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
