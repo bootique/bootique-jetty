@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class JettyHealthCheckGroupIT {
+public class JettyHealthChecksIT {
 
     @Rule
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
@@ -24,7 +24,7 @@ public class JettyHealthCheckGroupIT {
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
         Map<String, HealthCheckOutcome> results = registry.runHealthChecks();
 
-        assertTrue(results.containsKey(JettyHealthCheckGroupFactory.POOL_UTILIZATION_CHECK));
-        assertTrue(results.containsKey(JettyHealthCheckGroupFactory.QUEUED_REQUESTS_CHECK));
+        assertTrue(results.containsKey(JettyHealthChecksFactory.POOL_UTILIZATION_CHECK));
+        assertTrue(results.containsKey(JettyHealthChecksFactory.QUEUED_REQUESTS_CHECK));
     }
 }

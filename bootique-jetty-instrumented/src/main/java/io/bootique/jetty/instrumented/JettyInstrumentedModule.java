@@ -10,7 +10,7 @@ import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedListener;
-import io.bootique.jetty.instrumented.healthcheck.JettyHealthCheckGroup;
+import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecks;
 import io.bootique.jetty.instrumented.request.RequestMDCManager;
 import io.bootique.jetty.instrumented.request.RequestTimer;
 import io.bootique.jetty.instrumented.server.InstrumentedServerFactory;
@@ -49,7 +49,7 @@ public class JettyInstrumentedModule extends ConfigModule {
                 .addMappedListener(new TypeLiteral<MappedListener<RequestMDCManager>>() {
                 });
 
-        HealthCheckModule.extend(binder).addHealthCheckGroup(JettyHealthCheckGroup.class);
+        HealthCheckModule.extend(binder).addHealthCheckGroup(JettyHealthChecks.class);
     }
 
     @Provides
@@ -80,7 +80,7 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Singleton
     @Provides
-    JettyHealthCheckGroup provideHealthCheckGroup(InstrumentedServerFactory serverFactory) {
+    JettyHealthChecks provideHealthCheckGroup(InstrumentedServerFactory serverFactory) {
         return serverFactory.createHealthCheckGroup();
     }
 }

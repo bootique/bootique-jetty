@@ -3,8 +3,8 @@ package io.bootique.jetty.instrumented.server;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.jetty.instrumented.healthcheck.JettyHealthCheckGroup;
-import io.bootique.jetty.instrumented.healthcheck.JettyHealthCheckGroupFactory;
+import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecks;
+import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecksFactory;
 import io.bootique.jetty.server.ServerFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 @BQConfig
 public class InstrumentedServerFactory extends ServerFactory {
 
-    private JettyHealthCheckGroupFactory health;
+    private JettyHealthChecksFactory health;
 
     private MetricRegistry metricRegistry;
 
@@ -32,15 +32,15 @@ public class InstrumentedServerFactory extends ServerFactory {
     }
 
     /**
-     * @return a new configured {@link JettyHealthCheckGroup}.
+     * @return a new configured {@link JettyHealthChecks}.
      * @since 0.25
      */
-    public JettyHealthCheckGroup createHealthCheckGroup() {
+    public JettyHealthChecks createHealthCheckGroup() {
         return getHealth().createHealthCheckGroup(getMetricRegistry());
     }
 
-    JettyHealthCheckGroupFactory getHealth() {
-        return health != null ? health : new JettyHealthCheckGroupFactory();
+    JettyHealthChecksFactory getHealth() {
+        return health != null ? health : new JettyHealthChecksFactory();
     }
 
     /**
@@ -48,7 +48,7 @@ public class InstrumentedServerFactory extends ServerFactory {
      * @since 0.25
      */
     @BQConfigProperty
-    public void setHealth(JettyHealthCheckGroupFactory health) {
+    public void setHealth(JettyHealthChecksFactory health) {
         this.health = health;
     }
 

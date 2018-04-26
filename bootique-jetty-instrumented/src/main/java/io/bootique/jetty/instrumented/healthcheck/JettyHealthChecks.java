@@ -10,11 +10,11 @@ import java.util.Map;
  *
  * @since 0.25
  */
-public class JettyHealthCheckGroup implements HealthCheckGroup {
+public class JettyHealthChecks implements HealthCheckGroup {
 
     private Map<String, HealthCheck> healthChecks;
 
-    public JettyHealthCheckGroup(Map<String, HealthCheck> healthChecks) {
+    public JettyHealthChecks(Map<String, HealthCheck> healthChecks) {
         this.healthChecks = healthChecks;
     }
 

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  * @since 0.25
  */
 @BQConfig("Configures Jetty-related health checks.")
-public class JettyHealthCheckGroupFactory {
+public class JettyHealthChecksFactory {
 
     static final String POOL_UTILIZATION_CHECK = "bq.jetty.threadPool.utilization";
     static final String QUEUED_REQUESTS_CHECK = "bq.jetty.threadPool.queuedRequests";
@@ -68,8 +68,8 @@ public class JettyHealthCheckGroupFactory {
         this.poolUtilizationThresholds = poolUtilizationThresholds;
     }
 
-    public JettyHealthCheckGroup createHealthCheckGroup(MetricRegistry registry) {
-        return new JettyHealthCheckGroup(createHealthChecksMap(registry));
+    public JettyHealthChecks createHealthCheckGroup(MetricRegistry registry) {
+        return new JettyHealthChecks(createHealthChecksMap(registry));
     }
 
     protected Map<String, HealthCheck> createHealthChecksMap(MetricRegistry registry) {
