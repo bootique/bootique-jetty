@@ -169,7 +169,7 @@ public class ThreadPoolTester {
 
             try {
                 for (int i = 0; i < sendRequests; i++) {
-                    clientPool.submit(() -> target.request().get());
+                    clientPool.submit(() -> target.request().get().close());
                 }
 
                 assertTrue("Requests failed to queue up in 1 sec", locks.releaseOnRequestQueuedUp.await(1, TimeUnit.SECONDS));

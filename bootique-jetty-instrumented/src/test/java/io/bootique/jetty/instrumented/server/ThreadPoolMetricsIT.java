@@ -9,7 +9,9 @@ import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,13 +32,13 @@ public class ThreadPoolMetricsIT {
     }
 
     @Test
-    public void testUtilization_2() throws InterruptedException {
+    public void testUtilization_3() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
-                .sendRequests(2)
-                .unblockAfterInProgressRequests(2)
+                .sendRequests(3)
+                .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkUtilization(r, 0))
-                .afterRequestsFrozen(r -> checkUtilization(r, 2))
+                .afterRequestsFrozen(r -> checkUtilization(r, 3))
                 .run("classpath:threads20.yml");
     }
 
@@ -85,6 +87,17 @@ public class ThreadPoolMetricsIT {
             assertEquals("Actual frozen: " + (int) (v * 20d - acceptors - selectors) + " vs expected " + frozenRequests,
                     (acceptors + selectors + frozenRequests) / 20d, v, 0.1);
         });
+    }
+
+    private Stream<Thread> allThreads() {
+        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+        while (tg.getParent() != null) {
+            tg = tg.getParent();
+        }
+
+        Thread[] active = new Thread[tg.activeCount()];
+        tg.enumerate(active);
+        return Arrays.stream(active);
     }
 
     private Gauge<Double> findUtilizationGauge(BQRuntime runtime) {
