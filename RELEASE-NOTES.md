@@ -5,6 +5,7 @@
 * #76 Upgrade Jetty to 9.4
 * #77 Use percentage metric for thread pool utilization check
 * #78 Metrics renaming to follow naming convention
+* #79 Health check renaming to follow naming convention
 
 ## 0.25
 

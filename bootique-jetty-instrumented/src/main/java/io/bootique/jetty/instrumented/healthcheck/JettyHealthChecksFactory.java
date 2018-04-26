@@ -4,6 +4,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.jetty.instrumented.JettyInstrumentedModule;
 import io.bootique.jetty.instrumented.server.InstrumentedQueuedThreadPool;
 import io.bootique.metrics.health.HealthCheck;
 import io.bootique.metrics.health.check.IntRangeFactory;
@@ -23,8 +24,13 @@ import java.util.function.Supplier;
 @BQConfig("Configures Jetty-related health checks.")
 public class JettyHealthChecksFactory {
 
-    static final String POOL_UTILIZATION_CHECK = "bq.jetty.threadPool.utilization";
-    static final String QUEUED_REQUESTS_CHECK = "bq.jetty.threadPool.queuedRequests";
+    static final String POOL_UTILIZATION_CHECK = JettyInstrumentedModule
+            .METRIC_NAMING
+            .name("ThreadPool", "Utilization");
+    
+    static final String QUEUED_REQUESTS_CHECK =  JettyInstrumentedModule
+            .METRIC_NAMING
+            .name("ThreadPool", "QueuedRequests");
 
     private PercentRangeFactory poolUtilizationThresholds;
     private IntRangeFactory queuedRequestsThresholds;

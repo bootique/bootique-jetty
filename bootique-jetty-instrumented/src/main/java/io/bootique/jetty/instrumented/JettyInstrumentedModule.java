@@ -25,6 +25,8 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
  */
 public class JettyInstrumentedModule extends ConfigModule {
 
+    public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
+
     // TX ID listener is usually the outermost listener in any app. It is a good idea to order your other listeners
     // relative to this one , using higher ordering values.
     public static final int BUSINESS_TX_LISTENER_ORDER = Integer.MIN_VALUE + 800;

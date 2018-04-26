@@ -4,7 +4,6 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.RatioGauge;
 import io.bootique.jetty.instrumented.JettyInstrumentedModule;
-import io.bootique.metrics.MetricNaming;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.concurrent.BlockingQueue;
@@ -12,16 +11,17 @@ import java.util.concurrent.BlockingQueue;
 public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
 
     // for now assuming a single thread pool, so we can hardcode its name
-    private static final String sizeMetric;
-    private static final String queuedRequestsMetric;
-    private static final String utilization;
+    private static final String sizeMetric = JettyInstrumentedModule
+            .METRIC_NAMING
+            .name("ThreadPool", "Size");
 
-    static {
-        MetricNaming naming = MetricNaming.forModule(JettyInstrumentedModule.class);
-        sizeMetric = naming.name("ThreadPool", "Size");
-        queuedRequestsMetric = naming.name("ThreadPool", "QueuedRequests");
-        utilization = naming.name("ThreadPool", "Utilization");
-    }
+    private static final String queuedRequestsMetric = JettyInstrumentedModule
+            .METRIC_NAMING
+            .name("ThreadPool", "QueuedRequests");
+
+    private static final String utilization = JettyInstrumentedModule
+            .METRIC_NAMING
+            .name("ThreadPool", "Utilization");
 
     private MetricRegistry metricRegistry;
 

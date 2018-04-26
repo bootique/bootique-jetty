@@ -2,6 +2,7 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
+import io.bootique.metrics.health.HealthCheckRegistry;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,5 +38,21 @@ public class JettyInstrumentedModuleIT {
                 "bq.Jetty.ThreadPool.Utilization"));
 
         assertEquals(expectedGauges, metricRegistry.getGauges().keySet());
+    }
+
+    @Test
+    public void testHealthChecks() {
+        BQRuntime runtime = testFactory
+                .app("--server")
+                .autoLoadModules()
+                .createRuntime();
+
+        HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
+
+        Set<String> expectedGauges = new HashSet<>(asList(
+                "bq.Jetty.ThreadPool.QueuedRequests",
+                "bq.Jetty.ThreadPool.Utilization"));
+
+        assertEquals(expectedGauges, registry.healthCheckNames());
     }
 }
