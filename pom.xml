@@ -85,6 +85,11 @@
 				<artifactId>jersey-client</artifactId>
 				<version>2.21</version>
 			</dependency>
+            <dependency><!-- Transitive dependency of jersey-client -->
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
