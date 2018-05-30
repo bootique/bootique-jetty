@@ -1,0 +1,4 @@
+jetty:
+  connectors:
+    - port: 15001
+    - port: 15002

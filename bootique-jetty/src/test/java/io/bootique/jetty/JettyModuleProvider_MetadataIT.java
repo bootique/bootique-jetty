@@ -78,6 +78,7 @@ public class JettyModuleProvider_MetadataIT {
         });
 
         assertEquals("jetty" +
+                "[bootiqueCors:io.bootique.jetty.cors.BootiqueCorsFactory]"+
                 "[compactPath:boolean]" +
                 "[compression:boolean]" +
                 "[list:connectors<io.bootique.jetty.connector.ConnectorFactory>]" +
