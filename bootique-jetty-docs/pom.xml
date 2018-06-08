@@ -12,14 +12,12 @@
 	<packaging>pom</packaging>
 
 	<name>bootique-jetty-docs: Bootique Jetty Module Documentation</name>
-	<description>
-		Documentation for Bootique Jetty Integration.
-	</description>
+	<description>Documentation for Bootique Jetty Integration.</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- This annotation allows to only expose major version in the docs metadata to avoid confusing SEO -->
-        <bootique.version.major>0</bootique.version.major>	
+        <bootique.version.major>0</bootique.version.major>
 	</properties>
 
 	<build>

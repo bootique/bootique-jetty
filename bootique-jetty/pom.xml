@@ -12,9 +12,7 @@
 	<packaging>jar</packaging>
 
 	<name>bootique-jetty: a module to run Jetty on Bootique</name>
-	<description>
-		Provides Jetty integration with Bootique.
-	</description>
+	<description>Provides Jetty integration with Bootique.</description>
 
 	<dependencies>
 		<!-- Compile dependencies -->
@@ -51,16 +49,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <scope>test</scope>
-        </dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
@@ -68,6 +56,22 @@
 		<dependency>
 			<groupId>io.bootique</groupId>
 			<artifactId>bootique-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Jersey client on Java 9+ needs these -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
