@@ -116,5 +116,23 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>rat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>src/test/resources/health8.yml</exclude>
+								<exclude>src/test/resources/threads20.yml</exclude>
+								<exclude>src/test/resources/threads8.yml</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

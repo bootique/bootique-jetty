@@ -117,5 +117,22 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>rat</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>src/test/resources/io/bootique/jetty/**/other.txt</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

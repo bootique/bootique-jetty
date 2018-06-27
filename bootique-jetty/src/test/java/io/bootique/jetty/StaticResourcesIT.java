@@ -35,6 +35,25 @@ import static org.junit.Assert.assertEquals;
 
 public class StaticResourcesIT {
 
+    public static final String COPYRIGHT = "<!--\n" +
+            "   Licensed to ObjectStyle LLC under one\n" +
+            "   or more contributor license agreements.  See the NOTICE file\n" +
+            "   distributed with this work for additional information\n" +
+            "   regarding copyright ownership.  The ObjectStyle LLC licenses\n" +
+            "   this file to you under the Apache License, Version 2.0 (the\n" +
+            "   “License”); you may not use this file except in compliance\n" +
+            "   with the License.  You may obtain a copy of the License at\n" +
+            "\n" +
+            "     http://www.apache.org/licenses/LICENSE-2.0\n" +
+            "\n" +
+            "   Unless required by applicable law or agreed to in writing,\n" +
+            "   software distributed under the License is distributed on an\n" +
+            "   “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n" +
+            "   KIND, either express or implied.  See the License for the\n" +
+            "   specific language governing permissions and limitations\n" +
+            "   under the License.\n" +
+            "  -->\n";
+
     @Rule
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
@@ -132,7 +151,7 @@ public class StaticResourcesIT {
 
         Response r = base.path("/").request().get();
         assertEquals(Status.OK.getStatusCode(), r.getStatus());
-        assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+        assertEquals(COPYRIGHT + "<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
     }
 
     @Test
@@ -150,7 +169,7 @@ public class StaticResourcesIT {
 
         Response r = base.path("/").request().get();
         assertEquals(Status.OK.getStatusCode(), r.getStatus());
-        assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+        assertEquals(COPYRIGHT + "<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
     }
 
     @Test
@@ -193,7 +212,7 @@ public class StaticResourcesIT {
 
         Response r3 = base.path("/sub2/").request().get();
         assertEquals(Status.OK.getStatusCode(), r3.getStatus());
-        assertEquals("<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
+        assertEquals(COPYRIGHT + "<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
     }
 
 }
