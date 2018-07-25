@@ -54,7 +54,7 @@ public class ServerFactory {
     // defined as "int" in Jetty, so we should not exceed max int
     private int maxFormContentSize;
     private int maxFormKeys;
-    private BootiqueCorsFactory bootiqueCors;
+//    private BootiqueCorsFactory bootiqueCors;
 
     /**
      * Maintains a mapping between erroneous response's Status Code and the page (URL) which will be used to handle it further.
@@ -138,11 +138,11 @@ public class ServerFactory {
             handler.setErrorHandler(errorHandler);
         }
 
-        if (bootiqueCors != null) {
-            MappedFilter corsFilter = new MappedFilter(new CrossOriginFilter(), bootiqueCors.getUrlPatterns(),
-                    "cors-filter", bootiqueCors.getParameters(), bootiqueCors.getOrder());
-            getFilterFactory("cors-filter").createAndAddJettyFilter(handler, corsFilter);
-        }
+//        if (bootiqueCors != null) {
+//            MappedFilter corsFilter = new MappedFilter(new CrossOriginFilter(), bootiqueCors.getUrlPatterns(),
+//                    "cors-filter", bootiqueCors.getParameters(), bootiqueCors.getOrder());
+//            getFilterFactory("cors-filter").createAndAddJettyFilter(handler, corsFilter);
+//        }
 
         installListeners(handler, listeners);
         installServlets(handler, servlets);
@@ -484,14 +484,14 @@ public class ServerFactory {
         this.errorPages = errorPages;
     }
 
-
-    public BootiqueCorsFactory getBootiqueCors() {
-        return bootiqueCors;
-    }
-
-    @BQConfigProperty("Options for Cross Origin Filter")
-    public void setBootiqueCors(BootiqueCorsFactory bootiqueCors) {
-        this.bootiqueCors = bootiqueCors;
-    }
+//
+//    public BootiqueCorsFactory getBootiqueCors() {
+//        return bootiqueCors;
+//    }
+//
+//    @BQConfigProperty("Options for Cross Origin Filter")
+//    public void setBootiqueCors(BootiqueCorsFactory bootiqueCors) {
+//        this.bootiqueCors = bootiqueCors;
+//    }
 
 }

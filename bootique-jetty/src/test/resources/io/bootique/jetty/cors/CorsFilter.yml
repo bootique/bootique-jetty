@@ -2,7 +2,8 @@ jetty:
   connectors:
     - port: 15001
     - port: 15002
-  bootiqueCors:
+jettyservlets:
+  cors:
     urlPatterns:
       - "/api"
     allowedOrigins: "test"

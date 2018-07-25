@@ -1,6 +1,8 @@
 package io.bootique.jetty.cors;
 
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.jetty.MappedFilter;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -131,7 +133,7 @@ public class BootiqueCorsFactory {
         this.order = order;
     }
 
-    public Map<String, String> getParameters() {
+    private Map<String, String> getParameters() {
         final Map<String, String> params = new HashMap<>();
         params.put(ALLOWED_ORIGINS_PARAM, getAllowedOrigins());
         params.put(ALLOWED_TIMING_ORIGINS_PARAM, getAllowedTimingOrigins());
@@ -145,4 +147,8 @@ public class BootiqueCorsFactory {
         return params;
     }
 
+    MappedFilter<CrossOriginFilter> createCorsFilter() {
+        return  new MappedFilter<>(new CrossOriginFilter(), getUrlPatterns(),
+                "cors-filter", getParameters(), getOrder());
+    }
 }

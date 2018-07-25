@@ -45,6 +45,7 @@ public class BootiqueCorsFilterIT {
     public void testResponseHeaders() throws Exception {
         BQRuntime runtime = testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+                .module(JettyServletsModule.class)
                 .module(new UnitModule())
                 .createRuntime();
 
