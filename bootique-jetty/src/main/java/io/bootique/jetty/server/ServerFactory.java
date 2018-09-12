@@ -448,7 +448,7 @@ public class ServerFactory {
      * Compact URLs with multiple '/'s with a single '/'.
      *
      * @param compactPath Compact URLs with multiple '/'s with a single '/'. Default value is 'false'
-     * @since 0.26
+     * @since 1.0.RC1
      */
     @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
     public void setCompactPath(boolean compactPath) { this.compactPath = compactPath; }
