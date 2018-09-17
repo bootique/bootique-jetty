@@ -1,0 +1,383 @@
+// Licensed to ObjectStyle LLC under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ObjectStyle LLC licenses
+// this file to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+:toc:
+
+= Bootique Jetty Documentation
+
+== Chapter 1. Bootique Integration with Jetty
+
+https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web server] in your application. It provides environment for running servlet specification objects (servlets, servlet filters, servlet listeners). Also you will be able to serve static files that are either packaged in the application jar or located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both Jetty (e.g. set connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet parameters).
+
+`bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty</artifactId>
+</dependency>
+----
+
+Alternatively you may include an "instrumented" version of `bootique-jetty` that will provide a number of metrics for your running app:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-instrumented</artifactId>
+</dependency>
+----
+
+The module provides `--server` command, which starts your web server on foreground:
+
+----
+java -jar my.jar --server
+...
+i.b.j.s.ServerFactory - Adding listener i.b.j.s.DefaultServletEnvironment
+i.b.j.s.h.ContextHandler - Started o.e.j.s.ServletContextHandler@1e78c66e{/myapp,null,AVAILABLE}
+i.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+i.b.j.s.Server - Started @490ms
+----
+
+Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal Bootique way via YAML, as detailed below in the "Configuration Reference" chapter.
+
+== Chapter 2. Programming Jetty Applications
+
+You can write servlet specification objects (servlets, filters, listeners) as you'd do it under JavaEE, except that there's no `.war` and no `web.xml`. There's only your application, and you need to let Bootique know about your objects and how they should be mapped to request URLs. Let's start with servlets.
+
+=== Servlets
+
+The easiest way to add a servlet to a Bootique app is to annotate it with `@WebServlet`, providing name and url patterns:
+
+[source,java]
+----
+@WebServlet(
+    name = "myservlet",
+    urlPatterns = "/b",
+    initParams = {
+        @WebInitParam(name = "p1", value = "v1"),
+        @WebInitParam(name = "p2", value = "v2")
+    }
+)
+public class AnnotatedServlet extends HttpServlet {
+    //...
+}
+----
+
+The "name" annotation is kind of important as it would allow to override annotation values in the YAML, as described in the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal Guice injection.
+
+Next step is adding it to Bootique via `JettyModule` contribution API called from your application Module:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
+}
+----
+
+But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that you control.
+
+The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the mapping information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not otherwise available:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    MappedServlet mappedServlet = new MappedServlet(
+       new MyServlet(),
+       Collections.singleton("/c"),
+       "myservlet");
+
+    JettyModule.extend(binder).addMappedServlet(mappedServlet);
+}
+----
+
+Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize the underlying servlet with environment dependencies, we can do something like this:
+
+[source,java]
+----
+@Singleton
+@Provides
+MappedServlet<MyServlet> provideMyServlet(MyService1 s1, MyService2 s2) {
+    MyServlet servlet = new MyServlet(s1, s2);
+    return new MappedServlet<>(servlet, Collections.singleton("/c"), "myservlet");
+}
+
+// must use TypeLiteral to contribute MappedServlet<MyServlet> to the servlet collection
+@Override
+public void configure(Binder binder) {
+    TypeLiteral<MappedServlet<Servlet2>> tl = new TypeLiteral<MappedServlet<MyServlet>>() {};
+    JettyModule.extend(binder).addMappedServlet(tl);
+}
+----
+
+=== Servlet Filters
+
+Just like servlets, you can annotate and register your filters:
+
+[source,java]
+----
+@WebFilter(
+    filterName = "f1",
+    urlPatterns = "/b/*",
+    initParams = {
+        @WebInitParam(name = "p1", value = "v1"),
+        @WebInitParam(name = "p2", value = "v2")
+    }
+)
+public class AnnotatedFilter implements Filter { .. }
+----
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
+}
+----
+
+And just like with servlets you can use `MappedFilter` and `JettyModule.extend(..).addMappedFilter` to wrap a filter in app-specific metadata.
+
+=== Listeners
+
+Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addListener(MyListener.class);
+}
+----
+
+Listeners can rely on injection to obtain dependencies, just like servlets and filters.
+
+=== Serving Static Files
+
+TODO
+
+== Chapter 3. Configuration Reference
+
+=== jetty
+
+[source,yaml]
+----
+jetty:
+  context: "/myapp"
+  maxThreads: 100
+  params:
+    a: a1
+    b: b2
+----
+
+"jetty" is a root element of the Jetty configuration and is bound to a https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`] object. It supports the following properties:
+
+_"jetty" Element Property Reference_
+[cols=3*,options=header]
+|===
+|Property
+|Default
+|Description
+
+|`compression`
+|`true`
+|A boolean specifying whether gzip compression should be supported. When enabled (default), responses will be compressed if a client indicates it supports compression via `"Accept-Encoding: gzip"` header.
+
+|`connector`
+|_N/A (deprecated since 0.18)_
+|_Deprecated as more than one connector is supported._ _Use_ `connectors`_instead._ An object specifying properties of the web connector.
+
+|`connectors`
+|a single HTTP connector on port 8080
+|A list of connectors. Each connector listens on a single port. There can be HTTP or HTTPS connectors. See `jetty.connectors` below.
+
+|`context`
+|`/`
+|Web application context path.
+
+|`idleThreadTimeout`
+|`60000`
+|A period in milliseconds specifying how long until an idle thread is terminated.
+
+|`filters`
+|empty map
+|A map of servlet filter configurations by filter name. See `jetty.filters` below.
+
+|`maxThreads`
+|`1024`
+|Maximum number of request processing threads in the pool.
+
+|`minThreads`
+|`4`
+|Initial number of request processing threads in the pool.
+
+|`maxQueuedRequests`
+|`1024`
+|Maximum number of requests to queue if the thread pool is busy.
+
+|`params`
+|empty map
+|A map of arbitrary key/value parameters that are used as "init" parameters of the ServletContext.
+
+|`servlets`
+|empty map
+|A map of servlet configurations by servlet name. See `jetty.servlets` below.
+
+|`sessions`
+|`true`
+|A boolean specifying whether servlet sessions should be supported by Jetty.
+
+|`staticResourceBase`
+|none
+|Defines a base location for resources of the Jetty context. It can be a filesystem path, a URL or a special "`classpath:`" URL (which gives the ability to bundle resources in the app, not unlike a JavaEE .war file).
++
+For security reasons this annotation has to be set explicitly. There's no default.
++
+This setting only makes sense when some form of "default" servlet is in use, that will be responsible for serving static resources. See `JettyModule.contributeStaticServlet(..)` or `JettyModule.contributeDefaultServlet(..)`. Such servlet will use the path defined here, unless overridden via servlet parameters. For the list fo servlet parameters see http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html[Jetty default servlet docs].
+
+|`compactPath`
+|`false`
+|True if URLs are compacted to replace multiple '/'s with a single '/'
+|===
+
+==== jetty.connectors
+
+[source,yaml]
+----
+jetty:
+  connectors:
+    - port: 9999
+    - port: 9998
+      type: https
+----
+
+"jetty.connectors" element configures one or more web connectors. Each connector listens on a specified port and has an associated protocol (http or https). If no connectors are provided, Bootique will create a single HTTP connector on port 8080.
+
+HTTPS connectors require an SSL certificate (real or self-signed), stored in a keystore. http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html[Jetty documentaion on the subject] should help with generating a certificate. In its simplest form it may look like this:
+
+[source,bash]
+----
+keytool -keystore src/main/resources/mykeystore \
+       -alias mycert -genkey -keyalg RSA -sigalg SHA256withRSA -validity 365
+----
+
+_HTTP connector property reference_
+[cols=3*,options=header]
+|===
+|Property
+|Default
+|Description
+
+|`type`
+|N/A
+|Connector type. To use HTTP connector, this value must be set to "http", or omitted all together ("http" is the default).
+
+|`port`
+|`8080`
+|A port the connector listens on.
+
+|`requestHeaderSize`
+|`8192`
+|A max size in bytes of Jetty request headers and GET URLs.
+
+|`responseHeaderSize`
+|`8192`
+|A max size in bytes of Jetty response headers.
+|===
+
+_HTTPS connector property reference_
+[cols=3*,options=header]
+|===
+|Property
+|Default
+|Description
+
+|`type`
+|N/A
+|Connector type. To use HTTPS connector, this value must be set to "https".
+
+|`port`
+|`8080`
+|A port the connector listens on.
+
+|`requestHeaderSize`
+|`8192`
+|A max size in bytes of Jetty request headers and GET URLs.
+
+|`responseHeaderSize`
+|`8192`
+|A max size in bytes of Jetty response headers.
+
+|`keyStore`
+|
+|Required. A resource pointing to the keystore that has server SSL certificate. Can be a "classpath:" resource, etc.
+
+|`keyStorePassword`
+|`changeit`
+|A password to access the keystore.
+
+|`certificateAlias`
+|
+|An optional name of the certificate in the keystore, if there's more than one certificate.
+|===
+
+==== jetty.filters
+
+[source,yaml]
+----
+jetty:
+  filters:
+    f1:
+      urlPatterns:
+        - '/a/*/'
+        - '/b/*'
+      params:
+        p1: v1
+        p2: v2
+    f2:
+      params:
+        p3: v3
+        p4: v4
+----
+
+TODO
+
+==== jetty.servlets
+
+[source,yaml]
+----
+jetty:
+  servlets:
+    s1:
+      urlPatterns:
+        - '/myservlet'
+        - '/someotherpath'
+      params:
+        p1: v1
+        p2: v2
+    s2:
+      params:
+        p3: v3
+        p4: v4
+    default:
+      params:
+        resourceBase: /var/www/html
+----
+
+TODO

@@ -40,7 +40,6 @@
 		<module>bootique-jetty</module>
 		<module>bootique-jetty-instrumented</module>
 		<module>bootique-jetty-metrics</module>
-		<module>bootique-jetty-docs</module>
 	</modules>
 
 	<properties>
