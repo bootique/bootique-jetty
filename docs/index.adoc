@@ -188,7 +188,7 @@ jetty:
 
 "jetty" is a root element of the Jetty configuration and is bound to a https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`] object. It supports the following properties:
 
-_"jetty" Element Property Reference_
+."jetty" Element Property Reference
 [cols=3*,options=header]
 |===
 |Property
@@ -277,7 +277,7 @@ keytool -keystore src/main/resources/mykeystore \
        -alias mycert -genkey -keyalg RSA -sigalg SHA256withRSA -validity 365
 ----
 
-_HTTP connector property reference_
+.HTTP connector property reference
 [cols=3*,options=header]
 |===
 |Property
@@ -301,7 +301,7 @@ _HTTP connector property reference_
 |A max size in bytes of Jetty response headers.
 |===
 
-_HTTPS connector property reference_
+.HTTPS connector property reference
 [cols=3*,options=header]
 |===
 |Property
