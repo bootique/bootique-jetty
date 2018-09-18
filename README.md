@@ -18,7 +18,7 @@
   -->
 
 [![Build Status](https://travis-ci.org/bootique/bootique-jetty.svg)](https://travis-ci.org/bootique/bootique-jetty)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.bootique.jetty/bootique-jetty/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.bootique.jetty/bootique-jetty/)
+[![Maven Central](https://img.shields.io/maven-central/v/io.bootique.jetty/bootique-jetty.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.jetty/bootique-jetty/)
 
 
 # bootique-jetty
