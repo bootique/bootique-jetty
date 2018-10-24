@@ -18,36 +18,41 @@
    under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>io.bootique.modules.parent</groupId>
-		<artifactId>bootique-modules-parent</artifactId>
-		<version>0.13</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.bootique.modules.parent</groupId>
+        <artifactId>bootique-modules-parent</artifactId>
+        <version>0.13</version>
+    </parent>
 
-	<groupId>io.bootique.jetty</groupId>
-	<artifactId>bootique-jetty-parent</artifactId>
-	<version>1.0.RC1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-parent</artifactId>
+    <version>1.0.RC1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
-	<description>
-		Parent POM of Jetty and instrumented Jetty Bootique modules.
-	</description>
+    <name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
+    <description>
+        Parent POM of Jetty and instrumented Jetty Bootique modules.
+    </description>
 
-	<modules>
-		<module>bootique-jetty</module>
-		<module>bootique-jetty-instrumented</module>
-		<module>bootique-jetty-metrics</module>
-	</modules>
+    <modules>
+        <module>bootique-jetty</module>
+        <module>bootique-jetty-instrumented</module>
+        <module>bootique-jetty-metrics</module>
+        <module>bootique-jetty-websocket</module>
+    </modules>
 
-	<properties>
-		<bootique.version>${project.version}</bootique.version>
-		<hk2.version>2.5.0-b61</hk2.version>
-	</properties>
+    <properties>
+        <bootique.version>${project.version}</bootique.version>
+        <hk2.version>2.5.0-b61</hk2.version>
 
-	<scm>
+        <!-- Jetty support 1.0 ... 1.1 has been available since 2014. Should we upgrade? -->
+        <websocket.version>1.0</websocket.version>
+    </properties>
+
+    <scm>
         <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-jetty</developerConnection>
         <url>https://github.com/bootique/bootique-jetty</url>
         <tag>HEAD</tag>
@@ -61,28 +66,38 @@
         </repository>
     </distributionManagement>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>io.bootique</groupId>
-				<artifactId>bootique</artifactId>
-				<version>${bootique.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique</groupId>
-				<artifactId>bootique-test</artifactId>
-				<version>${bootique.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique.metrics</groupId>
-				<artifactId>bootique-metrics</artifactId>
-				<version>${bootique.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique.metrics</groupId>
-				<artifactId>bootique-metrics-healthchecks</artifactId>
-				<version>${bootique.version}</version>
-			</dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.bootique</groupId>
+                <artifactId>bootique</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique</groupId>
+                <artifactId>bootique-test</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique.metrics</groupId>
+                <artifactId>bootique-metrics</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique.metrics</groupId>
+                <artifactId>bootique-metrics-healthchecks</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.websocket</groupId>
+                <artifactId>javax.websocket-api</artifactId>
+                <version>${websocket.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <artifactId>javax-websocket-server-impl</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
@@ -93,60 +108,60 @@
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
             </dependency>
-			<dependency>
-				<groupId>org.glassfish.hk2</groupId>
-				<artifactId>hk2-api</artifactId>
-				<version>${hk2.version}</version>
-				<exclusions>
-					<!-- Guice includes this one -->
-					<exclusion>
-						<groupId>org.glassfish.hk2.external</groupId>
-						<artifactId>aopalliance-repackaged</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.hk2</groupId>
-				<artifactId>hk2-locator</artifactId>
-				<version>${hk2.version}</version>
-				<exclusions>
-					<!-- Guice includes this one -->
-					<exclusion>
-						<groupId>org.glassfish.hk2.external</groupId>
-						<artifactId>aopalliance-repackaged</artifactId>
-					</exclusion>
-					<exclusion>
-						<artifactId>javax.inject</artifactId>
-						<groupId>org.glassfish.hk2.external</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-		</dependencies>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>hk2-api</artifactId>
+                <version>${hk2.version}</version>
+                <exclusions>
+                    <!-- Guice includes this one -->
+                    <exclusion>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                        <artifactId>aopalliance-repackaged</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>hk2-locator</artifactId>
+                <version>${hk2.version}</version>
+                <exclusions>
+                    <!-- Guice includes this one -->
+                    <exclusion>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                        <artifactId>aopalliance-repackaged</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>javax.inject</artifactId>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
 
-	</dependencyManagement>
+    </dependencyManagement>
 
-	<!-- Optional profile used to sign artifacts -->
-	<profiles>
-		<profile>
-			<id>gpg</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+    <!-- Optional profile used to sign artifacts -->
+    <profiles>
+        <profile>
+            <id>gpg</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
-	</profiles>
+    </profiles>
 </project>

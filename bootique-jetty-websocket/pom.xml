@@ -27,40 +27,30 @@
 		<version>1.0.RC1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>bootique-jetty</artifactId>
+	<artifactId>bootique-jetty-websocket</artifactId>
 	<packaging>jar</packaging>
 
-	<name>bootique-jetty: a module to run Jetty on Bootique</name>
-	<description>Provides Jetty integration with Bootique.</description>
+	<name>bootique-jetty-websocket: WebSockets (JSR-356) Jetty-based integration for Bootique apps</name>
+	<description>Provides WebSockets (JSR-356) Jetty-based integration for Bootique apps.</description>
 
 	<dependencies>
 		<!-- Compile dependencies -->
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
+			<groupId>io.bootique.jetty</groupId>
+			<artifactId>bootique-jetty</artifactId>
+			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.bootique</groupId>
-			<artifactId>bootique</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
+			<groupId>javax.websocket</groupId>
+			<artifactId>javax.websocket-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>javax-websocket-server-impl</artifactId>
-			<version>9.4.9.v20180320</version>
+			<scope>compile</scope>
 		</dependency>
-
 
 		<!-- Unit test dependencies -->
 		<dependency>
@@ -74,25 +64,19 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.bootique</groupId>
 			<artifactId>bootique-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<exclusions>
-				<!-- Guice includes this one -->
-				<exclusion>
-					<artifactId>javax.inject</artifactId>
-					<groupId>org.glassfish.hk2.external</groupId>
-				</exclusion>
-			</exclusions>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -100,7 +84,6 @@
 			<artifactId>jersey-hk2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Jersey client on Java 9+ needs these -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
@@ -136,7 +119,6 @@
 				</plugins>
 			</build>
 		</profile>
-
 		<profile>
 			<id>rat</id>
 			<build>
@@ -146,7 +128,9 @@
 						<artifactId>apache-rat-plugin</artifactId>
 						<configuration>
 							<excludes>
-								<exclude>src/test/resources/io/bootique/jetty/**/other.txt</exclude>
+								<exclude>src/test/resources/health8.yml</exclude>
+								<exclude>src/test/resources/threads20.yml</exclude>
+								<exclude>src/test/resources/threads8.yml</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
