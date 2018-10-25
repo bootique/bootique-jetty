@@ -1,20 +1,20 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty.server;
@@ -87,13 +87,19 @@ public class ServerFactory {
         this.compression = true;
     }
 
-    public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<MappedListener> listeners) {
+    public Server createServer(
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners,
+            Set<ServletContextHandlerExtender> contextHandlerExtenders) {
 
         ThreadPool threadPool = createThreadPool();
+        Handler contextHandler = createHandler(servlets, filters, listeners, contextHandlerExtenders);
+
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
         server.setStopTimeout(1000L);
-        server.setHandler(createHandler(servlets, filters, listeners));
+        server.setHandler(contextHandler);
 
         if (maxFormContentSize > 0) {
             server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
@@ -123,9 +129,11 @@ public class ServerFactory {
         return server;
     }
 
-    protected Handler createHandler(Set<MappedServlet> servlets,
-                                    Set<MappedFilter> filters,
-                                    Set<MappedListener> listeners) {
+    protected Handler createHandler(
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners,
+            Set<ServletContextHandlerExtender> contextHandlerExtenders) {
 
         int options = 0;
 
@@ -158,7 +166,13 @@ public class ServerFactory {
         installServlets(handler, servlets);
         installFilters(handler, filters);
 
-        return handler;
+        // customize further...
+        ServletContextHandler customHandler = handler;
+        for (ServletContextHandlerExtender extender : contextHandlerExtenders) {
+            customHandler = extender.onHandlerCreated(customHandler);
+        }
+
+        return customHandler;
     }
 
     protected GzipHandler createGzipHandler() {
@@ -451,7 +465,9 @@ public class ServerFactory {
      * @since 1.0.RC1
      */
     @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
-    public void setCompactPath(boolean compactPath) { this.compactPath = compactPath; }
+    public void setCompactPath(boolean compactPath) {
+        this.compactPath = compactPath;
+    }
 
     /**
      * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).

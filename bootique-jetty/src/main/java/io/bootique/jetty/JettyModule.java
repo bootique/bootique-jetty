@@ -29,6 +29,7 @@ import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.server.MappedFilterFactory;
 import io.bootique.jetty.server.MappedServletFactory;
 import io.bootique.jetty.server.ServerFactory;
+import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import io.bootique.jetty.servlet.ServletEnvironment;
 import io.bootique.log.BootLogger;
@@ -103,13 +104,15 @@ public class JettyModule extends ConfigModule {
                         Set<MappedFilter> mappedFilters,
                         Set<EventListener> listeners,
                         Set<MappedListener> mappedListeners,
+                        Set<ServletContextHandlerExtender> contextHandlerExtenders,
                         BootLogger bootLogger,
                         ShutdownManager shutdownManager) {
 
         Server server = factory.createServer(
                 allServlets(servlets, mappedServlets),
                 allFilters(filters, mappedFilters),
-                allListeners(listeners, mappedListeners));
+                allListeners(listeners, mappedListeners),
+                contextHandlerExtenders);
 
         shutdownManager.addShutdownHook(() -> {
             bootLogger.trace(() -> "stopping Jetty...");

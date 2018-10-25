@@ -16,24 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.websocket;
+package io.bootique.jetty.server;
 
-import com.google.inject.Binder;
-import io.bootique.ConfigModule;
-import io.bootique.jetty.JettyModule;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 
 /**
+ * An extension point for low-level customization of the Jetty {@link ServletContextHandler} which is a central piece
+ * of the Jetty stack.
+ *
  * @since 1.0.RC1
  */
-public class JettyWebSocketModule extends ConfigModule {
+public interface ServletContextHandlerExtender {
 
-    public static JettyWebSocketModuleExtender extend(Binder binder) {
-        return new JettyWebSocketModuleExtender(binder);
-    }
-
-    @Override
-    public void configure(Binder binder) {
-        JettyModule.extend(binder).addContextHandlerExtender(JettyWebSocketContextHandlerExtender.class);
-        extend(binder).initAllExtensions();
-    }
+    ServletContextHandler onHandlerCreated(ServletContextHandler handler);
 }

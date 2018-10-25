@@ -18,22 +18,20 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Binder;
-import io.bootique.ConfigModule;
-import io.bootique.jetty.JettyModule;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * A DI binding annotation for the WebSocket endpoints.
+ *
  * @since 1.0.RC1
  */
-public class JettyWebSocketModule extends ConfigModule {
-
-    public static JettyWebSocketModuleExtender extend(Binder binder) {
-        return new JettyWebSocketModuleExtender(binder);
-    }
-
-    @Override
-    public void configure(Binder binder) {
-        JettyModule.extend(binder).addContextHandlerExtender(JettyWebSocketContextHandlerExtender.class);
-        extend(binder).initAllExtensions();
-    }
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@BindingAnnotation
+public @interface WebSocketEndpoint {
 }
