@@ -43,6 +43,8 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
@@ -53,7 +55,7 @@ public class JettyWebSocketModuleIT {
     public final BQTestFactory testFactory = new BQTestFactory();
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(100);
+    public Timeout globalTimeout = Timeout.seconds(10);
 
     private WebSocketContainer container;
 
@@ -126,6 +128,30 @@ public class JettyWebSocketModuleIT {
         }
     }
 
+    @Test
+    public void testEndpointScope() throws IOException, DeploymentException, InterruptedException {
+
+        BQRuntime runtime = testFactory.app("-s")
+                .autoLoadModules()
+                .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket3.class))
+                .createRuntime();
+
+        runtime.run();
+
+        ServerSocket3.assertInstances(0);
+
+        for (int i = 1; i <= 3; i++) {
+            Session session = createClientSession("ws3");
+            try {
+                ServerSocket3.openLatch.await();
+            } finally {
+                session.close();
+            }
+
+            ServerSocket3.assertInstances(i);
+        }
+    }
+
     @ClientEndpoint
     public static class ClientSocket1 {
         @OnError
@@ -174,8 +200,8 @@ public class JettyWebSocketModuleIT {
     @ServerEndpoint(value = "/ws2", decoders = DateDecoder.class)
     public static class ServerSocket2 {
 
+        static StringBuilder buffer = new StringBuilder();
         CountDownLatch messageLatch = new CountDownLatch(1);
-        StringBuilder buffer = new StringBuilder();
 
         void assertBuffer(String expected) {
             assertEquals(expected, buffer.toString());
@@ -185,6 +211,28 @@ public class JettyWebSocketModuleIT {
         public void onMessageText(LocalDate date) {
             buffer.append("message:" + date + ";");
             messageLatch.countDown();
+        }
+
+        @OnError
+        public void onWebSocketError(Throwable cause) {
+            cause.printStackTrace();
+        }
+    }
+
+    @ServerEndpoint(value = "/ws3")
+    public static class ServerSocket3 {
+
+        static Map<ServerSocket3, Integer> instanceMap = new ConcurrentHashMap<>();
+        static CountDownLatch openLatch = new CountDownLatch(1);
+
+        static void assertInstances(int expected) {
+            assertEquals(expected, instanceMap.size());
+        }
+
+        @OnOpen
+        public void onOpen() {
+            instanceMap.put(this, 1);
+            openLatch.countDown();
         }
 
         @OnError
