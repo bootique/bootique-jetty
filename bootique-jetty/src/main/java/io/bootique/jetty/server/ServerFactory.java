@@ -28,7 +28,6 @@ import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.resource.FolderResourceFactory;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
@@ -94,12 +93,16 @@ public class ServerFactory {
             Set<ServletContextHandlerExtender> contextHandlerExtenders) {
 
         ThreadPool threadPool = createThreadPool();
-        Handler contextHandler = createHandler(servlets, filters, listeners, contextHandlerExtenders);
+        ServletContextHandler contextHandler = createHandler(servlets, filters, listeners);
 
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
         server.setStopTimeout(1000L);
         server.setHandler(contextHandler);
+
+        // postconfig *after* the handler is associated with the Server. Some extensions like WebSocket require access
+        // to the handler's Server
+        postConfigHandler(contextHandler, contextHandlerExtenders);
 
         if (maxFormContentSize > 0) {
             server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
@@ -129,11 +132,14 @@ public class ServerFactory {
         return server;
     }
 
-    protected Handler createHandler(
+    protected void postConfigHandler(ServletContextHandler handler, Set<ServletContextHandlerExtender> contextHandlerExtenders) {
+        contextHandlerExtenders.forEach(c -> c.onHandlerInstalled(handler));
+    }
+
+    protected ServletContextHandler createHandler(
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
-            Set<MappedListener> listeners,
-            Set<ServletContextHandlerExtender> contextHandlerExtenders) {
+            Set<MappedListener> listeners) {
 
         int options = 0;
 
@@ -166,13 +172,7 @@ public class ServerFactory {
         installServlets(handler, servlets);
         installFilters(handler, filters);
 
-        // customize further...
-        ServletContextHandler customHandler = handler;
-        for (ServletContextHandlerExtender extender : contextHandlerExtenders) {
-            customHandler = extender.onHandlerCreated(customHandler);
-        }
-
-        return customHandler;
+        return handler;
     }
 
     protected GzipHandler createGzipHandler() {

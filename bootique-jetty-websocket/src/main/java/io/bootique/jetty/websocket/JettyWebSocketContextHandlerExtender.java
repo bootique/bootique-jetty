@@ -24,6 +24,10 @@ import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import javax.servlet.ServletException;
+import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
+import java.util.Set;
 
 /**
  * Creates and configures JSR-356 {@link javax.websocket.server.ServerContainer} within the Jetty environment.
@@ -32,15 +36,75 @@ import javax.servlet.ServletException;
  */
 public class JettyWebSocketContextHandlerExtender implements ServletContextHandlerExtender {
 
+    private Set<Object> endpoints;
+
+    public JettyWebSocketContextHandlerExtender(Set<Object> endpoints) {
+        this.endpoints = endpoints;
+    }
+
     @Override
-    public ServletContextHandler onHandlerCreated(ServletContextHandler handler) {
+    public void onHandlerInstalled(ServletContextHandler handler) {
+
+        ServerContainer wsContainer;
 
         try {
-            ServerContainer container = WebSocketServerContainerInitializer.configureContext(handler);
+            // install WebSocket extensions..
+            wsContainer = WebSocketServerContainerInitializer.configureContext(handler);
         } catch (ServletException e) {
             throw new RuntimeException("Error initializing WebSocket Jetty extensions", e);
         }
 
-        return handler;
+        endpoints.forEach(e -> installEndpoint(e, wsContainer));
+    }
+
+    protected void installEndpoint(Object endpoint, ServerContainer wsContainer) {
+
+        Class<?> endpointType = endpoint.getClass();
+        ServerEndpoint endpointAnnotation = endpointType.getAnnotation(ServerEndpoint.class);
+        if (endpointAnnotation == null) {
+            // TODO: handle subclasses of javax.websocket.Endpoint
+            throw new IllegalArgumentException(endpointType.getName() + " is not annotated with @ServerEndpoint");
+        }
+
+        String path = normalizePath(endpointAnnotation.value());
+
+        // TODO: other pieces provided by @ServerEndpoint
+        ServerEndpointConfig config = ServerEndpointConfig.Builder
+                .create(endpointType, path)
+                // make sure Bootique-configured instances are used as endpoints...
+                .configurator(new BQEndpointConfiguration(endpoint))
+                .build();
+
+        try {
+            wsContainer.addEndpoint(config);
+        } catch (DeploymentException e) {
+            throw new RuntimeException("Error installing endpoint " + endpointType.getName(), e);
+        }
+    }
+
+    protected String normalizePath(String path) {
+
+        if(path == null || path.isEmpty()) {
+            return "/";
+        }
+
+        if(!path.startsWith("/")) {
+            return "/" + path;
+        }
+
+        return path;
+    }
+
+    class BQEndpointConfiguration extends ServerEndpointConfig.Configurator {
+        private Object instance;
+
+        public BQEndpointConfiguration(Object instance) {
+            this.instance = instance;
+        }
+
+        @Override
+        public <T> T getEndpointInstance(Class<T> endpointClass) {
+            return (T) instance;
+        }
     }
 }

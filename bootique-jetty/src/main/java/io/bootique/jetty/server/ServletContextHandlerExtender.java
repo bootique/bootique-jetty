@@ -22,11 +22,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 
 /**
  * An extension point for low-level customization of the Jetty {@link ServletContextHandler} which is a central piece
- * of the Jetty stack.
+ * of the Jetty stack. The extender is called <i>after</i> ServletContextHandler is created and added to the Jetty server.
  *
  * @since 1.0.RC1
  */
 public interface ServletContextHandlerExtender {
 
-    ServletContextHandler onHandlerCreated(ServletContextHandler handler);
+    void onHandlerInstalled(ServletContextHandler handler);
 }

@@ -39,12 +39,12 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
         return this;
     }
 
-    public JettyWebSocketModuleExtender addResource(Object endpoint) {
+    public JettyWebSocketModuleExtender addEndpoint(Object endpoint) {
         contributeEndpoints().addBinding().toInstance(endpoint);
         return this;
     }
 
-    public JettyWebSocketModuleExtender addResource(Class<?> endpointType) {
+    public JettyWebSocketModuleExtender addEndpoint(Class<?> endpointType) {
         contributeEndpoints().addBinding().to(endpointType);
         return this;
     }
