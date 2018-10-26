@@ -1,4 +1,0 @@
-jetty:
-  sessions: true
-  connectors:
-    - port: 11001

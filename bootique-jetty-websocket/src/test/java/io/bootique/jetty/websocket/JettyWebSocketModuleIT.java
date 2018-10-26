@@ -68,13 +68,13 @@ public class JettyWebSocketModuleIT {
     }
 
     private Session createClientSession() throws IOException, DeploymentException {
-        return container.connectToServer(TestSocket.class, URI.create("ws://127.0.0.1:11001/wstest/"));
+        return container.connectToServer(TestSocket.class, URI.create("ws://127.0.0.1:8080/wstest/"));
     }
 
     @Test
     public void testBasicCommunication() throws IOException, DeploymentException, InterruptedException {
-        
-        BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/websocket/JettyWebSocketModuleIT.yml")
+
+        BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
                 .module(b -> b.bind(TestSocket.class).in(Singleton.class))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(TestSocket.class))
