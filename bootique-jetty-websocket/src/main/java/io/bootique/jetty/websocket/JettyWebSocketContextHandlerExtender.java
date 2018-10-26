@@ -22,6 +22,8 @@ import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
@@ -29,12 +31,16 @@ import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+
 /**
  * Creates and configures JSR-356 {@link javax.websocket.server.ServerContainer} within the Jetty environment.
  *
  * @since 1.0.RC1
  */
 public class JettyWebSocketContextHandlerExtender implements ServletContextHandlerExtender {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketContextHandlerExtender.class);
 
     private Set<Object> endpoints;
 
@@ -66,14 +72,7 @@ public class JettyWebSocketContextHandlerExtender implements ServletContextHandl
             throw new IllegalArgumentException(endpointType.getName() + " is not annotated with @ServerEndpoint");
         }
 
-        String path = normalizePath(endpointAnnotation.value());
-
-        // TODO: other pieces provided by @ServerEndpoint
-        ServerEndpointConfig config = ServerEndpointConfig.Builder
-                .create(endpointType, path)
-                // make sure Bootique-configured instances are used as endpoints...
-                .configurator(new BQEndpointConfiguration(endpoint))
-                .build();
+        ServerEndpointConfig config = createConfig(endpoint, endpointAnnotation);
 
         try {
             wsContainer.addEndpoint(config);
@@ -82,13 +81,32 @@ public class JettyWebSocketContextHandlerExtender implements ServletContextHandl
         }
     }
 
+    private ServerEndpointConfig createConfig(Object endpoint, ServerEndpoint endpointAnnotation) {
+
+        String path = normalizePath(endpointAnnotation.value());
+
+        // Ignore "configurator" annotation value; but honor all others
+        if (endpointAnnotation.configurator() != null) {
+            LOGGER.warn("@ServerEndpoint.configurator setting is ignored");
+        }
+
+        return ServerEndpointConfig.Builder
+                .create(endpoint.getClass(), path)
+                // make sure Bootique-configured instances are returned for endpoints...
+                .configurator(new BQEndpointConfiguration(endpoint))
+                .decoders(asList(endpointAnnotation.decoders()))
+                .encoders(asList(endpointAnnotation.encoders()))
+                .subprotocols(asList(endpointAnnotation.subprotocols()))
+                .build();
+    }
+
     protected String normalizePath(String path) {
 
-        if(path == null || path.isEmpty()) {
+        if (path == null || path.isEmpty()) {
             return "/";
         }
 
-        if(!path.startsWith("/")) {
+        if (!path.startsWith("/")) {
             return "/" + path;
         }
 

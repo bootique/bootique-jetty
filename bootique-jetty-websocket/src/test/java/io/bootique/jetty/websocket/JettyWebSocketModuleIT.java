@@ -29,9 +29,10 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 
 import javax.websocket.ClientEndpoint;
-import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
+import javax.websocket.Decoder;
 import javax.websocket.DeploymentException;
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -41,6 +42,7 @@ import javax.websocket.WebSocketContainer;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +53,7 @@ public class JettyWebSocketModuleIT {
     public final BQTestFactory testFactory = new BQTestFactory();
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(10);
+    public Timeout globalTimeout = Timeout.seconds(100);
 
     private WebSocketContainer container;
 
@@ -67,25 +69,25 @@ public class JettyWebSocketModuleIT {
         ((LifeCycle) container).stop();
     }
 
-    private Session createClientSession() throws IOException, DeploymentException {
-        return container.connectToServer(TestSocket.class, URI.create("ws://127.0.0.1:8080/wstest/"));
+    private Session createClientSession(String path) throws IOException, DeploymentException {
+        return container.connectToServer(ClientSocket1.class, URI.create("ws://127.0.0.1:8080/" + path));
     }
 
     @Test
-    public void testBasicCommunication() throws IOException, DeploymentException, InterruptedException {
+    public void testClientServerMessage() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
-                .module(b -> b.bind(TestSocket.class).in(Singleton.class))
-                .module(b -> JettyWebSocketModule.extend(b).addEndpoint(TestSocket.class))
+                .module(b -> b.bind(ServerSocket1.class).in(Singleton.class))
+                .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket1.class))
                 .createRuntime();
 
         runtime.run();
 
-        TestSocket serverSocket = runtime.getInstance(TestSocket.class);
+        ServerSocket1 serverSocket = runtime.getInstance(ServerSocket1.class);
         serverSocket.assertBuffer("");
 
-        Session session = createClientSession();
+        Session session = createClientSession("ws1");
         try {
             serverSocket.openLatch.await();
             serverSocket.assertBuffer("open;");
@@ -100,9 +102,40 @@ public class JettyWebSocketModuleIT {
         }
     }
 
+    @Test
+    public void testDecoder() throws IOException, DeploymentException, InterruptedException {
+
+        BQRuntime runtime = testFactory.app("-s")
+                .autoLoadModules()
+                .module(b -> b.bind(ServerSocket2.class).in(Singleton.class))
+                .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket2.class))
+                .createRuntime();
+
+        runtime.run();
+
+        ServerSocket2 serverSocket = runtime.getInstance(ServerSocket2.class);
+        serverSocket.assertBuffer("");
+
+        Session session = createClientSession("ws2");
+        try {
+            session.getBasicRemote().sendText("2018-03-01");
+            serverSocket.messageLatch.await();
+            serverSocket.assertBuffer("message:2018-03-01;");
+        } finally {
+            session.close();
+        }
+    }
+
     @ClientEndpoint
-    @ServerEndpoint(value = "/wstest/")
-    public static class TestSocket {
+    public static class ClientSocket1 {
+        @OnError
+        public void onWebSocketError(Throwable cause) {
+            cause.printStackTrace();
+        }
+    }
+
+    @ServerEndpoint(value = "/ws1")
+    public static class ServerSocket1 {
 
         CountDownLatch openLatch = new CountDownLatch(1);
         CountDownLatch messageLatch = new CountDownLatch(1);
@@ -115,7 +148,7 @@ public class JettyWebSocketModuleIT {
         }
 
         @OnOpen
-        public void onOpen(Session session) {
+        public void onOpen() {
             buffer.append("open;");
             openLatch.countDown();
         }
@@ -127,7 +160,7 @@ public class JettyWebSocketModuleIT {
         }
 
         @OnClose
-        public void onWebSocketClose(CloseReason reason) {
+        public void onWebSocketClose() {
             buffer.append("close;");
             closeLatch.countDown();
         }
@@ -135,6 +168,49 @@ public class JettyWebSocketModuleIT {
         @OnError
         public void onWebSocketError(Throwable cause) {
             cause.printStackTrace();
+        }
+    }
+
+    @ServerEndpoint(value = "/ws2", decoders = DateDecoder.class)
+    public static class ServerSocket2 {
+
+        CountDownLatch messageLatch = new CountDownLatch(1);
+        StringBuilder buffer = new StringBuilder();
+
+        void assertBuffer(String expected) {
+            assertEquals(expected, buffer.toString());
+        }
+
+        @OnMessage
+        public void onMessageText(LocalDate date) {
+            buffer.append("message:" + date + ";");
+            messageLatch.countDown();
+        }
+
+        @OnError
+        public void onWebSocketError(Throwable cause) {
+            cause.printStackTrace();
+        }
+    }
+
+    public static class DateDecoder implements Decoder.Text<LocalDate> {
+
+        @Override
+        public LocalDate decode(String s) {
+            return s != null ? LocalDate.parse(s) : null;
+        }
+
+        @Override
+        public boolean willDecode(String s) {
+            return true;
+        }
+
+        @Override
+        public void init(EndpointConfig config) {
+        }
+
+        @Override
+        public void destroy() {
         }
     }
 }
