@@ -11,6 +11,7 @@ other JSR-356 annotations.
 * Endpoints are managed via the DI container and support service injection.
 * It is a user's choice whether the endpoint should be a singleton or
 a new instance should be created per peer.
+* Supports `WebSocketContainer` configuration via YAML.
 * _Endpoints that are not using annotations and are instead subclass
 `javax.websocket.Endpoint` are not yet supported._
 
@@ -25,6 +26,7 @@ public class E2 { ... }
 
 public MyModule implements Module {
 
+   @Override
    public void configure(Binder b) {
        // E1 is a singleton endpoint
        b.bind(E1.class).in(Singleton.class);
@@ -38,4 +40,14 @@ public MyModule implements Module {
            .addEndpoint(E2.class);
    }
 }
+```
+
+Example config:
+
+```yaml
+jettywebsocket:
+    asyncSendTimeout: "5s"
+    maxSessionIdleTimeout: "30min"
+    maxBinaryMessageBufferSize: "30kb"
+    maxTextMessageBufferSize: "45kb"
 ```

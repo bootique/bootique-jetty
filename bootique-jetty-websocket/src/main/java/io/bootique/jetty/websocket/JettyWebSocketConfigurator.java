@@ -22,6 +22,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.slf4j.Logger;
@@ -48,10 +49,16 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
     private Set<EndpointKeyHolder> endpointDiKeys;
     private Injector injector;
+    private WebSocketPolicy webSocketPolicy;
 
-    public JettyWebSocketConfigurator(Injector injector, Set<EndpointKeyHolder> endpointDiKeys) {
+    public JettyWebSocketConfigurator(
+            Injector injector,
+            WebSocketPolicy webSocketPolicy,
+            Set<EndpointKeyHolder> endpointDiKeys) {
+
         this.injector = injector;
         this.endpointDiKeys = endpointDiKeys;
+        this.webSocketPolicy = webSocketPolicy;
     }
 
     @Override
@@ -60,13 +67,21 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
         ServerContainer wsContainer;
 
         try {
-            // install WebSocket extensions..
+            // install Jetty WebSocket support...
             wsContainer = WebSocketServerContainerInitializer.configureContext(handler);
         } catch (ServletException e) {
             throw new RuntimeException("Error initializing WebSocket Jetty extensions", e);
         }
 
+        configurePolicy(wsContainer);
         endpointDiKeys.forEach(e -> installEndpoint(e.getKey(), wsContainer));
+    }
+
+    protected void configurePolicy(ServerContainer wsContainer) {
+        wsContainer.setAsyncSendTimeout(webSocketPolicy.getAsyncWriteTimeout());
+        wsContainer.setDefaultMaxSessionIdleTimeout(webSocketPolicy.getIdleTimeout());
+        wsContainer.setDefaultMaxBinaryMessageBufferSize(webSocketPolicy.getMaxBinaryMessageBufferSize());
+        wsContainer.setDefaultMaxTextMessageBufferSize(webSocketPolicy.getMaxTextMessageBufferSize());
     }
 
     protected <T> void installEndpoint(Key<T> endpointDiKey, ServerContainer wsContainer) {
@@ -80,6 +95,8 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
         Supplier<T> endpointSupplier = () -> injector.getInstance(endpointDiKey);
         ServerEndpointConfig config = createConfigFromAnnotation(endpointType, endpointSupplier, endpointAnnotation);
+
+        LOGGER.info("Adding WebSocket endpoint mapped to {}", config.getPath());
 
         try {
             wsContainer.addEndpoint(config);
@@ -97,7 +114,7 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
         // Ignore "configurator" annotation value (unless we uncover a valid use case for overriding the one supplied
         // by Bootique below. Honor all other annotation parameters though
-        if (endpointAnnotation.configurator() != null) {
+        if (endpointAnnotation.configurator() != ServerEndpointConfig.Configurator.class) {
             LOGGER.warn("@ServerEndpoint.configurator is not null, but will be ignored");
         }
 
