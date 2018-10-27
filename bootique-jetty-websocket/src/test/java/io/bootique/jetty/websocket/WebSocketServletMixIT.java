@@ -51,7 +51,7 @@ public class WebSocketServletMixIT extends JettyWebSocketTestBase {
 
         BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
-                .module(b -> JettyModule.extend(b).addServlet(Servlet.class))
+                .module(b -> JettyModule.extend(b).addServlet(ServletSamePath.class).addServlet(ServletDifferentPath.class))
                 .module(b -> b.bind(ServerSocket.class).in(Singleton.class))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
                 .createRuntime();
@@ -65,17 +65,31 @@ public class WebSocketServletMixIT extends JettyWebSocketTestBase {
             serverSocket.assertBuffer(";socket accessed");
         }
 
-        Response r = createWebTarget("servlet").request().get();
-        assertEquals(200, r.getStatus());
-        assertEquals("servlet accessed", r.readEntity(String.class));
+        Response r1 = createWebTarget("servlet").request().get();
+        assertEquals(200, r1.getStatus());
+        assertEquals("servlet accessed as /servlet", r1.readEntity(String.class));
+
+        // same path as websocket here.. resolution will happen at the protocol level
+        Response r2 = createWebTarget("socket").request().get();
+        assertEquals(200, r2.getStatus());
+        assertEquals("servlet accessed as /socket", r2.readEntity(String.class));
     }
 
-    @WebServlet(urlPatterns = "/servlet")
-    public static class Servlet extends HttpServlet {
+    @WebServlet(urlPatterns = "/socket")
+    public static class ServletSamePath extends HttpServlet {
 
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            resp.getWriter().print("servlet accessed");
+            resp.getWriter().print("servlet accessed as /socket");
+        }
+    }
+
+    @WebServlet(urlPatterns = "/servlet")
+    public static class ServletDifferentPath extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.getWriter().print("servlet accessed as /servlet");
         }
     }
 
