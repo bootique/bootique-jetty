@@ -18,20 +18,23 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.BindingAnnotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.inject.Key;
 
 /**
- * A DI binding annotation for the WebSocket endpoints.
+ * A wrapper for a Guice DI {@link Key} to make the Key itself injectable.
  *
  * @since 1.0.RC1
  */
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@BindingAnnotation
-public @interface WebSocketEndpoint {
+public class EndpointKeyHolder {
+
+    private Key<?> key;
+
+    public EndpointKeyHolder(Key<?> key) {
+        this.key = key;
+    }
+
+    public Key<?> getKey() {
+        return key;
+    }
 }

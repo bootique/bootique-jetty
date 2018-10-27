@@ -19,6 +19,7 @@
 package io.bootique.jetty.websocket;
 
 import com.google.inject.Binder;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.bootique.ConfigModule;
@@ -37,13 +38,13 @@ public class JettyWebSocketModule extends ConfigModule {
 
     @Override
     public void configure(Binder binder) {
-        JettyModule.extend(binder).addContextHandlerExtender(JettyWebSocketContextHandlerExtender.class);
+        JettyModule.extend(binder).addContextHandlerExtender(JettyWebSocketConfigurator.class);
         extend(binder).initAllExtensions();
     }
 
     @Provides
     @Singleton
-    JettyWebSocketContextHandlerExtender provideWsJettyExtender(@WebSocketEndpoint Set<Object> endpoints) {
-        return new JettyWebSocketContextHandlerExtender(endpoints);
+    JettyWebSocketConfigurator provideWebSocketConfigurator(Injector injector, Set<EndpointKeyHolder> endpointKeys) {
+        return new JettyWebSocketConfigurator(injector, endpointKeys);
     }
 }

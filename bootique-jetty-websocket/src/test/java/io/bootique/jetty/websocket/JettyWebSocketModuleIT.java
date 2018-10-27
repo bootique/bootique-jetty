@@ -129,16 +129,18 @@ public class JettyWebSocketModuleIT {
     }
 
     @Test
-    public void testEndpointScope() throws IOException, DeploymentException, InterruptedException {
+    public void testEndpointNoScope() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
+                // binding endpoint with no scope
+                .module(b -> b.bind(ServerSocket3.class))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket3.class))
                 .createRuntime();
 
         runtime.run();
 
-        ServerSocket3.assertInstances(0);
+        ServerSocket3.reset();
 
         for (int i = 1; i <= 3; i++) {
             Session session = createClientSession("ws3");
@@ -149,6 +151,32 @@ public class JettyWebSocketModuleIT {
             }
 
             ServerSocket3.assertInstances(i);
+        }
+    }
+
+    @Test
+    public void testEndpointSingletonScope() throws IOException, DeploymentException, InterruptedException {
+
+        BQRuntime runtime = testFactory.app("-s")
+                .autoLoadModules()
+                // binding with singleton scope
+                .module(b -> b.bind(ServerSocket3.class).in(Singleton.class))
+                .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket3.class))
+                .createRuntime();
+
+        runtime.run();
+
+        ServerSocket3.reset();
+
+        for (int i = 1; i <= 3; i++) {
+            Session session = createClientSession("ws3");
+            try {
+                ServerSocket3.openLatch.await();
+            } finally {
+                session.close();
+            }
+
+            ServerSocket3.assertInstances(1);
         }
     }
 
@@ -223,7 +251,12 @@ public class JettyWebSocketModuleIT {
     public static class ServerSocket3 {
 
         static Map<ServerSocket3, Integer> instanceMap = new ConcurrentHashMap<>();
-        static CountDownLatch openLatch = new CountDownLatch(1);
+        static CountDownLatch openLatch;
+
+        static void reset() {
+            instanceMap.clear();
+            openLatch = new CountDownLatch(1);
+        }
 
         static void assertInstances(int expected) {
             assertEquals(expected, instanceMap.size());

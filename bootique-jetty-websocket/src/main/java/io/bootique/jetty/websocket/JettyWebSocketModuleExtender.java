@@ -28,7 +28,9 @@ import io.bootique.ModuleExtender;
  */
 public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketModuleExtender> {
 
-    private Multibinder<Object> endpoints;
+    // see JettyWebSocketContextHandlerExtender for the explanation why endpoints are collected as Keys.
+    // TL;DR - we need to instantiate them per peer connection unless a user decides they should be singletons...
+    private Multibinder<EndpointKeyHolder> endpointKeys;
 
     public JettyWebSocketModuleExtender(Binder binder) {
         super(binder);
@@ -36,23 +38,35 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
 
     @Override
     public JettyWebSocketModuleExtender initAllExtensions() {
+        contributeEndpointKeys();
         return this;
     }
 
-    public JettyWebSocketModuleExtender addEndpoint(Object endpoint) {
-        contributeEndpoints().addBinding().toInstance(endpoint);
+    /**
+     * Registers a DI key to locate the endpoint when it is requested by the WebSocket server.
+     *
+     * @param endpointDiKey a DI key to locate the endpoint.
+     * @return this extender instance
+     */
+    public JettyWebSocketModuleExtender addEndpoint(Key<?> endpointDiKey) {
+        contributeEndpointKeys().addBinding().toInstance(new EndpointKeyHolder(endpointDiKey));
         return this;
     }
 
+    /**
+     * Registers a type of endpoint with the WebSocket server.
+     *
+     * @param endpointType endpoint type used as a DI Key to locate the endpoint in runtime.
+     * @return this extender instance
+     */
     public JettyWebSocketModuleExtender addEndpoint(Class<?> endpointType) {
-        contributeEndpoints().addBinding().to(endpointType);
-        return this;
+        return addEndpoint(Key.get(endpointType));
     }
 
-    protected Multibinder<Object> contributeEndpoints() {
-        if (endpoints == null) {
-            endpoints = newSet(Key.get(Object.class, WebSocketEndpoint.class));
+    protected Multibinder<EndpointKeyHolder> contributeEndpointKeys() {
+        if (endpointKeys == null) {
+            endpointKeys = newSet(EndpointKeyHolder.class);
         }
-        return endpoints;
+        return endpointKeys;
     }
 }
