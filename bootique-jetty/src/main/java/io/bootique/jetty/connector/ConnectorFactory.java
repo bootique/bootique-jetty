@@ -1,20 +1,20 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty.connector;
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.config.PolymorphicConfiguration;
+import io.bootique.value.Duration;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -49,6 +50,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
     private String host;
     private int responseHeaderSize;
     private int requestHeaderSize;
+    private Duration idleTimeout;
 
     public ConnectorFactory() {
         this.port = 8080;
@@ -83,10 +85,14 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
                 connectionFactories);
 
         connector.setPort(getPort());
-        connector.setIdleTimeout(30 * 1000);
+        connector.setIdleTimeout(getIdleTimeoutMs());
         connector.setHost(getHost());
 
         return connector;
+    }
+
+    protected long getIdleTimeoutMs() {
+        return idleTimeout != null ? idleTimeout.getDuration().toMillis() : 30 * 1000;
     }
 
     protected abstract ConnectionFactory[] buildHttpConnectionFactories(HttpConfiguration httpConfig);
@@ -221,5 +227,14 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
             " value based on the number of available processor cores.")
     public void setSelectorThreads(int selectorThreads) {
         this.selectorThreads = selectorThreads;
+    }
+
+    /**
+     * @param idleTimeout
+     * @since 1.0.RC1
+     */
+    @BQConfigProperty
+    public void setIdleTimeout(Duration idleTimeout) {
+        this.idleTimeout = idleTimeout;
     }
 }
