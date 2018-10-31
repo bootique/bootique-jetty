@@ -7,6 +7,7 @@
 * #78 Metrics renaming to follow naming convention
 * #79 Health check renaming to follow naming convention
 * #80 JDK9 Compatibility
+* #85 "bootique-jetty-websocket" - new module to support websocket apps
 
 ## 0.25
 
