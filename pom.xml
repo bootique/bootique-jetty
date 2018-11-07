@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>io.bootique.modules.parent</groupId>
 		<artifactId>bootique-modules-parent</artifactId>
-		<version>0.8</version>
+		<version>0.13</version>
 	</parent>
 
 	<groupId>io.bootique.jetty</groupId>
 	<artifactId>bootique-jetty-parent</artifactId>
-	<version>0.26-SNAPSHOT</version>
+    <version>1.0.RC1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
@@ -21,13 +21,16 @@
 		<module>bootique-jetty</module>
 		<module>bootique-jetty-instrumented</module>
 		<module>bootique-jetty-metrics</module>
-		<module>bootique-jetty-docs</module>
-    </modules>
+		<module>bootique-jetty-websocket</module>
+	</modules>
 
-	<properties>
-		<jetty-version>9.4.9.v20180320</jetty-version>
-		<bootique-version>${project.version}</bootique-version>
-	</properties>
+    <properties>
+        <bootique.version>${project.version}</bootique.version>
+        <hk2.version>2.5.0-b61</hk2.version>
+
+        <!-- Jetty support 1.0 ... 1.1 has been available since 2014. Should we upgrade? -->
+        <websocket.version>1.0</websocket.version>
+    </properties>
 
 	<scm>
         <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-jetty</developerConnection>
@@ -45,55 +48,107 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-client</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-servlet</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-servlets</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique</groupId>
-				<artifactId>bootique</artifactId>
-				<version>${bootique-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique</groupId>
-				<artifactId>bootique-test</artifactId>
-				<version>${bootique-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique.metrics</groupId>
-				<artifactId>bootique-metrics</artifactId>
-				<version>${bootique-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.bootique.metrics</groupId>
-				<artifactId>bootique-metrics-healthchecks</artifactId>
-				<version>${bootique-version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-client</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlets</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <artifactId>javax-websocket-server-impl</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.bootique</groupId>
+                <artifactId>bootique</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique</groupId>
+                <artifactId>bootique-test</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique.metrics</groupId>
+                <artifactId>bootique-metrics</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.bootique.metrics</groupId>
+                <artifactId>bootique-metrics-healthchecks</artifactId>
+                <version>${bootique.version}</version>
+            </dependency>
+
+
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<dependency>
+            <dependency>
+                <groupId>javax.websocket</groupId>
+                <artifactId>javax.websocket-api</artifactId>
+                <version>${websocket.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency><!-- Transitive dependency of jersey-client -->
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>hk2-api</artifactId>
+                <version>${hk2.version}</version>
+                <exclusions>
+                    <!-- Guice includes this one -->
+                    <exclusion>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                        <artifactId>aopalliance-repackaged</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>hk2-locator</artifactId>
+                <version>${hk2.version}</version>
+                <exclusions>
+                    <!-- Guice includes this one -->
+                    <exclusion>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                        <artifactId>aopalliance-repackaged</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>javax.inject</artifactId>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>2.21</version>
+				<version>${jersey.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,4 +1,4 @@
-## 0.26
+## 1.0.RC1
 
 * #74 Add a @BQConfigProperty for 'compactPath' in ContextHandler
 * #75 Cleaning up APIs deprecated since <= 0.25
@@ -6,6 +6,9 @@
 * #77 Use percentage metric for thread pool utilization check
 * #78 Metrics renaming to follow naming convention
 * #79 Health check renaming to follow naming convention
+* #80 JDK9 Compatibility
+* #85 "bootique-jetty-websocket" - new module to support websocket apps
+* #86 Support connector "idleTimeout" property in config 
 
 ## 0.25
 

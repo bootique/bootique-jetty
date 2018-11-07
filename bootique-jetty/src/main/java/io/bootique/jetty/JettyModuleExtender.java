@@ -1,3 +1,22 @@
+/**
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package io.bootique.jetty;
 
 import com.google.inject.Binder;
@@ -5,6 +24,7 @@ import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import io.bootique.ModuleExtender;
+import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.DefaultServlet;
 
 import javax.servlet.Filter;
@@ -31,6 +51,8 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     private Multibinder<MappedServlet> mappedServlets;
     private Multibinder<MappedListener> mappedListeners;
 
+    private Multibinder<ServletContextHandlerExtender> contextHandlerExtenders;
+
     public JettyModuleExtender(Binder binder) {
         super(binder);
     }
@@ -50,6 +72,8 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         contributeMappedFilters();
         contributeMappedServlets();
         contributeMappedListeners();
+
+        contributeContextHandlerExtenders();
 
         return this;
     }
@@ -178,6 +202,35 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         return addMappedFilter(Key.get(mappedFilterType));
     }
 
+    /**
+     * Registers an extender of the Jetty {@link org.eclipse.jetty.servlet.ServletContextHandler}. This is a low-level
+     * extension point that allows to install some Jetty extensions like the WebSockets engine. This should be usually
+     * of no interest to regular bootique-jetty users.
+     *
+     * @param extender an "extender" object that can customize {@link org.eclipse.jetty.servlet.ServletContextHandler}.
+     * @return this extender instance
+     * @since 1.0.RC1
+     */
+    public JettyModuleExtender addContextHandlerExtender(ServletContextHandlerExtender extender) {
+        contributeContextHandlerExtenders().addBinding().toInstance(extender);
+        return this;
+    }
+
+    /**
+     * Registers an extender of the Jetty {@link org.eclipse.jetty.servlet.ServletContextHandler}. This is a low-level
+     * extension point that allows to install some Jetty extensions like the WebSockets engine. This should be usually
+     * of no interest to regular bootique-jetty users.
+     *
+     * @param type a class of an "extender" object that can customize
+     *             {@link org.eclipse.jetty.servlet.ServletContextHandler}.
+     * @return this extender instance
+     * @since 1.0.RC1
+     */
+    public JettyModuleExtender addContextHandlerExtender(Class<? extends ServletContextHandlerExtender> type) {
+        contributeContextHandlerExtenders().addBinding().to(type);
+        return this;
+    }
+
     protected Multibinder<Filter> contributeFilters() {
         return filters != null ? filters : (filters = newSet(Filter.class));
     }
@@ -202,5 +255,10 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         return mappedListeners != null ? mappedListeners : (mappedListeners = newSet(MappedListener.class));
     }
 
+    protected Multibinder<ServletContextHandlerExtender> contributeContextHandlerExtenders() {
+        return contextHandlerExtenders != null
+                ? contextHandlerExtenders
+                : (contextHandlerExtenders = newSet(ServletContextHandlerExtender.class));
+    }
 
 }

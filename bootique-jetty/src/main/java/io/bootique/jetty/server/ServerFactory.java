@@ -1,3 +1,22 @@
+/**
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
@@ -10,7 +29,6 @@ import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.jetty.cors.BootiqueCorsFactory;
 import io.bootique.resource.FolderResourceFactory;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
@@ -71,13 +89,23 @@ public class ServerFactory {
         this.compression = true;
     }
 
-    public Server createServer(Set<MappedServlet> servlets, Set<MappedFilter> filters, Set<MappedListener> listeners) {
+    public Server createServer(
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners,
+            Set<ServletContextHandlerExtender> contextHandlerExtenders) {
 
         ThreadPool threadPool = createThreadPool();
+        ServletContextHandler contextHandler = createHandler(servlets, filters, listeners);
+
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
         server.setStopTimeout(1000L);
-        server.setHandler(createHandler(servlets, filters, listeners));
+        server.setHandler(contextHandler);
+
+        // postconfig *after* the handler is associated with the Server. Some extensions like WebSocket require access
+        // to the handler's Server
+        postConfigHandler(contextHandler, contextHandlerExtenders);
 
         if (maxFormContentSize > 0) {
             server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
@@ -107,9 +135,14 @@ public class ServerFactory {
         return server;
     }
 
-    protected Handler createHandler(Set<MappedServlet> servlets,
-                                    Set<MappedFilter> filters,
-                                    Set<MappedListener> listeners) {
+    protected void postConfigHandler(ServletContextHandler handler, Set<ServletContextHandlerExtender> contextHandlerExtenders) {
+        contextHandlerExtenders.forEach(c -> c.onHandlerInstalled(handler));
+    }
+
+    protected ServletContextHandler createHandler(
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners) {
 
         int options = 0;
 
@@ -438,10 +471,12 @@ public class ServerFactory {
      * Compact URLs with multiple '/'s with a single '/'.
      *
      * @param compactPath Compact URLs with multiple '/'s with a single '/'. Default value is 'false'
-     * @since 0.26
+     * @since 1.0.RC1
      */
     @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
-    public void setCompactPath(boolean compactPath) { this.compactPath = compactPath; }
+    public void setCompactPath(boolean compactPath) {
+        this.compactPath = compactPath;
+    }
 
     /**
      * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).
