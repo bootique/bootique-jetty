@@ -27,14 +27,12 @@ import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
-import io.bootique.jetty.cors.BootiqueCorsFactory;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -72,7 +70,6 @@ public class ServerFactory {
     // defined as "int" in Jetty, so we should not exceed max int
     private int maxFormContentSize;
     private int maxFormKeys;
-//    private BootiqueCorsFactory bootiqueCors;
 
     /**
      * Maintains a mapping between erroneous response's Status Code and the page (URL) which will be used to handle it further.
@@ -170,12 +167,6 @@ public class ServerFactory {
             errorPages.forEach((statusCode, location) -> errorHandler.addErrorPage(statusCode, location));
             handler.setErrorHandler(errorHandler);
         }
-
-//        if (bootiqueCors != null) {
-//            MappedFilter corsFilter = new MappedFilter(new CrossOriginFilter(), bootiqueCors.getUrlPatterns(),
-//                    "cors-filter", bootiqueCors.getParameters(), bootiqueCors.getOrder());
-//            getFilterFactory("cors-filter").createAndAddJettyFilter(handler, corsFilter);
-//        }
 
         installListeners(handler, listeners);
         installServlets(handler, servlets);
@@ -518,15 +509,4 @@ public class ServerFactory {
     public void setErrorPages(Map<Integer, String> errorPages) {
         this.errorPages = errorPages;
     }
-
-//
-//    public BootiqueCorsFactory getBootiqueCors() {
-//        return bootiqueCors;
-//    }
-//
-//    @BQConfigProperty("Options for Cross Origin Filter")
-//    public void setBootiqueCors(BootiqueCorsFactory bootiqueCors) {
-//        this.bootiqueCors = bootiqueCors;
-//    }
-
 }
