@@ -46,11 +46,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
-            <scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.bootique</groupId>
 			<artifactId>bootique</artifactId>
 			<scope>compile</scope>
@@ -117,11 +112,6 @@
 			<artifactId>activation</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-client</artifactId>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 
 	<!-- Optional profile used to sign artifacts -->

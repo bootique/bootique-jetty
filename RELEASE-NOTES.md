@@ -1,5 +1,6 @@
 ## 1.0.RC1
 
+* #39 Add support for CORS configuration
 * #74 Add a @BQConfigProperty for 'compactPath' in ContextHandler
 * #75 Cleaning up APIs deprecated since <= 0.25
 * #76 Upgrade Jetty to 9.4

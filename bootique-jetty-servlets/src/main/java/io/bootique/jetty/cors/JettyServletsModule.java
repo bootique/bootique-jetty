@@ -30,7 +30,7 @@ import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 /**
- * @since 0.26
+ * @since 1.0.RC1
  */
 public class JettyServletsModule extends ConfigModule {
 
@@ -44,7 +44,6 @@ public class JettyServletsModule extends ConfigModule {
     JettyServlets providesJettyServlets(ConfigurationFactory configurationFactory) {
         return configurationFactory.config(JettyServlets.class, configPrefix);
     }
-
 
     @Provides
     @Singleton

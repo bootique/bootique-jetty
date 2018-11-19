@@ -19,35 +19,23 @@
 
 package io.bootique.jetty.cors;
 
-import com.google.inject.Module;
-import io.bootique.BQModule;
-import io.bootique.BQModuleProvider;
-import io.bootique.jetty.JettyModule;
-
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Map;
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
 
 /**
- * @since 0.26
+ * @since 1.0.RC1
  */
-public class JettyServletsProvider implements BQModuleProvider {
+@BQConfig
+public class JettyServlets {
 
-    @Override
-    public Module module() {
-        return new JettyModule();
+    private BootiqueCorsFactory cors;
+
+    public BootiqueCorsFactory getCors() {
+        return cors;
     }
 
-
-    @Override
-    public Map<String, Type> configs() {
-        return Collections.singletonMap("jettyservlets", JettyServlets.class);
-    }
-
-    @Override
-    public BQModule.Builder moduleBuilder() {
-        return BQModuleProvider.super
-                .moduleBuilder()
-                .description("Integrates Jetty web server in the application.");
+    @BQConfigProperty
+    public void setCors(BootiqueCorsFactory cors) {
+        this.cors = cors;
     }
 }
