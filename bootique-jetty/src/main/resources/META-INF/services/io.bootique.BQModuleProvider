@@ -18,3 +18,4 @@
 #####################################################################
 
 io.bootique.jetty.JettyModuleProvider
+io.bootique.jetty.cors.JettyServletsProvider
