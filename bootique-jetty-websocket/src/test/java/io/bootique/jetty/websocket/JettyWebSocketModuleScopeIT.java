@@ -56,6 +56,8 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
 
         for (int i = 1; i <= 3; i++) {
 
+            ServerSocket.resetLatch();
+
             try (Session session = createClientSession("ws3")) {
                 ServerSocket.openLatch.await();
             }
@@ -78,7 +80,9 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
 
         for (int i = 1; i <= 3; i++) {
 
-            try(Session session = createClientSession("ws3")) {
+            ServerSocket.resetLatch();
+
+            try (Session session = createClientSession("ws3")) {
                 ServerSocket.openLatch.await();
             }
 
@@ -94,6 +98,10 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
 
         static void reset() {
             instanceMap.clear();
+            openLatch = null;
+        }
+
+        static void resetLatch() {
             openLatch = new CountDownLatch(1);
         }
 
