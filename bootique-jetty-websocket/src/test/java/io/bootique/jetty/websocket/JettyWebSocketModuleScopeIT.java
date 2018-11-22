@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 
-public class JettyWebSocketModuleIScopeIT extends JettyWebSocketTestBase {
+public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
 
     @Before
     public void reset() {
