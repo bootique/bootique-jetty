@@ -83,8 +83,8 @@ public class JettyHealthChecksFactory {
         // default range
         return ValueRange.builder(Percent.class)
                 .min(Percent.ZERO)
-                .warning(new Percent(70))
-                .critical(new Percent(90))
+                .warning(new Percent(0.7))
+                .critical(new Percent(0.9))
                 .max(Percent.HUNDRED).build();
     }
 

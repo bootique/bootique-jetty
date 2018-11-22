@@ -10,6 +10,7 @@
 * #80 JDK9 Compatibility
 * #85 "bootique-jetty-websocket" - new module to support websocket apps
 * #86 Support connector "idleTimeout" property in config 
+* #87 Pool utilization threshold health check has out of range default "warn" and "critical" levels
 
 ## 0.25
 
