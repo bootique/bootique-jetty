@@ -55,12 +55,6 @@
 			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>javax-websocket-server-impl</artifactId>
-			<version>9.4.9.v20180320</version>
-		</dependency>
-
 
 		<!-- Unit test dependencies -->
 		<dependency>
