@@ -39,7 +39,7 @@ public class JettyServletsModuleProvider implements BQModuleProvider {
 
     @Override
     public Map<String, Type> configs() {
-        return Collections.singletonMap("jettyservlets", JettyServlets.class);
+        return Collections.singletonMap("jettyservlets", JettyServletsFactory.class);
     }
 
     @Override

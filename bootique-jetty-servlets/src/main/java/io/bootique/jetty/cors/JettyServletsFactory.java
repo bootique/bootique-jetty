@@ -26,7 +26,7 @@ import io.bootique.annotation.BQConfigProperty;
  * @since 1.0.RC1
  */
 @BQConfig
-public class JettyServlets {
+public class JettyServletsFactory {
 
     private BootiqueCorsFactory cors;
 

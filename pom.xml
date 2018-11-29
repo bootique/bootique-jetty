@@ -103,11 +103,6 @@
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-client</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey.version}</version>
@@ -149,6 +144,13 @@
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
 				<version>${jersey.version}</version>
+                <exclusions>
+                    <!-- Guice includes this one -->
+                    <exclusion>
+                        <artifactId>javax.inject</artifactId>
+                        <groupId>org.glassfish.hk2.external</groupId>
+                    </exclusion>
+                </exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

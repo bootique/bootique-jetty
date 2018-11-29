@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.cors;
 
+import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -30,6 +31,7 @@ import java.util.Set;
 /**
  * @since 1.0.RC1
  */
+@BQConfig
 public class BootiqueCorsFactory {
 
     private Set<String> urlPatterns;

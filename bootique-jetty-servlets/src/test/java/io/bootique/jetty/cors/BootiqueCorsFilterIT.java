@@ -18,78 +18,77 @@
  */
 package io.bootique.jetty.cors;
 
-import java.io.IOException;
+import io.bootique.jetty.JettyModule;
+import io.bootique.test.junit.BQTestFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import io.bootique.BQRuntime;
-import io.bootique.jetty.JettyModule;
-import io.bootique.test.junit.BQTestFactory;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.junit.Rule;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class BootiqueCorsFilterIT {
 
     private static final String OUT_CONTENT = "xcontent_stream_content_stream";
 
+    private static final String RESTRICTED_HEADERS_PROP = "sun.net.http.allowRestrictedHeaders";
+    private static String ORIGINAL_RESTRICTED_HEADERS;
+
     @Rule
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    @Test(expected = RuntimeException.class)
-    public void testLoadFilter() {
+    @BeforeClass
+    public static void configJavaForCors() {
+        ORIGINAL_RESTRICTED_HEADERS = System.getProperty(RESTRICTED_HEADERS_PROP);
 
-        BQRuntime runtime = testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoCorsFilter.yml")
-                .module(new UnitModule())
-                .createRuntime();
+        // This is to allow "Origin" header to be passed through. See:
+        // https://stackoverflow.com/questions/13255051/setting-origin-and-access-control-request-method-headers-with-jersey-client
+        System.setProperty(RESTRICTED_HEADERS_PROP, "true");
+    }
 
-        runtime.run();
+    @AfterClass
+    public static void undoConfigJavaForCors() {
+
+        String restore = ORIGINAL_RESTRICTED_HEADERS != null ? ORIGINAL_RESTRICTED_HEADERS : "false";
+        System.setProperty(RESTRICTED_HEADERS_PROP, restore);
     }
 
     @Test
-    public void testResponseHeaders() throws Exception {
-        BQRuntime runtime = testFactory
+    public void testLoadFilter() {
+        testFactory
+                .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoCorsFilter.yml")
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .run();
+    }
+
+    @Test
+    public void testResponseHeaders() {
+        testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
                 .module(JettyServletsModule.class)
-                .module(new UnitModule())
-                .createRuntime();
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .run();
 
-        runtime.run();
+        WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/api");
 
-        HttpClient httpClient = new HttpClient();
-        httpClient.start();
+        Response r1 = target.request().header("Origin", "test").options();
+        assertEquals("test", r1.getHeaderString("Access-Control-Allow-Origin"));
 
-        // deprecated default connector must NOT be started
-        Server server = runtime.getInstance(Server.class);
-        Connector[] connectors = server.getConnectors();
-        assertEquals(2, connectors.length);
+        Response r2 = target.request().header("Origin", "test2").options();
+        assertNull(r2.getHeaderString("Access-Control-Allow-Origin"));
 
-        ContentResponse response1 = httpClient.newRequest("http://localhost:15001/api")
-                .header("Origin", "test")
-                .method(HttpMethod.OPTIONS).send();
-        assertEquals("test", response1.getHeaders().get("Access-Control-Allow-Origin"));
-
-        ContentResponse response2 = httpClient.newRequest("http://localhost:15001/api")
-                .header("Origin", "test2")
-                .method(HttpMethod.OPTIONS).send();
-        assertNull(response2.getHeaders().get("Access-Control-Allow-Origin"));
-
-        ContentResponse response3 = httpClient.newRequest("http://localhost:15001/api")
-                .method(HttpMethod.OPTIONS).send();
-        assertNull(response3.getHeaders().get("Access-Control-Allow-Origin"));
+        Response r3 = target.request().options();
+        assertNull(r3.getHeaderString("Access-Control-Allow-Origin"));
     }
 
     @WebServlet(urlPatterns = "/api")
@@ -99,14 +98,6 @@ public class BootiqueCorsFilterIT {
         protected void doGet(HttpServletRequest req, HttpServletResponse resp)
                 throws ServletException, IOException {
             resp.getWriter().append(OUT_CONTENT);
-        }
-    }
-
-    class UnitModule implements Module {
-
-        @Override
-        public void configure(Binder binder) {
-            JettyModule.extend(binder).addServlet(ContentServlet.class);
         }
     }
 }

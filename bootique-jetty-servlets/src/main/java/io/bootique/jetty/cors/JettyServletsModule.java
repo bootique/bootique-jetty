@@ -41,16 +41,15 @@ public class JettyServletsModule extends ConfigModule {
 
     @Provides
     @Singleton
-    JettyServlets providesJettyServlets(ConfigurationFactory configurationFactory) {
-        return configurationFactory.config(JettyServlets.class, configPrefix);
+    JettyServletsFactory providesJettyServlets(ConfigurationFactory configurationFactory) {
+        return configurationFactory.config(JettyServletsFactory.class, configPrefix);
     }
 
     @Provides
     @Singleton
-    MappedFilter<CrossOriginFilter> providesCrossOriginFilter(JettyServlets jettyServlets) {
-        return jettyServlets
+    MappedFilter<CrossOriginFilter> providesCrossOriginFilter(JettyServletsFactory jettyServletsFactory) {
+        return jettyServletsFactory
                 .getCors()
                 .createCorsFilter();
     }
-
 }
