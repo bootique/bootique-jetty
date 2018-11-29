@@ -23,8 +23,8 @@ import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ import java.util.Set;
  * @since 1.0.RC1
  */
 @BQConfig
-public class BootiqueCorsFactory {
+public class CrossOriginFilterFactory {
 
     private Set<String> urlPatterns;
 
@@ -46,9 +46,7 @@ public class BootiqueCorsFactory {
     private boolean chainPreflight;
     private int order;
 
-    public BootiqueCorsFactory(){
-
-        this.urlPatterns = new HashSet<>();
+    public CrossOriginFilterFactory() {
         this.allowedOrigins = "*";
         this.allowedTimingOrigins = "*";
         this.allowedMethods = "X-Requested-With,Content-Type,Accept,Origin";
@@ -132,8 +130,8 @@ public class BootiqueCorsFactory {
         this.chainPreflight = chainPreflight;
     }
 
-    public Set<String> getUrlPatterns() {
-        return urlPatterns;
+    private Set<String> getUrlPatterns() {
+        return urlPatterns != null ? urlPatterns : Collections.singleton("/*");
     }
 
     @BQConfigProperty
@@ -165,8 +163,12 @@ public class BootiqueCorsFactory {
         return params;
     }
 
-    MappedFilter<CrossOriginFilter> createCorsFilter() {
-        return  new MappedFilter<>(new CrossOriginFilter(), getUrlPatterns(),
-                "cors-filter", getParameters(), getOrder());
+    public MappedFilter<CrossOriginFilter> createCorsFilter() {
+        return new MappedFilter<>(
+                new CrossOriginFilter(),
+                getUrlPatterns(),
+                "cors-filter",
+                getParameters(),
+                getOrder());
     }
 }

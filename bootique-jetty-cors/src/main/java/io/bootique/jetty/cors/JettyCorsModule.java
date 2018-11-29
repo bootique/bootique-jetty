@@ -19,23 +19,29 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.annotation.BQConfig;
-import io.bootique.annotation.BQConfigProperty;
+import com.google.inject.Binder;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import io.bootique.ConfigModule;
+import io.bootique.config.ConfigurationFactory;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedFilter;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 /**
  * @since 1.0.RC1
  */
-@BQConfig
-public class JettyServletsFactory {
+public class JettyCorsModule extends ConfigModule {
 
-    private BootiqueCorsFactory cors;
-
-    public BootiqueCorsFactory getCors() {
-        return cors;
+    @Override
+    public void configure(Binder binder) {
+        JettyModule.extend(binder).addMappedFilter(new TypeLiteral<MappedFilter<CrossOriginFilter>>(){});
     }
 
-    @BQConfigProperty
-    public void setCors(BootiqueCorsFactory cors) {
-        this.cors = cors;
+    @Provides
+    @Singleton
+    MappedFilter<CrossOriginFilter> providesCrossOriginFilter(ConfigurationFactory configurationFactory) {
+        return configurationFactory.config(CrossOriginFilterFactory.class, configPrefix).createCorsFilter();
     }
 }

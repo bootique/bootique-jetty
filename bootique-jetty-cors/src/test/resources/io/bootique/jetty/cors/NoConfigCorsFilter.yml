@@ -20,13 +20,3 @@
 jetty:
   connectors:
     - port: 15001
-    - port: 15002
-
-jettyservlets:
-  cors:
-    urlPatterns:
-      - "/api"
-    allowedOrigins: "test"
-    allowedMethods: "POST"
-    allowedHeaders: "X-Requested-With,Content-Type,Accept,Origin"
-    preflightMaxAge: 180

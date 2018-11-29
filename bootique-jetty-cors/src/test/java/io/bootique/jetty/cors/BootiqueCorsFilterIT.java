@@ -18,28 +18,19 @@
  */
 package io.bootique.jetty.cors;
 
-import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 import static org.junit.Assert.*;
 
 public class BootiqueCorsFilterIT {
-
-    private static final String OUT_CONTENT = "xcontent_stream_content_stream";
 
     private static final String RESTRICTED_HEADERS_PROP = "sun.net.http.allowRestrictedHeaders";
     private static String ORIGINAL_RESTRICTED_HEADERS;
@@ -64,19 +55,24 @@ public class BootiqueCorsFilterIT {
     }
 
     @Test
-    public void testLoadFilter() {
+    public void testResponseHeaders_DefaultConfig() {
         testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoCorsFilter.yml")
-                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoConfigCorsFilter.yml")
+                .module(JettyCorsModule.class)
                 .run();
+
+        // by default matches all paths and all origins
+
+        WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/xp");
+        Response r = target.request().header("Origin", "xo").options();
+        assertEquals("xo", r.getHeaderString("Access-Control-Allow-Origin"));
     }
 
     @Test
-    public void testResponseHeaders() {
+    public void testResponseHeaders_ByOrigin() {
         testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
-                .module(JettyServletsModule.class)
-                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .module(JettyCorsModule.class)
                 .run();
 
         WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/api");
@@ -91,13 +87,21 @@ public class BootiqueCorsFilterIT {
         assertNull(r3.getHeaderString("Access-Control-Allow-Origin"));
     }
 
-    @WebServlet(urlPatterns = "/api")
-    static class ContentServlet extends HttpServlet {
+    @Test
+    public void testResponseHeaders_ByPath() {
+        testFactory
+                .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+                .module(JettyCorsModule.class)
+                .run();
 
-        @Override
-        protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-                throws ServletException, IOException {
-            resp.getWriter().append(OUT_CONTENT);
-        }
+        WebTarget coveredPath = ClientBuilder.newClient().target("http://localhost:15001/api");
+
+        Response r1 = coveredPath.request().header("Origin", "test").options();
+        assertEquals("test", r1.getHeaderString("Access-Control-Allow-Origin"));
+
+
+        WebTarget notCoveredPath = ClientBuilder.newClient().target("http://localhost:15001/notapi");
+        Response r2 = notCoveredPath.request().header("Origin", "test").options();
+        assertNull(r2.getHeaderString("Access-Control-Allow-Origin"));
     }
 }

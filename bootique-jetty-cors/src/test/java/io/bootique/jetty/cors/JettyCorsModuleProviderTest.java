@@ -16,36 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.bootique.jetty.cors;
 
-import com.google.inject.Module;
-import io.bootique.BQModule;
-import io.bootique.BQModuleProvider;
+import io.bootique.test.junit.BQModuleProviderChecker;
+import org.junit.Test;
 
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Map;
+public class JettyCorsModuleProviderTest {
 
-/**
- * @since 1.0.RC1
- */
-public class JettyServletsModuleProvider implements BQModuleProvider {
-
-    @Override
-    public Module module() {
-        return new JettyServletsModule();
-    }
-
-    @Override
-    public Map<String, Type> configs() {
-        return Collections.singletonMap("jettyservlets", JettyServletsFactory.class);
-    }
-
-    @Override
-    public BQModule.Builder moduleBuilder() {
-        return BQModuleProvider.super
-                .moduleBuilder()
-                .description("Integrates additional Jetty Servlets in the application.");
+    @Test
+    public void testAutoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(JettyCorsModuleProvider.class);
     }
 }

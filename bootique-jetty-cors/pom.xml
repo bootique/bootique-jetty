@@ -28,9 +28,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bootique-jetty-servlets</artifactId>
-    <name>bootique-jetty-servlets: a module to integrate additional Jetty Servlets</name>
-    <description>Provides Jetty Servlets integration with Bootique.</description>
+    <artifactId>bootique-jetty-cors</artifactId>
+    <name>bootique-jetty-cors: CORS filter integration for Bootique</name>
+    <description>Provides CORS filter integration for Bootique.</description>
 
     <dependencies>
         <!-- Compile dependencies -->

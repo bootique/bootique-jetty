@@ -40,7 +40,7 @@
 		<module>bootique-jetty-instrumented</module>
 		<module>bootique-jetty-metrics</module>
 		<module>bootique-jetty-websocket</module>
-        <module>bootique-jetty-servlets</module>
+        <module>bootique-jetty-cors</module>
     </modules>
 
     <properties>
