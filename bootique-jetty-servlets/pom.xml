@@ -72,6 +72,11 @@
             <artifactId>bootique-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Jersey client on Java 9+ needs these -->
         <dependency>
