@@ -292,6 +292,10 @@ keytool -keystore src/main/resources/mykeystore \
 |`8080`
 |A port the connector listens on.
 
+|`host`
+|`*`
+|A host the connector listens on. * to listen on all, 127.0.0.1 to listen on IPv4 localhost.
+
 |`requestHeaderSize`
 |`8192`
 |A max size in bytes of Jetty request headers and GET URLs.
