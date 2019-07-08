@@ -56,7 +56,7 @@ public class JettyWebSocketModule extends ConfigModule {
 
     @Provides
     @Singleton
-    WebSocketPolicy provideWebSocketPolicy(ConfigurationFactory configurationFactory) {
-        return configurationFactory.config(WebSocketPolicyFactory.class, configPrefix).createPolicy();
+    WebSocketPolicy provideWebSocketPolicy(ConfigurationFactory configFactory) {
+        return config(WebSocketPolicyFactory.class, configFactory).createPolicy();
     }
 }

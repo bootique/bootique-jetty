@@ -41,7 +41,7 @@ public class JettyCorsModule extends ConfigModule {
 
     @Provides
     @Singleton
-    MappedFilter<CrossOriginFilter> providesCrossOriginFilter(ConfigurationFactory configurationFactory) {
-        return configurationFactory.config(CrossOriginFilterFactory.class, configPrefix).createCorsFilter();
+    MappedFilter<CrossOriginFilter> providesCrossOriginFilter(ConfigurationFactory configFactory) {
+        return config(CrossOriginFilterFactory.class, configFactory).createCorsFilter();
     }
 }

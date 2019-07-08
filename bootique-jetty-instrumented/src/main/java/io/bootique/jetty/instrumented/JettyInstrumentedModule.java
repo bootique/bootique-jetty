@@ -80,7 +80,7 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Provides
     InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory, MetricRegistry metricRegistry) {
-        return configFactory.config(InstrumentedServerFactory.class, configPrefix).initMetricRegistry(metricRegistry);
+        return config(InstrumentedServerFactory.class, configFactory).initMetricRegistry(metricRegistry);
     }
 
     @Provides

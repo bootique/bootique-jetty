@@ -168,6 +168,6 @@ public class JettyModule extends ConfigModule {
     @Singleton
     @Provides
     ServerFactory providerServerFactory(ConfigurationFactory configFactory) {
-        return configFactory.config(ServerFactory.class, configPrefix);
+        return config(ServerFactory.class, configFactory);
     }
 }
