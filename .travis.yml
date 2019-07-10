@@ -16,7 +16,7 @@
 language: java
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   - oraclejdk11
   - openjdk-ea
 
@@ -29,7 +29,7 @@ jobs:
       jdk: oraclejdk8
       script: mvn clean source:jar javadoc:javadoc deploy -DskipTests --settings travis_settings.xml
       if: branch IN (master, 1.0-STABLE) AND type IN (push) AND repo = bootique/bootique-jetty
-      
+
 # travis encrypt -r bootique/bootique-jetty "CI_DEPLOY_USERNAME='name'"
 # travis encrypt -r bootique/bootique-jetty "CI_DEPLOY_PASSWORD='password'"
 env:
