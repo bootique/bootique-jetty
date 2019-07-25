@@ -1,3 +1,10 @@
+
+## 1.1
+
+* #91 Upgrade Jetty to 9.4.19.v20190610
+
+## 1.0
+
 ## 1.0.RC1
 
 * #39 Add support for CORS configuration
