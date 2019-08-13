@@ -51,6 +51,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
     private int responseHeaderSize;
     private int requestHeaderSize;
     private Duration idleTimeout;
+    private boolean sendServerVersion;
 
     public ConnectorFactory() {
         this.port = 8080;
@@ -109,7 +110,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         httpConfig.setRequestHeaderSize(requestHeaderSize);
         httpConfig.setResponseHeaderSize(responseHeaderSize);
         httpConfig.setSendDateHeader(true);
-        httpConfig.setSendServerVersion(true);
+        httpConfig.setSendServerVersion(sendServerVersion);
 
         httpConfig.addCustomizer(new ForwardedRequestCustomizer());
 
@@ -236,5 +237,21 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
     @BQConfigProperty
     public void setIdleTimeout(Duration idleTimeout) {
         this.idleTimeout = idleTimeout;
+    }
+
+    /**
+     * @since 1.1
+     */
+    public boolean isSendServerVersion() {
+        return sendServerVersion;
+    }
+
+    /**
+     * @param sendServerVersion
+     * @since 1.1
+     */
+    @BQConfigProperty("Property to include server version header in responses.")
+    public void setSendServerVersion(boolean sendServerVersion) {
+        this.sendServerVersion = sendServerVersion;
     }
 }
