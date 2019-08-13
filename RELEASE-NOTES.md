@@ -1,3 +1,7 @@
+## 1.1
+
+* #88 Turning off "Server" header
+
 ## 1.0.RC1
 
 * #39 Add support for CORS configuration
