@@ -1,11 +1,9 @@
-
 ## 1.1
 
+* #88 Turning off "Server" header
 * #91 Upgrade Jetty to 9.4.19.v20190610
 
 ## 1.0
-
-## 1.0.RC1
 
 * #39 Add support for CORS configuration
 * #74 Add a @BQConfigProperty for 'compactPath' in ContextHandler
