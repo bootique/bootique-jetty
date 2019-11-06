@@ -37,10 +37,11 @@
 
 	<modules>
 		<module>bootique-jetty</module>
-		<module>bootique-jetty-instrumented</module>
-		<module>bootique-jetty-metrics</module>
-		<module>bootique-jetty-websocket</module>
         <module>bootique-jetty-cors</module>
+        <module>bootique-jetty-docs</module>
+        <module>bootique-jetty-instrumented</module>
+        <module>bootique-jetty-metrics</module>
+        <module>bootique-jetty-websocket</module>
     </modules>
 
     <properties>
