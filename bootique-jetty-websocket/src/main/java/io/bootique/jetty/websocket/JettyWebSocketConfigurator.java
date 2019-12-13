@@ -18,8 +18,8 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
+import io.bootique.di.Injector;
+import io.bootique.di.Key;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
@@ -86,7 +86,7 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
     protected <T> void installEndpoint(Key<T> endpointDiKey, ServerContainer wsContainer) {
 
-        Class<? super T> endpointType = endpointDiKey.getTypeLiteral().getRawType();
+        Class<? super T> endpointType = endpointDiKey.getType().getRawType();
         ServerEndpoint endpointAnnotation = endpointType.getAnnotation(ServerEndpoint.class);
         if (endpointAnnotation == null) {
             // TODO: must handle subclasses of javax.websocket.Endpoint

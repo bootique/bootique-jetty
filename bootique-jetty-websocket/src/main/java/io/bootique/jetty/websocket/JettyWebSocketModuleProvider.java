@@ -18,13 +18,13 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Module;
 import io.bootique.BQModuleProvider;
+import io.bootique.di.BQModule;
 
 public class JettyWebSocketModuleProvider implements BQModuleProvider {
 
     @Override
-    public Module module() {
+    public BQModule module() {
         return new JettyWebSocketModule();
     }
 }

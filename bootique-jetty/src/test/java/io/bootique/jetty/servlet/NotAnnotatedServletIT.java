@@ -19,10 +19,10 @@
 
 package io.bootique.jetty.servlet;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.ProvisionException;
+import io.bootique.di.Binder;
+import io.bootique.di.DIRuntimeException;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
@@ -39,12 +39,12 @@ public class NotAnnotatedServletIT {
     @Rule
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    @Test(expected = ProvisionException.class)
+    @Test(expected = DIRuntimeException.class)
     public void testServletContainerState() {
         testFactory.app("-s").module(new ServletModule()).run();
     }
 
-    class ServletModule implements Module {
+    class ServletModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

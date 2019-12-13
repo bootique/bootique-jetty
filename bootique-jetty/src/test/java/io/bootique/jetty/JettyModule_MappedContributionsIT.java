@@ -19,17 +19,17 @@
 
 package io.bootique.jetty;
 
-import com.google.inject.Binder;
-import com.google.inject.Key;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
+import io.bootique.di.Binder;
+import io.bootique.di.Key;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
+import io.bootique.di.TypeLiteral;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import javax.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -87,7 +87,7 @@ public class JettyModule_MappedContributionsIT {
         assertEquals("f3_s3r", r1.readEntity(String.class));
     }
 
-    public static class TestModule implements Module {
+    public static class TestModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

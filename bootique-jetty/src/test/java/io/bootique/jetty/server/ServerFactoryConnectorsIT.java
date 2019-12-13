@@ -19,9 +19,9 @@
 
 package io.bootique.jetty.server;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
 import io.bootique.BQRuntime;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
 import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
@@ -84,7 +84,7 @@ public class ServerFactoryConnectorsIT {
         }
     }
 
-    class UnitModule implements Module {
+    class UnitModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

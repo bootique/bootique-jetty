@@ -19,11 +19,11 @@
 
 package io.bootique.jetty;
 
-import com.google.inject.Binder;
-import com.google.inject.Key;
-import com.google.inject.TypeLiteral;
-import com.google.inject.multibindings.Multibinder;
 import io.bootique.ModuleExtender;
+import io.bootique.di.Binder;
+import io.bootique.di.Key;
+import io.bootique.di.SetBuilder;
+import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.DefaultServlet;
 
@@ -43,15 +43,15 @@ import java.util.Set;
 public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
 
-    private Multibinder<Filter> filters;
-    private Multibinder<Servlet> servlets;
-    private Multibinder<EventListener> listeners;
+    private SetBuilder<Filter> filters;
+    private SetBuilder<Servlet> servlets;
+    private SetBuilder<EventListener> listeners;
 
-    private Multibinder<MappedFilter> mappedFilters;
-    private Multibinder<MappedServlet> mappedServlets;
-    private Multibinder<MappedListener> mappedListeners;
+    private SetBuilder<MappedFilter> mappedFilters;
+    private SetBuilder<MappedServlet> mappedServlets;
+    private SetBuilder<MappedListener> mappedListeners;
 
-    private Multibinder<ServletContextHandlerExtender> contextHandlerExtenders;
+    private SetBuilder<ServletContextHandlerExtender> contextHandlerExtenders;
 
     public JettyModuleExtender(Binder binder) {
         super(binder);
@@ -79,12 +79,12 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public JettyModuleExtender addListener(EventListener listener) {
-        contributeListeners().addBinding().toInstance(listener);
+        contributeListeners().add(listener);
         return this;
     }
 
     public JettyModuleExtender addListener(Class<? extends EventListener> listenerType) {
-        contributeListeners().addBinding().to(listenerType);
+        contributeListeners().add(listenerType);
         return this;
     }
 
@@ -95,7 +95,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
-        contributeMappedListeners().addBinding().toInstance(mappedListener);
+        contributeMappedListeners().add(mappedListener);
         return this;
     }
 
@@ -106,7 +106,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(Key<MappedListener<T>> mappedListenerKey) {
-        contributeMappedListeners().addBinding().to(mappedListenerKey);
+        contributeMappedListeners().add(mappedListenerKey);
         return this;
     }
 
@@ -137,7 +137,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @return this extender instance.
      */
     public JettyModuleExtender addServlet(Class<? extends Servlet> servletType) {
-        contributeServlets().addBinding().to(servletType);
+        contributeServlets().add(servletType);
         return this;
     }
 
@@ -152,12 +152,12 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public <T extends Servlet> JettyModuleExtender addMappedServlet(MappedServlet<T> mappedServlet) {
-        contributeMappedServlets().addBinding().toInstance(mappedServlet);
+        contributeMappedServlets().add(mappedServlet);
         return this;
     }
 
     public <T extends Servlet> JettyModuleExtender addMappedServlet(Key<MappedServlet<T>> mappedServletKey) {
-        contributeMappedServlets().addBinding().to(mappedServletKey);
+        contributeMappedServlets().add(mappedServletKey);
         return this;
     }
 
@@ -174,7 +174,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @return this extender instance.
      */
     public JettyModuleExtender addFilter(Class<? extends Filter> filterType) {
-        contributeFilters().addBinding().to(filterType);
+        contributeFilters().add(filterType);
         return this;
     }
 
@@ -189,12 +189,12 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public <T extends Filter> JettyModuleExtender addMappedFilter(MappedFilter<T> mappedFilter) {
-        contributeMappedFilters().addBinding().toInstance(mappedFilter);
+        contributeMappedFilters().add(mappedFilter);
         return this;
     }
 
     public <T extends Filter> JettyModuleExtender addMappedFilter(Key<MappedFilter<T>> mappedFilterKey) {
-        contributeMappedFilters().addBinding().to(mappedFilterKey);
+        contributeMappedFilters().add(mappedFilterKey);
         return this;
     }
 
@@ -212,7 +212,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 1.0.RC1
      */
     public JettyModuleExtender addContextHandlerExtender(ServletContextHandlerExtender extender) {
-        contributeContextHandlerExtenders().addBinding().toInstance(extender);
+        contributeContextHandlerExtenders().add(extender);
         return this;
     }
 
@@ -227,35 +227,35 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 1.0.RC1
      */
     public JettyModuleExtender addContextHandlerExtender(Class<? extends ServletContextHandlerExtender> type) {
-        contributeContextHandlerExtenders().addBinding().to(type);
+        contributeContextHandlerExtenders().add(type);
         return this;
     }
 
-    protected Multibinder<Filter> contributeFilters() {
+    protected SetBuilder<Filter> contributeFilters() {
         return filters != null ? filters : (filters = newSet(Filter.class));
     }
 
-    protected Multibinder<Servlet> contributeServlets() {
+    protected SetBuilder<Servlet> contributeServlets() {
         return servlets != null ? servlets : (servlets = newSet(Servlet.class));
     }
 
-    protected Multibinder<EventListener> contributeListeners() {
+    protected SetBuilder<EventListener> contributeListeners() {
         return listeners != null ? listeners : (listeners = newSet(EventListener.class));
     }
 
-    protected Multibinder<MappedFilter> contributeMappedFilters() {
+    protected SetBuilder<MappedFilter> contributeMappedFilters() {
         return mappedFilters != null ? mappedFilters : (mappedFilters = newSet(MappedFilter.class));
     }
 
-    protected Multibinder<MappedServlet> contributeMappedServlets() {
+    protected SetBuilder<MappedServlet> contributeMappedServlets() {
         return mappedServlets != null ? mappedServlets : (mappedServlets = newSet(MappedServlet.class));
     }
 
-    protected Multibinder<MappedListener> contributeMappedListeners() {
+    protected SetBuilder<MappedListener> contributeMappedListeners() {
         return mappedListeners != null ? mappedListeners : (mappedListeners = newSet(MappedListener.class));
     }
 
-    protected Multibinder<ServletContextHandlerExtender> contributeContextHandlerExtenders() {
+    protected SetBuilder<ServletContextHandlerExtender> contributeContextHandlerExtenders() {
         return contextHandlerExtenders != null
                 ? contextHandlerExtenders
                 : (contextHandlerExtenders = newSet(ServletContextHandlerExtender.class));

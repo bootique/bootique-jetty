@@ -18,16 +18,16 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Binder;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.Binder;
+import io.bootique.di.Injector;
+import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 
 import java.util.Set;
+import javax.inject.Singleton;
 
 /**
  * @since 1.0.RC1

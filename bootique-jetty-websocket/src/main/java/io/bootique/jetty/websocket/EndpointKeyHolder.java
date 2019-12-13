@@ -19,7 +19,7 @@
 package io.bootique.jetty.websocket;
 
 
-import com.google.inject.Key;
+import io.bootique.di.Key;
 
 /**
  * A wrapper for a Guice DI {@link Key} to make the Key itself injectable.

@@ -19,9 +19,9 @@
 
 package io.bootique.jetty.servlet;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.After;
@@ -95,7 +95,7 @@ public class AnnotatedFilterIT {
         assertion = null;
     }
 
-    class FilterModule implements Module {
+    class FilterModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

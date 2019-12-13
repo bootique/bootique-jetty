@@ -19,12 +19,13 @@
 
 package io.bootique.jetty.cors;
 
-import com.google.inject.Binder;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
+import javax.inject.Singleton;
+
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.Binder;
+import io.bootique.di.Provides;
+import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
@@ -36,7 +37,8 @@ public class JettyCorsModule extends ConfigModule {
 
     @Override
     public void configure(Binder binder) {
-        JettyModule.extend(binder).addMappedFilter(new TypeLiteral<MappedFilter<CrossOriginFilter>>(){});
+        JettyModule.extend(binder)
+                .addMappedFilter(new TypeLiteral<MappedFilter<CrossOriginFilter>>(){});
     }
 
     @Provides

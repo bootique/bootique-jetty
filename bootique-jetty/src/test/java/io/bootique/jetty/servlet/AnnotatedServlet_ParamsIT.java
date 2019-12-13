@@ -19,9 +19,9 @@
 
 package io.bootique.jetty.servlet;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
@@ -70,7 +70,7 @@ public class AnnotatedServlet_ParamsIT {
         assertEquals("p1_v3_p2_v4", r.readEntity(String.class));
     }
 
-    class ServletModule implements Module {
+    class ServletModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

@@ -19,8 +19,8 @@
 
 package io.bootique.jetty.metrics;
 
-import com.google.inject.Module;
 import io.bootique.BQModuleProvider;
+import io.bootique.di.BQModule;
 import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.metrics.health.HealthCheckModuleProvider;
 
@@ -34,7 +34,7 @@ import static java.util.Arrays.asList;
 public class JettyMetricsModuleProvider implements BQModuleProvider {
 
     @Override
-    public Module module() {
+    public BQModule module() {
         return new JettyMetricsModule();
     }
 

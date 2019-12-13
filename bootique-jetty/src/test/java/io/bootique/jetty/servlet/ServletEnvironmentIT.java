@@ -19,10 +19,10 @@
 
 package io.bootique.jetty.servlet;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.TypeLiteral;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
+import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.test.junit.BQTestFactory;
@@ -77,7 +77,7 @@ public class ServletEnvironmentIT {
 		Objects.requireNonNull(assertion).run();
 	}
 
-	class ServletCheckingModule implements Module {
+	class ServletCheckingModule implements BQModule {
 
 		@Override
 		public void configure(Binder binder) {

@@ -18,7 +18,6 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Singleton;
 import io.bootique.BQRuntime;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
         BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
                 // binding with singleton scope
-                .module(b -> b.bind(ServerSocket.class).in(Singleton.class))
+                .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
                 .createRuntime();
 

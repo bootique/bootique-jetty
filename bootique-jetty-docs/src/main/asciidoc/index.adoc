@@ -80,7 +80,8 @@ public class AnnotatedServlet extends HttpServlet {
 }
 ----
 
-The "name" annotation is kind of important as it would allow to override annotation values in the YAML, as described in the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal Guice injection.
+The "name" annotation is kind of important as it would allow to override annotation values in the YAML,
+as described in the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal Bootique DI injection.
 
 Next step is adding it to Bootique via `JettyModule` contribution API called from your application Module:
 

@@ -19,12 +19,11 @@
 
 package io.bootique.jetty;
 
-import com.google.inject.Binder;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.Binder;
+import io.bootique.di.Provides;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.server.MappedFilterFactory;
 import io.bootique.jetty.server.MappedServletFactory;
@@ -36,6 +35,7 @@ import io.bootique.log.BootLogger;
 import io.bootique.shutdown.ShutdownManager;
 import org.eclipse.jetty.server.Server;
 
+import javax.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import java.util.EventListener;

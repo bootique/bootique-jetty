@@ -19,9 +19,9 @@
 
 package io.bootique.jetty;
 
-import com.google.inject.Module;
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
+import io.bootique.di.BQModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,7 +75,7 @@ public class JettyModuleIT {
         this.mockFilter3 = mock(Filter.class);
     }
 
-    private BQRuntime startApp(Module module) {
+    private BQRuntime startApp(BQModule module) {
         BQRuntime runtime = testFactory.app("-s")
                 .module(module)
                 .createRuntime();

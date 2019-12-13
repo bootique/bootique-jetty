@@ -19,21 +19,21 @@
 
 package io.bootique.jetty.metrics;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
+import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.metrics.health.HealthCheckRegistry;
 
 import java.util.Collections;
+import javax.inject.Singleton;
 
 /**
  * @since 0.20
  */
-public class JettyMetricsModule implements Module {
+public class JettyMetricsModule implements BQModule {
 
     @Override
     public void configure(Binder binder) {

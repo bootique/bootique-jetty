@@ -18,10 +18,10 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Binder;
-import com.google.inject.Key;
-import com.google.inject.multibindings.Multibinder;
 import io.bootique.ModuleExtender;
+import io.bootique.di.Binder;
+import io.bootique.di.Key;
+import io.bootique.di.SetBuilder;
 
 /**
  * @since 1.0.RC1
@@ -30,7 +30,7 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
 
     // see JettyWebSocketContextHandlerExtender for the explanation why endpoints are collected as Keys.
     // TL;DR - we need to instantiate them per peer connection unless a user decides they should be singletons...
-    private Multibinder<EndpointKeyHolder> endpointKeys;
+    private SetBuilder<EndpointKeyHolder> endpointKeys;
 
     public JettyWebSocketModuleExtender(Binder binder) {
         super(binder);
@@ -49,7 +49,7 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
      * @return this extender instance
      */
     public JettyWebSocketModuleExtender addEndpoint(Key<?> endpointDiKey) {
-        contributeEndpointKeys().addBinding().toInstance(new EndpointKeyHolder(endpointDiKey));
+        contributeEndpointKeys().add(new EndpointKeyHolder(endpointDiKey));
         return this;
     }
 
@@ -63,7 +63,7 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
         return addEndpoint(Key.get(endpointType));
     }
 
-    protected Multibinder<EndpointKeyHolder> contributeEndpointKeys() {
+    protected SetBuilder<EndpointKeyHolder> contributeEndpointKeys() {
         if (endpointKeys == null) {
             endpointKeys = newSet(EndpointKeyHolder.class);
         }

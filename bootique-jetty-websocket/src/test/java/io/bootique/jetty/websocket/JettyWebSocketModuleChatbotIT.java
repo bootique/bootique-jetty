@@ -18,7 +18,6 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Singleton;
 import org.junit.Test;
 
 import javax.websocket.ClientEndpoint;
@@ -43,7 +42,7 @@ public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
 
         testFactory.app("-s")
                 .autoLoadModules()
-                .module(b -> b.bind(ChatServer.class).in(Singleton.class))
+                .module(b -> b.bind(ChatServer.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ChatServer.class))
                 .run();
 

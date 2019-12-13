@@ -18,11 +18,10 @@
  */
 package io.bootique.jetty.websocket;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import io.bootique.BQRuntime;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import javax.websocket.DeploymentException;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -43,7 +42,7 @@ public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
         BQRuntime runtime = testFactory.app("-s")
                 .autoLoadModules()
                 .module(b -> b.bind(EchoService.class).toInstance(service))
-                .module(b -> b.bind(ServerSocket.class).in(Singleton.class))
+                .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
                 .createRuntime();
 

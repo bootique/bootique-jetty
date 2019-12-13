@@ -19,9 +19,9 @@
 
 package io.bootique.jetty.server;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
-import com.google.inject.Provides;
+import io.bootique.di.Binder;
+import io.bootique.di.BQModule;
+import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import io.bootique.test.junit.BQTestFactory;
 import org.glassfish.jersey.message.GZipEncoder;
@@ -110,7 +110,7 @@ public class CompressionIT {
         assertNull(gzipDeflateResponse.getHeaderString("Content-Encoding"));
     }
 
-    class ServletModule implements Module {
+    class ServletModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {

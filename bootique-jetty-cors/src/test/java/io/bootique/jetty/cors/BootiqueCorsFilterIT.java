@@ -58,7 +58,6 @@ public class BootiqueCorsFilterIT {
     public void testResponseHeaders_DefaultConfig() {
         testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoConfigCorsFilter.yml")
-                .module(JettyCorsModule.class)
                 .run();
 
         // by default matches all paths and all origins
@@ -72,7 +71,6 @@ public class BootiqueCorsFilterIT {
     public void testResponseHeaders_ByOrigin() {
         testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
-                .module(JettyCorsModule.class)
                 .run();
 
         WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/api");
@@ -91,7 +89,6 @@ public class BootiqueCorsFilterIT {
     public void testResponseHeaders_ByPath() {
         testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
-                .module(JettyCorsModule.class)
                 .run();
 
         WebTarget coveredPath = ClientBuilder.newClient().target("http://localhost:15001/api");
