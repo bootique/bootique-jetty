@@ -49,8 +49,8 @@ public class CrossOriginFilterFactory {
     public CrossOriginFilterFactory() {
         this.allowedOrigins = "*";
         this.allowedTimingOrigins = "*";
-        this.allowedMethods = "X-Requested-With,Content-Type,Accept,Origin";
-        this.allowedHeaders = "GET,POST,HEAD";
+        this.allowedMethods = "GET,POST,HEAD";
+        this.allowedHeaders = "X-Requested-With,Content-Type,Accept,Origin";
         this.preflightMaxAge = 1800;
         this.allowCredentials = true;
         this.exposedHeaders = "";
