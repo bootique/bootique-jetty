@@ -1,0 +1,97 @@
+// Licensed to ObjectStyle LLC under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ObjectStyle LLC licenses
+// this file to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+[#jetty-extensions]
+== Jetty Extensions
+
+Bootique includes additional modules described in this chapter that provide metrics, health checks and other Jetty
+extensions.
+
+=== Metrics and Healthchecks
+
+You may use an "instrumented" version `bootique-jetty`, that will extend the server with a number of metrics
+and health checks for your running app:
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-instrumented</artifactId>
+</dependency>
+----
+
+=== Support for CORS
+If the services running on Jetty are accessed from other domains, you may need to explicitly configure CORS rules to
+to prevent the browsers from blocking access. To achieve that include the following module:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-cors</artifactId>
+</dependency>
+----
+
+and then configure rules in YAML under "jettycors" root element:
+[source,yaml]
+----
+jettycors:
+  urlPatterns:
+    - "/*"
+  allowedOrigins: "https://www1.example.org,https://www2.example.org"
+  allowedMethods: "GET,OPTIONS,HEAD"
+  allowedHeaders: "*"
+----
+
+=== Support for Websockets
+If in addition to HTTP requests, you'd like your server to provide access via websockets, you need to add the following
+module:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-websocket</artifactId>
+</dependency>
+----
+
+Somewhat similar to servlets, the application will need to provide its own classes for websocket endpoints (that must
+follow JSR-356 API to be recognized as endpoonts). Then you need to register them using `JettyWebSocketModule` extender:
+
+[source,java]
+----
+@ServerEndpoint(value = "/ws1")
+public class MySocket {
+
+    @OnMessage
+    public void onMessageText(String message) {
+        System.out.println("message from websocket:" + message );
+    }
+}
+
+JettyWebSocketModule.extend(b).addEndpoint(MySocket.class);
+----
+
+Just like with servlets, endpoints can be managed by the DI container and can inject any services available in the
+application. Websockets server parameters are configured in YAML under "jettywebsocket" root element:
+[source,yaml]
+----
+jettywebsocket:
+    asyncSendTimeout: "5s"
+    maxSessionIdleTimeout: "30min"
+    maxBinaryMessageBufferSize: "30kb"
+    maxTextMessageBufferSize: "45kb"
+----

@@ -34,18 +34,9 @@ located somewhere on the filesystem. As things go with Bootique, you will be abl
 </dependency>
 ----
 
-Alternatively you may include an "instrumented" version of `bootique-jetty` that will provide a number of metrics for
-your running app:
-
-[source,xml]
-----
-<dependency>
-    <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty-instrumented</artifactId>
-</dependency>
-----
-
-The module provides `--server` command, which starts your web server on foreground:
+Alternatively you may include an <<ext-jetty-instrumented,"instrumented" version>> of `bootique-jetty` that will
+enable a number of metrics for your running app. Either the regular or the instrumented Jetty modules provide `--server`
+command, which starts your web server on foreground:
 
 ----
 java -jar my.jar --server
@@ -57,4 +48,6 @@ i.b.j.s.Server - Started @490ms
 ----
 
 Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal
-Bootique way via YAML, as detailed below in the "Configuration Reference" chapter.
+Bootique way via YAML, as detailed below in the <<jetty-configuration,"Configuration Reference" chapter>>. A few
+additional Bootique modules that extend Jetty to support CORS, websockets, etc. are documented in the
+<<jetty-extensions,"Extensions" chapter>>.
