@@ -71,18 +71,14 @@ module:
 Somewhat similar to servlets, the application will need to provide its own classes for websocket endpoints (that must
 follow JSR-356 API to be recognized as endpoonts). Then you need to register them using `JettyWebSocketModule` extender:
 
-[source,java]
+[source,java,indent=0]
 ----
-@ServerEndpoint(value = "/ws1")
-public class MySocket {
+include::../../../test/java/io/bootique/jetty/docs/AnnotatedWebsocket.java[tags=AnnotatedWebsocket]
+----
 
-    @OnMessage
-    public void onMessageText(String message) {
-        System.out.println("message from websocket:" + message );
-    }
-}
-
-JettyWebSocketModule.extend(b).addEndpoint(MySocket.class);
+[source,java,indent=0]
+----
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithWebsocket.java[tags=bindWebsocket]
 ----
 
 Just like with servlets, endpoints can be managed by the DI container and can inject any services available in the

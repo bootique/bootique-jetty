@@ -20,29 +20,14 @@ package io.bootique.jetty.docs;
 
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
-import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.websocket.JettyWebSocketModule;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+public class ModuleWithWebsocket implements BQModule {
 
-public class ModuleWithListener implements BQModule {
-
-    // tag::bindListener[]
+    // tag::bindWebsocket[]
     @Override
     public void configure(Binder binder) {
-        JettyModule.extend(binder).addListener(MyListener.class);
+        JettyWebSocketModule.extend(binder).addEndpoint(AnnotatedWebsocket.class);
     }
-    // end::bindListener[]
-
-    public static class MyListener implements HttpSessionListener {
-        @Override
-        public void sessionCreated(HttpSessionEvent se) {
-
-        }
-
-        @Override
-        public void sessionDestroyed(HttpSessionEvent se) {
-
-        }
-    }
+    // end::bindWebsocket[]
 }
