@@ -24,19 +24,9 @@ You can write servlet specification objects (servlets, filters, listeners) as yo
 
 The easiest way to add a servlet to a Bootique app is to annotate it with `@WebServlet`, providing name and url patterns:
 
-[source,java]
+[source,java,indent=0]
 ----
-@WebServlet(
-    name = "myservlet",
-    urlPatterns = "/b",
-    initParams = {
-        @WebInitParam(name = "p1", value = "v1"),
-        @WebInitParam(name = "p2", value = "v2")
-    }
-)
-public class AnnotatedServlet extends HttpServlet {
-    //...
-}
+include::../../../test/java/io/bootique/jetty/docs/AnnotatedServlet.java[tags=AnnotatedServlet]
 ----
 
 The "name" annotation is kind of important as it would allow to override annotation values in the YAML,
@@ -44,87 +34,53 @@ as described in the "Configuration Reference" chapter. A servlet created this wa
 
 Next step is adding it to Bootique via `JettyModule` contribution API called from your application Module:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithAnnotatedServlet.java[tags=bindAnnotatedServlet]
 ----
 
-But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that you control.
+But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context
+of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that
+you control. The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the
+mapping information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not
+otherwise available:
 
-The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the mapping information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not otherwise available:
-
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    MappedServlet mappedServlet = new MappedServlet(
-       new MyServlet(),
-       Collections.singleton("/c"),
-       "myservlet");
-
-    JettyModule.extend(binder).addMappedServlet(mappedServlet);
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithMappedServlet.java[tags=bindMappedServlet]
 ----
 
-Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize the underlying servlet with environment dependencies, we can do something like this:
+Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize
+the underlying servlet with environment dependencies, we can do something like this:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Singleton
-@Provides
-MappedServlet<MyServlet> provideMyServlet(MyService1 s1, MyService2 s2) {
-    MyServlet servlet = new MyServlet(s1, s2);
-    return new MappedServlet<>(servlet, Collections.singleton("/c"), "myservlet");
-}
-
-// must use TypeLiteral to contribute MappedServlet<MyServlet> to the servlet collection
-@Override
-public void configure(Binder binder) {
-    TypeLiteral<MappedServlet<Servlet2>> tl = new TypeLiteral<MappedServlet<MyServlet>>() {};
-    JettyModule.extend(binder).addMappedServlet(tl);
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithMappedServletAndDI.java[tags=bindMappedServlet]
 ----
 
 === Servlet Filters
 
 Just like servlets, you can annotate and register your filters:
-
-[source,java]
+[source,java,indent=0]
 ----
-@WebFilter(
-    filterName = "f1",
-    urlPatterns = "/b/*",
-    initParams = {
-        @WebInitParam(name = "p1", value = "v1"),
-        @WebInitParam(name = "p2", value = "v2")
-    }
-)
-public class AnnotatedFilter implements Filter { .. }
+include::../../../test/java/io/bootique/jetty/docs/AnnotatedFilter.java[tags=AnnotatedFilter]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithAnnotatedFilter.java[tags=bindAnnotatedFilter]
 ----
 
 And just like with servlets you can use `MappedFilter` and `JettyModule.extend(..).addMappedFilter` to wrap a filter in app-specific metadata.
 
 === Listeners
 
-Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
+Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet
+specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    JettyModule.extend(binder).addListener(MyListener.class);
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithListener.java[tags=bindListener]
 ----
 
 Listeners can rely on injection to obtain dependencies, just like servlets and filters.
@@ -136,13 +92,11 @@ Jetty is not limited to just servlets. It can also act as a webserver for static
 on the application classpath. By default this behavior is disabled to prevent unintended security risks. To enable the
 "webserver" feature use extender's `useDefaultServlet()` method:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    JettyModule.extend(binder).useDefaultServlet();
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithDefaultServlet.java[tags=bindDefaultServlet]
 ----
+
 This enables a special internal servlet at "/" path, that will act as a static webserver. It requires an additional
 configuration parameter though - the base directory where the files are stored. This is configured in YAML, and the path
 can be either a directory on the filesystem or a classpath:
@@ -157,17 +111,12 @@ jetty:
 need to serve more then one file directory under different base URLs), you can define more of those "webserver" servlets,
 each with its own parameters:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Override
-public void configure(Binder binder) {
-    JettyModule.extend(b)
-       .addStaticServlet("abc", "/abc/*")
-       .addStaticServlet("xyz", "/xyz/*");
-}
+include::../../../test/java/io/bootique/jetty/docs/ModuleWithStaticServlets.java[tags=bindStaticServlets]
 ----
 By default they use the common `staticResourceBase`, which can be overridden via
-http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters].
+https://www.eclipse.org/jetty/javadoc/9.4.19.v20190610/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters].
 
 
 === ServletEnvironment
@@ -177,16 +126,15 @@ listeners are all passed the servlet environment objects in their methods). But 
 E.g. imagine you are writing an audit service that needs to know the request URL and the calling client IP address.
 For such services Bootique provides an injectable `ServletEnvironment` object:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Inject
-private ServletEnvironment servletEnv;
+include::../../../test/java/io/bootique/jetty/docs/ServiceWithServletEnvironment.java[tags=envInject]
 ----
 
 Now any method in this class can access `ServletContext` or `HttpServletRequest`:
-[source,java]
+[source,java,indent=0]
 ----
-String url = getUservletEnv.map(HttpServletRequest::getRequestURI).orElse("unknown");
+include::../../../test/java/io/bootique/jetty/docs/ServiceWithServletEnvironment.java[tags=envRead]
 ----
 
 Note that `ServletEnvironment` returns `Optional` for both, as there is no guarantee that it is invoked within a request
