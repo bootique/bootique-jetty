@@ -129,6 +129,66 @@ public void configure(Binder binder) {
 
 Listeners can rely on injection to obtain dependencies, just like servlets and filters.
 
+[#serving-static-files]
 === Serving Static Files
 
-TODO
+Jetty is not limited to just servlets. It can also act as a webserver for static files stored on the filesystem or even
+on the application classpath. By default this behavior is disabled to prevent unintended security risks. To enable the
+"webserver" feature use extender's `useDefaultServlet()` method:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).useDefaultServlet();
+}
+----
+This enables a special internal servlet at "/" path, that will act as a static webserver. It requires an additional
+configuration parameter though - the base directory where the files are stored. This is configured in YAML, and the path
+can be either a directory on the filesystem or a classpath:
+[source,yaml]
+----
+jetty:
+  context: "/myapp"
+  staticResourceBase: "classpath:com/example/docroot"
+----
+
+"Default" servlet always has a base URL of "/" (relative to the application context). If you want a different path (or
+need to serve more then one file directory under different base URLs), you can define more of those "webserver" servlets,
+each with its own parameters:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(b)
+       .addStaticServlet("abc", "/abc/*")
+       .addStaticServlet("xyz", "/xyz/*");
+}
+----
+By default they use the common `staticResourceBase`, which can be overridden via
+http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters].
+
+
+=== ServletEnvironment
+
+Some application classes have direct access to the current servlet request and context (e.g. servlets, filters,
+listeners are all passed the servlet environment objects in their methods). But other classes don't.
+E.g. imagine you are writing an audit service that needs to know the request URL and the calling client IP address.
+For such services Bootique provides an injectable `ServletEnvironment` object:
+
+[source,java]
+----
+@Inject
+private ServletEnvironment servletEnv;
+----
+
+Now any method in this class can access `ServletContext` or `HttpServletRequest`:
+[source,java]
+----
+String url = getUservletEnv.map(HttpServletRequest::getRequestURI).orElse("unknown");
+----
+
+Note that `ServletEnvironment` returns `Optional` for both, as there is no guarantee that it is invoked within a request
+or after the Jetty engine initialized its servlets. It is the responsibility of the caller to verify the state of the
+`Optional` and react accordingly, just like we did in this example.

@@ -43,10 +43,6 @@ jetty:
 |`true`
 |A boolean specifying whether gzip compression should be supported. When enabled (default), responses will be compressed if a client indicates it supports compression via `"Accept-Encoding: gzip"` header.
 
-|`connector`
-|_N/A (deprecated since 0.18)_
-|_Deprecated as more than one connector is supported._ _Use_ `connectors`_instead._ An object specifying properties of the web connector.
-
 |`connectors`
 |a single HTTP connector on port 8080
 |A list of connectors. Each connector listens on a single port. There can be HTTP or HTTPS connectors. See `jetty.connectors` below.
@@ -89,11 +85,10 @@ jetty:
 
 |`staticResourceBase`
 |none
-|Defines a base location for resources of the Jetty context. It can be a filesystem path, a URL or a special "`classpath:`" URL (which gives the ability to bundle resources in the app, not unlike a JavaEE .war file).
-+
-For security reasons this annotation has to be set explicitly. There's no default.
-+
-This setting only makes sense when some form of "default" servlet is in use, that will be responsible for serving static resources. See `JettyModule.contributeStaticServlet(..)` or `JettyModule.contributeDefaultServlet(..)`. Such servlet will use the path defined here, unless overridden via servlet parameters. For the list fo servlet parameters see http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html[Jetty default servlet docs].
+|This setting is used in conjunction with <<serving-static-files,"default" servlet>> that serves "static" resources. It
+defines a base location for static resources of the Jetty context. It can be a filesystem path, a URL or a special
+"`classpath:`" URL. The last option gives the ability to bundle resources in the app, not unlike a JavaEE .war file.
+For security reasons this property has to be set explicitly. There's no default.
 
 |`compactPath`
 |`false`
