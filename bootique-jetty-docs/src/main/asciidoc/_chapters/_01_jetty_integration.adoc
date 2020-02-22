@@ -1,0 +1,53 @@
+// Licensed to ObjectStyle LLC under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ObjectStyle LLC licenses
+// this file to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+== Bootique Integration with Jetty
+
+https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web server] in your application. It provides environment for running servlet specification objects (servlets, servlet filters, servlet listeners). Also you will be able to serve static files that are either packaged in the application jar or located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both Jetty (e.g. set connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet parameters).
+
+`bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty</artifactId>
+</dependency>
+----
+
+Alternatively you may include an "instrumented" version of `bootique-jetty` that will provide a number of metrics for your running app:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-instrumented</artifactId>
+</dependency>
+----
+
+The module provides `--server` command, which starts your web server on foreground:
+
+----
+java -jar my.jar --server
+...
+i.b.j.s.ServerFactory - Adding listener i.b.j.s.DefaultServletEnvironment
+i.b.j.s.h.ContextHandler - Started o.e.j.s.ServletContextHandler@1e78c66e{/myapp,null,AVAILABLE}
+i.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+i.b.j.s.Server - Started @490ms
+----
+
+Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal Bootique way via YAML, as detailed below in the "Configuration Reference" chapter.

@@ -1,0 +1,134 @@
+// Licensed to ObjectStyle LLC under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ObjectStyle LLC licenses
+// this file to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+
+== Programming Jetty Applications
+
+You can write servlet specification objects (servlets, filters, listeners) as you'd do it under JavaEE, except that there's no `.war` and no `web.xml`. There's only your application, and you need to let Bootique know about your objects and how they should be mapped to request URLs. Let's start with servlets.
+
+=== Servlets
+
+The easiest way to add a servlet to a Bootique app is to annotate it with `@WebServlet`, providing name and url patterns:
+
+[source,java]
+----
+@WebServlet(
+    name = "myservlet",
+    urlPatterns = "/b",
+    initParams = {
+        @WebInitParam(name = "p1", value = "v1"),
+        @WebInitParam(name = "p2", value = "v2")
+    }
+)
+public class AnnotatedServlet extends HttpServlet {
+    //...
+}
+----
+
+The "name" annotation is kind of important as it would allow to override annotation values in the YAML,
+as described in the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal Bootique DI injection.
+
+Next step is adding it to Bootique via `JettyModule` contribution API called from your application Module:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addServlet(AnnotatedServlet.class);
+}
+----
+
+But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that you control.
+
+The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the mapping information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not otherwise available:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    MappedServlet mappedServlet = new MappedServlet(
+       new MyServlet(),
+       Collections.singleton("/c"),
+       "myservlet");
+
+    JettyModule.extend(binder).addMappedServlet(mappedServlet);
+}
+----
+
+Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize the underlying servlet with environment dependencies, we can do something like this:
+
+[source,java]
+----
+@Singleton
+@Provides
+MappedServlet<MyServlet> provideMyServlet(MyService1 s1, MyService2 s2) {
+    MyServlet servlet = new MyServlet(s1, s2);
+    return new MappedServlet<>(servlet, Collections.singleton("/c"), "myservlet");
+}
+
+// must use TypeLiteral to contribute MappedServlet<MyServlet> to the servlet collection
+@Override
+public void configure(Binder binder) {
+    TypeLiteral<MappedServlet<Servlet2>> tl = new TypeLiteral<MappedServlet<MyServlet>>() {};
+    JettyModule.extend(binder).addMappedServlet(tl);
+}
+----
+
+=== Servlet Filters
+
+Just like servlets, you can annotate and register your filters:
+
+[source,java]
+----
+@WebFilter(
+    filterName = "f1",
+    urlPatterns = "/b/*",
+    initParams = {
+        @WebInitParam(name = "p1", value = "v1"),
+        @WebInitParam(name = "p2", value = "v2")
+    }
+)
+public class AnnotatedFilter implements Filter { .. }
+----
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addFilter(AnnotatedFilter.class);
+}
+----
+
+And just like with servlets you can use `MappedFilter` and `JettyModule.extend(..).addMappedFilter` to wrap a filter in app-specific metadata.
+
+=== Listeners
+
+Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
+
+[source,java]
+----
+@Override
+public void configure(Binder binder) {
+    JettyModule.extend(binder).addListener(MyListener.class);
+}
+----
+
+Listeners can rely on injection to obtain dependencies, just like servlets and filters.
+
+=== Serving Static Files
+
+TODO
