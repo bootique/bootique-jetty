@@ -18,13 +18,16 @@
 // use custom header
 :bq-header: _index/header.html
 
-= Bootique Jetty Documentation
+== Bootique Integration with Jetty
 
-== Chapter 1. Bootique Integration with Jetty
+https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web server]
+in your application. It provides environment for running servlet specification objects (servlets, servlet filters,
+servlet listeners). Also you will be able to serve static files that are either packaged in the application jar or
+located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both Jetty
+(e.g. set connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet parameters).
 
-https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web server] in your application. It provides environment for running servlet specification objects (servlets, servlet filters, servlet listeners). Also you will be able to serve static files that are either packaged in the application jar or located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both Jetty (e.g. set connector ports) as well as your apps (e.g. map servlet URL patterns and pass servlet parameters).
-
-`bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
+`bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the
+`pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
 
 [source,xml]
 ----
@@ -34,7 +37,8 @@ https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http:
 </dependency>
 ----
 
-Alternatively you may include an "instrumented" version of `bootique-jetty` that will provide a number of metrics for your running app:
+Alternatively you may include an "instrumented" version of `bootique-jetty` that will provide a number of metrics for
+your running app:
 
 [source,xml]
 ----
@@ -55,11 +59,14 @@ i.b.j.s.ServerConnector - Started ServerConnector@41ccbaa{HTTP/1.1,[http/1.1]}{0
 i.b.j.s.Server - Started @490ms
 ----
 
-Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal Bootique way via YAML, as detailed below in the "Configuration Reference" chapter.
+Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal
+Bootique way via YAML, as detailed below in the "Configuration Reference" chapter.
 
-== Chapter 2. Programming Jetty Applications
+== Programming Jetty Applications
 
-You can write servlet specification objects (servlets, filters, listeners) as you'd do it under JavaEE, except that there's no `.war` and no `web.xml`. There's only your application, and you need to let Bootique know about your objects and how they should be mapped to request URLs. Let's start with servlets.
+You can write servlet specification objects (servlets, filters, listeners) as you'd do it under JavaEE, except that
+there's no `.war` and no `web.xml`. There's only your application, and you need to let Bootique know about your objects
+and how they should be mapped to request URLs. Let's start with servlets.
 
 === Servlets
 
@@ -80,7 +87,9 @@ public class AnnotatedServlet extends HttpServlet {
 }
 ----
 
-The "name" annotation is kind of important as it would allow to override annotation values in the YAML, as described in the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal Guice injection.
+The "name" annotation is kind of important as it would allow to override annotation values in the YAML, as described in
+the "Configuration Reference" chapter. A servlet created this way can inject any services it might need using normal
+Guice injection.
 
 Next step is adding it to Bootique via `JettyModule` contribution API called from your application Module:
 
@@ -92,9 +101,11 @@ public void configure(Binder binder) {
 }
 ----
 
-But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that you control.
+But what if you are deploying a third-party servlet that is not annotated? Or annotation values are off in the context
+of your application? There are two choices. The first is to subclass such servlets and annotate the subclasses that you control.
 
-The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the mapping information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not otherwise available:
+The second is to wrap your servlet in a special metadata object called `MappedServlet`, providing all the mapping
+information in that wrapper. This is a bit too verbose, but can be a good way to define the mapping that is not otherwise available:
 
 [source,java]
 ----
@@ -109,7 +120,8 @@ public void configure(Binder binder) {
 }
 ----
 
-Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize the underlying servlet with environment dependencies, we can do something like this:
+Finally if we need to use MappedServlet for mapping servlet URLs and parameters, but also need the ability to initialize
+the underlying servlet with environment dependencies, we can do something like this:
 
 [source,java]
 ----
@@ -153,11 +165,13 @@ public void configure(Binder binder) {
 }
 ----
 
-And just like with servlets you can use `MappedFilter` and `JettyModule.extend(..).addMappedFilter` to wrap a filter in app-specific metadata.
+And just like with servlets you can use `MappedFilter` and `JettyModule.extend(..).addMappedFilter` to wrap a filter
+in app-specific metadata.
 
 === Listeners
 
-Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
+Listeners are simpler then servlets or filters. All you need is to create classes that implement one of servlet
+specification listener interfaces (`ServletContextListener`, `HttpSessionListener`, etc.) and bind them in your app:
 
 [source,java]
 ----
@@ -173,7 +187,7 @@ Listeners can rely on injection to obtain dependencies, just like servlets and f
 
 TODO
 
-== Chapter 3. Configuration Reference
+== Configuration Reference
 
 === jetty
 
@@ -187,7 +201,9 @@ jetty:
     b: b2
 ----
 
-"jetty" is a root element of the Jetty configuration and is bound to a https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`] object. It supports the following properties:
+"jetty" is a root element of the Jetty configuration and is bound to a
+https://github.com/bootique/bootique-jetty/blob/1.x/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`]
+object. It supports the following properties:
 
 ."jetty" Element Property Reference
 [cols=3*,options=header]
@@ -198,15 +214,13 @@ jetty:
 
 |`compression`
 |`true`
-|A boolean specifying whether gzip compression should be supported. When enabled (default), responses will be compressed if a client indicates it supports compression via `"Accept-Encoding: gzip"` header.
-
-|`connector`
-|_N/A (deprecated since 0.18)_
-|_Deprecated as more than one connector is supported._ _Use_ `connectors`_instead._ An object specifying properties of the web connector.
+|A boolean specifying whether gzip compression should be supported. When enabled (default), responses will be compressed
+if a client indicates it supports compression via `"Accept-Encoding: gzip"` header.
 
 |`connectors`
 |a single HTTP connector on port 8080
-|A list of connectors. Each connector listens on a single port. There can be HTTP or HTTPS connectors. See `jetty.connectors` below.
+|A list of connectors. Each connector listens on a single port. There can be HTTP or HTTPS connectors. See
+`jetty.connectors` below.
 
 |`context`
 |`/`
@@ -268,9 +282,13 @@ jetty:
       type: https
 ----
 
-"jetty.connectors" element configures one or more web connectors. Each connector listens on a specified port and has an associated protocol (http or https). If no connectors are provided, Bootique will create a single HTTP connector on port 8080.
+"jetty.connectors" element configures one or more web connectors. Each connector listens on a specified port and has
+an associated protocol (http or https). If no connectors are provided, Bootique will create a single HTTP connector on
+port 8080.
 
-HTTPS connectors require an SSL certificate (real or self-signed), stored in a keystore. http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html[Jetty documentaion on the subject] should help with generating a certificate. In its simplest form it may look like this:
+HTTPS connectors require an SSL certificate (real or self-signed), stored in a keystore.
+http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html[Jetty documentaion on the subject]
+should help with generating a certificate. In its simplest form it may look like this:
 
 [source,bash]
 ----
