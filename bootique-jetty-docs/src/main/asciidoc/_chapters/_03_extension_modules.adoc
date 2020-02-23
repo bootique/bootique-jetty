@@ -21,6 +21,7 @@
 Bootique includes additional modules described in this chapter that provide metrics, health checks and other Jetty
 extensions.
 
+[#merics-and-healthchecks]
 === Metrics and Healthchecks
 
 You may use an "instrumented" version `bootique-jetty`, that will extend the server with a number of metrics

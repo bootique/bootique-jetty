@@ -17,11 +17,11 @@
 
 == Bootique Integration with Jetty
 
-https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web server]
-in your application. It provides environment for running servlet specification objects (servlets, servlet filters,
-servlet listeners). Also you will be able to serve static files that are either packaged in the application jar or
-located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both Jetty
-(e.g. set connector ports) and your apps (e.g. map servlet URL patterns and pass servlet parameters).
+https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web
+server] in your application. It provides environment for running servlet specification objects (servlets, servlet
+filters, servlet listeners). Also you will be able to serve static files that are either packaged in the application
+jar or located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both
+Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns and pass servlet parameters).
 
 `bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the
 `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
@@ -34,7 +34,7 @@ located somewhere on the filesystem. As things go with Bootique, you will be abl
 </dependency>
 ----
 
-Alternatively you may include an <<ext-jetty-instrumented,"instrumented" version>> of `bootique-jetty` that will
+Alternatively you may include an <<merics-and-healthchecks,"instrumented" version>> of `bootique-jetty` that will
 enable a number of metrics for your running app. Either the regular or the instrumented Jetty modules provide `--server`
 command, which starts your web server on foreground:
 
@@ -48,6 +48,6 @@ i.b.j.s.Server - Started @490ms
 ----
 
 Various aspects of the Jetty container, such as listen port, thread pool size, etc. can be configured in a normal
-Bootique way via YAML, as detailed below in the <<jetty-configuration,"Configuration Reference" chapter>>. A few
+Bootique way via YAML, as detailed in the <<jetty-configuration,"Configuration Reference" chapter>>. A few
 additional Bootique modules that extend Jetty to support CORS, websockets, etc. are documented in the
 <<jetty-extensions,"Extensions" chapter>>.
