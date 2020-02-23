@@ -20,6 +20,10 @@
 
 === jetty
 
+"jetty" is a root element of the Jetty configuration and is bound to a
+https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`]
+object. Example:
+
 [source,yaml]
 ----
 jetty:
@@ -30,7 +34,7 @@ jetty:
     b: b2
 ----
 
-"jetty" is a root element of the Jetty configuration and is bound to a https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty/src/main/java/io/bootique/jetty/server/ServerFactory.java[`ServerFactory`] object. It supports the following properties:
+It supports the following properties:
 
 ."jetty" Element Property Reference
 [cols=3*,options=header]
@@ -97,6 +101,10 @@ For security reasons this property has to be set explicitly. There's no default.
 
 ==== jetty.connectors
 
+"jetty.connectors" element configures one or more web connectors. Each connector listens on a specified port and has an
+associated protocol (http or https). If no connectors are provided, Bootique will create a single HTTP connector on
+port 8080. Example:
+
 [source,yaml]
 ----
 jetty:
@@ -106,9 +114,9 @@ jetty:
       type: https
 ----
 
-"jetty.connectors" element configures one or more web connectors. Each connector listens on a specified port and has an associated protocol (http or https). If no connectors are provided, Bootique will create a single HTTP connector on port 8080.
-
-HTTPS connectors require an SSL certificate (real or self-signed), stored in a keystore. http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html[Jetty documentaion on the subject] should help with generating a certificate. In its simplest form it may look like this:
+Each HTTPS connector requires an SSL certificate (real or self-signed), stored in a keystore.
+http://www.eclipse.org/jetty/documentation/9.4.x/configuring-ssl.html[Jetty documentation on the subject] should help
+with generating a certificate. In its simplest form it may look like this:
 
 [source,bash]
 ----
@@ -224,3 +232,37 @@ jetty:
 ----
 
 TODO
+
+[#jettycors]
+=== jettycors
+
+"jettycors" is a root element of the Jetty CORS module configuration and is bound to a
+https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty-cors/src/main/java/io/bootique/jetty/cors/CrossOriginFilterFactory.java[`CrossOriginFilterFactory`]
+object. Example:
+
+[source,yaml]
+----
+jettycors:
+  urlPatterns:
+    - "/*"
+  allowedOrigins: "https://www1.example.org,https://www2.example.org"
+  allowedMethods: "GET,OPTIONS,HEAD"
+  allowedHeaders: "*"
+----
+
+[#jettywebsocket]
+=== jettywebsocket
+
+"jettywebsocket" is a root element of the Jetty Websocket module configuration and is bound to a
+https://github.com/bootique/bootique-jetty/blob/0826b9c29210db3b5a7b0941ba387147e24736a8/bootique-jetty-websocket/src/main/java/io/bootique/jetty/websocket/WebSocketPolicyFactory.java[`WebSocketPolicyFactory`]
+object. Example:
+
+[source,yaml]
+----
+jettywebsocket:
+    asyncSendTimeout: "5s"
+    maxSessionIdleTimeout: "30min"
+    maxBinaryMessageBufferSize: "30kb"
+    maxTextMessageBufferSize: "45kb"
+----
+

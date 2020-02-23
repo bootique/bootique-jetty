@@ -45,16 +45,7 @@ to prevent the browsers from blocking access. To achieve that include the follow
 </dependency>
 ----
 
-and then configure rules in YAML under "jettycors" root element:
-[source,yaml]
-----
-jettycors:
-  urlPatterns:
-    - "/*"
-  allowedOrigins: "https://www1.example.org,https://www2.example.org"
-  allowedMethods: "GET,OPTIONS,HEAD"
-  allowedHeaders: "*"
-----
+and then configure rules in YAML under "jettycors" root element (see details <<jettycors, here>>).
 
 === Support for Websockets
 If in addition to HTTP requests, you'd like your server to provide access via websockets, you need to add the following
@@ -82,12 +73,5 @@ include::../../../test/java/io/bootique/jetty/docs/ModuleWithWebsocket.java[tags
 ----
 
 Just like with servlets, endpoints can be managed by the DI container and can inject any services available in the
-application. Websockets server parameters are configured in YAML under "jettywebsocket" root element:
-[source,yaml]
-----
-jettywebsocket:
-    asyncSendTimeout: "5s"
-    maxSessionIdleTimeout: "30min"
-    maxBinaryMessageBufferSize: "30kb"
-    maxTextMessageBufferSize: "45kb"
-----
+application. Websockets server parameters are configured in YAML under "jettywebsocket" root element (see details
+<<jettywebsocket, here>>).
