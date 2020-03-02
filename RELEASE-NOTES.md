@@ -1,3 +1,7 @@
+## 2.0
+
+* #95 Safer default value for ServerFactory.maxThreads 
+
 ## 1.1
 
 * #88 Turning off "Server" header

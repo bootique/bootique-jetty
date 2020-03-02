@@ -79,7 +79,7 @@ public class ServerFactory {
     public ServerFactory() {
         this.context = "/";
         this.minThreads = 4;
-        this.maxThreads = 1024;
+        this.maxThreads = 200;
         this.maxQueuedRequests = 1024;
         this.idleThreadTimeout = 60000;
         this.sessions = true;

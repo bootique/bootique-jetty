@@ -64,7 +64,7 @@ It supports the following properties:
 |A map of servlet filter configurations by filter name. See `jetty.filters` below.
 
 |`maxThreads`
-|`1024`
+|`200`
 |Maximum number of request processing threads in the pool.
 
 |`minThreads`
