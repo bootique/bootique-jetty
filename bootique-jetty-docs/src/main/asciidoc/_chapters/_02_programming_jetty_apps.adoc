@@ -115,9 +115,34 @@ each with its own parameters:
 ----
 include::../../../test/java/io/bootique/jetty/docs/ModuleWithStaticServlets.java[tags=bindStaticServlets]
 ----
-By default they use the common `staticResourceBase`, which can be overridden via
-https://www.eclipse.org/jetty/javadoc/9.4.19.v20190610/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters].
+By default each "static servlet" shares the common `staticResourceBase`, but it can also define its own base using a
+few https://www.eclipse.org/jetty/javadoc/9.4.19.v20190610/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters],
+namely `resourceBase` and `pathInfoOnly`:
 
+[source,yaml]
+----
+jetty:
+  context: "/myapp"
+  servlets:
+    abc:
+      params:
+        resourceBase: "classpath:com/example/abcdocroot"
+        pathInfoOnly: true
+----
+
+`resourceBase` simply overrides `staticResourceBase`, while `pathInfoOnly` controls static resource URL resolution:
+
+|===
+|`pathInfoOnly`|URL|File Path
+
+|false (default)
+|/abc/dir1/f1.html
+|<resource_base>/abc/dir1/f1.html
+
+|true
+|/abc/dir1/f1.html
+|<resource_base>/dir1/f1.html
+|===
 
 === ServletEnvironment
 
