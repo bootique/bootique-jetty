@@ -115,7 +115,8 @@ each with its own parameters:
 ----
 include::../../../test/java/io/bootique/jetty/docs/ModuleWithStaticServlets.java[tags=bindStaticServlets]
 ----
-By default each "static servlet" shares the common `staticResourceBase`, but it can also define its own base using a
+By default each "static servlet" shares the common `staticResourceBase`, but it can also define its own base and
+URL-to-file mapping approach using a
 few https://www.eclipse.org/jetty/javadoc/9.4.19.v20190610/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters],
 namely `resourceBase` and `pathInfoOnly`:
 
