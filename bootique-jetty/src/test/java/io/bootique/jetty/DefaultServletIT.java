@@ -96,6 +96,28 @@ public class DefaultServletIT {
     }
 
     @Test
+    public void testDefaultServlet_ResourceBaseInServletParamsOverridesDefault() {
+
+        testFactory.app("-s")
+                .module(b -> {
+                    JettyModule.extend(b).useDefaultServlet();
+                    BQCoreModule.extend(b)
+                            // default resource base
+                            .setProperty("bq.jetty.staticResourceBase",
+                                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/")
+                            // per-servlet resource base
+                            .setProperty("bq.jetty.servlets.default.params.resourceBase",
+                                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_altdocroot/");
+                })
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        Response r = base.path("/other.txt").request().get();
+        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("alt other", r.readEntity(String.class));
+    }
+
+    @Test
     public void testDefaultServlet_ResourceBaseIsFilePathWithDotSlash() {
 
         testFactory.app("-s")
