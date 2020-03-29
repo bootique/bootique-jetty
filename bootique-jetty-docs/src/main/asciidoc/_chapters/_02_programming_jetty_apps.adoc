@@ -131,8 +131,8 @@ jetty:
         pathInfoOnly: true
 ----
 
-`resourceBase` simply overrides `staticResourceBase`, while `pathInfoOnly` controls static resource URL resolution:
-
+`resourceBase` simply overrides `staticResourceBase` for a given servlet, while `pathInfoOnly` controls static resource
+URL resolution as follows:
 |===
 |URL|pathInfoOnly|File Path
 
