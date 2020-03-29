@@ -134,14 +134,14 @@ jetty:
 `resourceBase` simply overrides `staticResourceBase`, while `pathInfoOnly` controls static resource URL resolution:
 
 |===
-|`pathInfoOnly`|URL|File Path
+|URL|pathInfoOnly|File Path
 
-|false (default)
 |/abc/dir1/f1.html
+|false (default)
 |<resource_base>/abc/dir1/f1.html
 
-|true
 |/abc/dir1/f1.html
+|true
 |<resource_base>/dir1/f1.html
 |===
 
