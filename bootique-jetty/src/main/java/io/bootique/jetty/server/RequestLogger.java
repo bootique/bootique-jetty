@@ -19,7 +19,8 @@
 
 package io.bootique.jetty.server;
 
-import org.eclipse.jetty.server.Slf4jRequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
+import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 
 /**
  * Extending Jetty request logger without adding any functionality, simply to separate logging configuration between
@@ -27,11 +28,15 @@ import org.eclipse.jetty.server.Slf4jRequestLog;
  *
  * @since 0.18
  */
-public class RequestLogger extends Slf4jRequestLog {
+public class RequestLogger extends CustomRequestLog {
 
     public RequestLogger() {
-        setLoggerName(getClass().getName());
-        setExtended(true);
-        setLogLatency(true);
+        super(getSlf4jWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT);
+    }
+
+    static Slf4jRequestLogWriter getSlf4jWriter() {
+        Slf4jRequestLogWriter writer = new Slf4jRequestLogWriter();
+        writer.setLoggerName(RequestLogger.class.getName());
+        return writer;
     }
 }

@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.bootique.modules.parent</groupId>
 		<artifactId>bootique-modules-parent</artifactId>
-		<version>1.2</version>
+		<version>1.2.1</version>
 	</parent>
 
 	<groupId>io.bootique.jetty</groupId>
@@ -47,9 +47,7 @@
     <properties>
         <bootique.version>${project.version}</bootique.version>
         <hk2.version>2.5.0-b61</hk2.version>
-
-        <!-- Jetty support 1.0 ... 1.1 has been available since 2014. Should we upgrade? -->
-        <websocket.version>1.0</websocket.version>
+        <websocket.version>1.1</websocket.version>
     </properties>
 
 	<scm>
@@ -155,28 +153,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<!-- Optional profile used to sign artifacts -->
-	<profiles>
-		<profile>
-			<id>gpg</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

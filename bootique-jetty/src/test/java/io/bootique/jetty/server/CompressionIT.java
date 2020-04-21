@@ -45,7 +45,14 @@ import static org.junit.Assert.assertNull;
 public class CompressionIT {
 
     // must be big enough.. compression on small strings is skipped
-    private static final String OUT_CONTENT = "content_stream_content_stream";
+    private static final String OUT_CONTENT;
+    static {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<100; i++) {
+            sb.append("content_stream_content_stream_");
+        }
+        OUT_CONTENT = sb.toString();
+    }
 
     @Rule
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
