@@ -106,10 +106,12 @@ public class ServerFactory {
 
         if (maxFormContentSize > 0) {
             server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
+            contextHandler.setMaxFormContentSize(maxFormContentSize);
         }
 
         if (maxFormKeys > 0) {
             server.setAttribute("org.eclipse.jetty.server.Request.maxFormKeys", maxFormKeys);
+            contextHandler.setMaxFormKeys(maxFormKeys);
         }
 
         createRequestLog(server);
@@ -151,7 +153,7 @@ public class ServerFactory {
         handler.setContextPath(context);
         handler.setCompactPath(compactPath);
         if (params != null) {
-            params.forEach((k, v) -> handler.setInitParameter(k, v));
+            params.forEach(handler::setInitParameter);
         }
 
         if (staticResourceBase != null) {
@@ -164,7 +166,7 @@ public class ServerFactory {
 
         if (errorPages != null) {
             ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
-            errorPages.forEach((statusCode, location) -> errorHandler.addErrorPage(statusCode, location));
+            errorPages.forEach(errorHandler::addErrorPage);
             handler.setErrorHandler(errorHandler);
         }
 
@@ -224,14 +226,14 @@ public class ServerFactory {
     private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
         List<MappedFilter> sorted = new ArrayList<>(unsorted);
 
-        Collections.sort(sorted, Comparator.comparing(MappedFilter::getOrder));
+        sorted.sort(Comparator.comparing(MappedFilter::getOrder));
         return sorted;
     }
 
     private List<MappedListener> sortedListeners(Set<MappedListener> unsorted) {
         List<MappedListener> sorted = new ArrayList<>(unsorted);
 
-        Collections.sort(sorted, Comparator.comparing(MappedListener::getOrder));
+        sorted.sort(Comparator.comparing(MappedListener::getOrder));
         return sorted;
     }
 
