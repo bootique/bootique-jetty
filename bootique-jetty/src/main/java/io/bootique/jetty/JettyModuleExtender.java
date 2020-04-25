@@ -26,7 +26,7 @@ import io.bootique.di.Key;
 import io.bootique.di.SetBuilder;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
-import io.bootique.jetty.servlet.BQDefaultServlet;
+import io.bootique.jetty.servlet.MultiBaseStaticServlet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -122,7 +122,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
-        return addServlet(new BQDefaultServlet(), name, urlPatterns);
+        return addServlet(new MultiBaseStaticServlet(), name, urlPatterns);
     }
 
     public JettyModuleExtender useDefaultServlet() {

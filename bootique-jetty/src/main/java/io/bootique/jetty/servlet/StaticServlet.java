@@ -18,40 +18,36 @@
  */
 package io.bootique.jetty.servlet;
 
-import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.servlet.DefaultServlet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.URL;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @since 2.0
  */
-public class BQDefaultServlet extends DefaultServlet {
+public class StaticServlet extends DefaultServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BQDefaultServlet.class);
+    static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
-    private static final String RESOURCE_BASE_PARAMETER = "resourceBase";
+
+    private String resourceBase;
+
+    public StaticServlet(String resourceBase) {
+        this.resourceBase = resourceBase;
+    }
 
     @Override
     public String getInitParameter(String name) {
         String value = super.getInitParameter(name);
-        return (value != null && RESOURCE_BASE_PARAMETER.equals(name))
-                ? resolveFolderResourceFactory(value)
-                : value;
+        return (value != null && RESOURCE_BASE_PARAMETER.equals(name)) ? resourceBase : value;
     }
 
-    protected String resolveFolderResourceFactory(String path) {
-        URL url;
-        try {
-            url = new FolderResourceFactory(path).getUrl();
-        } catch (IllegalArgumentException e) {
-            // log, but allow to start
-            LOGGER.warn("Static servlet base directory does not exist: {}", path);
-            return null;
-        }
-
-        return url.toExternalForm();
+    // making public, so we can call it from MultiBaseDefaultServlet
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doGet(request, response);
     }
 }
