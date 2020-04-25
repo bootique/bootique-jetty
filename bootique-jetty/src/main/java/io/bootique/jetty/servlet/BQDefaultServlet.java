@@ -20,11 +20,17 @@ package io.bootique.jetty.servlet;
 
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
 
 /**
  * @since 2.0
  */
 public class BQDefaultServlet extends DefaultServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BQDefaultServlet.class);
 
     private static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
@@ -37,6 +43,15 @@ public class BQDefaultServlet extends DefaultServlet {
     }
 
     protected String resolveFolderResourceFactory(String path) {
-        return new FolderResourceFactory(path).getUrl().toExternalForm();
+        URL url;
+        try {
+            url = new FolderResourceFactory(path).getUrl();
+        } catch (IllegalArgumentException e) {
+            // log, but allow to start
+            LOGGER.warn("Static servlet base directory does not exist: {}", path);
+            return null;
+        }
+
+        return url.toExternalForm();
     }
 }

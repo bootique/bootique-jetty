@@ -19,6 +19,7 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
+import io.bootique.command.CommandOutcome;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StaticServletIT {
 
@@ -118,6 +120,22 @@ public class StaticServletIT {
         Response r4 = base.path("/sub4/f.txt").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r4.getStatus());
         assertEquals("[/f.txt]", r4.readEntity(String.class));
+    }
+
+    @Test
+    public void testResourceBaseClasspath_Missing() {
+
+        CommandOutcome run = testFactory.app("-s")
+                .module(b -> {
+                    JettyModule.extend(b).addStaticServlet("s1", "/sub1/*");
+
+                    BQCoreModule.extend(b)
+                            .setProperty("bq.jetty.servlets.s1.params.resourceBase",
+                                    "classpath:io/bootique/jetty/no_such_folder/");
+                })
+                .run();
+
+        assertTrue("failed to start with invalid folder", run.isSuccess());
     }
 
     @Test
