@@ -127,6 +127,8 @@ jetty:
   servlets:
     abc:
       params:
+        # Note that "resourceBase" follows Bootique resource URL format
+        # and hence can be a  "classpath:" URL or a filesystem path
         resourceBase: "classpath:com/example/abcdocroot"
         pathInfoOnly: true
 ----
