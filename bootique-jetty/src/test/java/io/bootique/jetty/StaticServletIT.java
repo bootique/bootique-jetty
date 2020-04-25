@@ -119,4 +119,25 @@ public class StaticServletIT {
         assertEquals(Response.Status.OK.getStatusCode(), r4.getStatus());
         assertEquals("[/f.txt]", r4.readEntity(String.class));
     }
+
+    @Test
+    public void testResourceBaseClasspath() {
+
+        testFactory.app("-s")
+                .module(b -> {
+                    JettyModule.extend(b).addStaticServlet("s1", "/sub1/*");
+
+                    BQCoreModule.extend(b)
+                            // s1: own resource base specified as "classpath"
+                            .setProperty("bq.jetty.servlets.s1.params.resourceBase",
+                                    "classpath:io/bootique/jetty/ResourcePathResolving/root1/");
+                })
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        Response r1 = base.path("/sub1/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("[/root1/sub1/f.txt]", r1.readEntity(String.class));
+    }
 }

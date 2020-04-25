@@ -25,7 +25,7 @@ import io.bootique.di.Key;
 import io.bootique.di.SetBuilder;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
-import org.eclipse.jetty.servlet.DefaultServlet;
+import io.bootique.jetty.servlet.BQDefaultServlet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -121,7 +121,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
-        return addServlet(new DefaultServlet(), name, urlPatterns);
+        return addServlet(new BQDefaultServlet(), name, urlPatterns);
     }
 
     public JettyModuleExtender useDefaultServlet() {

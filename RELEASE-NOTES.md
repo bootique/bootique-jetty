@@ -1,6 +1,7 @@
 ## 2.0
 
-* #95 Safer default value for ServerFactory.maxThreads 
+* #95 Safer default value for ServerFactory.maxThreads
+* #96 Support "classpath:" URLs for "resourceBase" of static servlets
 
 ## 1.1
 
