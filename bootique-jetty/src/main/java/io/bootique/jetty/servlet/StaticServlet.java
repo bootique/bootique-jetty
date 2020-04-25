@@ -32,7 +32,6 @@ public class StaticServlet extends DefaultServlet {
 
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
-
     private String resourceBase;
 
     public StaticServlet(String resourceBase) {
@@ -41,8 +40,8 @@ public class StaticServlet extends DefaultServlet {
 
     @Override
     public String getInitParameter(String name) {
-        String value = super.getInitParameter(name);
-        return (value != null && RESOURCE_BASE_PARAMETER.equals(name)) ? resourceBase : value;
+        // ignore super value if the parameter is "resourceBase"
+        return RESOURCE_BASE_PARAMETER.equals(name) ? this.resourceBase : super.getInitParameter(name);
     }
 
     // making public, so we can call it from MultiBaseDefaultServlet

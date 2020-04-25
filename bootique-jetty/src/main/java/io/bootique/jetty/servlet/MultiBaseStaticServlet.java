@@ -112,7 +112,6 @@ public class MultiBaseStaticServlet extends HttpServlet {
     }
 
     protected Collection<URL> resolveFolderResourceFactory(String path) {
-        Collection<URL> urls;
         try {
             return new FolderResourceFactory(path).getUrls();
         } catch (IllegalArgumentException e) {
