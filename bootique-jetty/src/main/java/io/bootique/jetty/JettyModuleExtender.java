@@ -19,6 +19,7 @@
 
 package io.bootique.jetty;
 
+import io.bootique.BQCoreModule;
 import io.bootique.ModuleExtender;
 import io.bootique.di.Binder;
 import io.bootique.di.Key;
@@ -113,7 +114,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     /**
      * @param mappedListenerType
      * @param <T>
-     * @return
+     * @return this extender instance
      * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(TypeLiteral<MappedListener<T>> mappedListenerType) {
@@ -126,6 +127,17 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     public JettyModuleExtender useDefaultServlet() {
         return addStaticServlet("default", "/");
+    }
+
+    /**
+     * Sets an init parameter of a named servlet. Same thing can be achieved via configuration.
+     *
+     * @return this extender instance
+     * @since 2.0
+     */
+    public JettyModuleExtender setServletParam(String servletName, String propertyName, String propertyValue) {
+        BQCoreModule.extend(binder).setProperty("bq.jetty.servlets." + servletName + ".params." + propertyName, propertyValue);
+        return this;
     }
 
     /**
