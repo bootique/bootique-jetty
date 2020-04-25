@@ -22,6 +22,7 @@ package io.bootique.jetty;
 import io.bootique.test.junit.BQTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -42,6 +43,7 @@ public class ServletInitParametersIT {
 	public BQTestFactory testFactory = new BQTestFactory();
 
 	@Test
+	@DisplayName("Params passed from YAML")
 	public void testInitParametersPassed() {
 
 		testFactory.app("-s", "-c", "classpath:io/bootique/jetty/ServletInitParametersIT.yml")
@@ -49,13 +51,32 @@ public class ServletInitParametersIT {
 				.module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
 				.run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+		WebTarget base = ClientBuilder.newClient().target("http://127.0.0.1:8080");
 
 		Response r1 = base.path("/").request().get();
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
 		assertEquals("s1_a1_b2", r1.readEntity(String.class));
 	}
+
+	@Test
+	@DisplayName("Params passed via module extender")
+	public void testInitParametersPassed_Extender() {
+
+		testFactory.app("-s")
+				.autoLoadModules()
+				.module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+				.module(b -> JettyModule.extend(b).setServletParam("s1", "a", "a1").setServletParam("s1", "b", "b2"))
+				.run();
+
+		WebTarget base = ClientBuilder.newClient().target("http://127.0.0.1:8080");
+
+		Response r1 = base.path("/").request().get();
+		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+
+		assertEquals("s1_a1_b2", r1.readEntity(String.class));
+	}
+
 
 	static class TestServlet extends HttpServlet {
 
