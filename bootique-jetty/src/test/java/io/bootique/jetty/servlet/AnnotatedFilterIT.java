@@ -19,14 +19,14 @@
 
 package io.bootique.jetty.servlet;
 
-import io.bootique.di.Binder;
 import io.bootique.di.BQModule;
+import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -40,16 +40,16 @@ import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
 import java.util.Objects;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AnnotatedFilterIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
     private Runnable assertion;
 
-    @After
+    @AfterEach
     public void after() {
         assertion = null;
     }

@@ -21,7 +21,7 @@ package io.bootique.jetty.instrumented.unit;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import io.bootique.test.junit.BQTestFactory;
+import io.bootique.test.junit5.BQTestFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -39,7 +39,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Helps to build an assembly with a testable thread pool state. Specifically allows to freeze some request threads in
@@ -191,13 +191,13 @@ public class ThreadPoolTester {
                     clientPool.submit(() -> target.request().get().close());
                 }
 
-                assertTrue("Requests failed to queue up in 1 sec", locks.releaseOnRequestQueuedUp.await(1, TimeUnit.SECONDS));
+                assertTrue(locks.releaseOnRequestQueuedUp.await(1, TimeUnit.SECONDS), "Requests failed to queue up in 1 sec");
 
                 runChecksWithRequestsFrozen(runtime);
 
             } finally {
                 locks.requestFreezeLock.unlock();
-                assertTrue("Queued requests failed to clear in 1 sec", locks.releaseAfterRequestLatch.await(1, TimeUnit.SECONDS));
+                assertTrue(locks.releaseAfterRequestLatch.await(1, TimeUnit.SECONDS), "Queued requests failed to clear in 1 sec");
             }
         }
     }

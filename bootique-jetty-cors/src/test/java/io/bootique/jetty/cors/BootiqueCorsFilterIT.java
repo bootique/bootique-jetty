@@ -18,27 +18,28 @@
  */
 package io.bootique.jetty.cors;
 
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class BootiqueCorsFilterIT {
 
     private static final String RESTRICTED_HEADERS_PROP = "sun.net.http.allowRestrictedHeaders";
     private static String ORIGINAL_RESTRICTED_HEADERS;
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    @BeforeClass
+    @BeforeAll
     public static void configJavaForCors() {
         ORIGINAL_RESTRICTED_HEADERS = System.getProperty(RESTRICTED_HEADERS_PROP);
 
@@ -47,7 +48,7 @@ public class BootiqueCorsFilterIT {
         System.setProperty(RESTRICTED_HEADERS_PROP, "true");
     }
 
-    @AfterClass
+    @AfterAll
     public static void undoConfigJavaForCors() {
 
         String restore = ORIGINAL_RESTRICTED_HEADERS != null ? ORIGINAL_RESTRICTED_HEADERS : "false";

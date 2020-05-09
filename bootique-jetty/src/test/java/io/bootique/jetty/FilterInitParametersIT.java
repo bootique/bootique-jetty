@@ -19,10 +19,10 @@
 
 package io.bootique.jetty;
 
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,17 +43,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class FilterInitParametersIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory();
 
     private MappedServlet endOfChainServlet;
 
-    @Before
+    @BeforeEach
     public void before() {
         Servlet mockServlet = mock(Servlet.class);
         endOfChainServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/*")));

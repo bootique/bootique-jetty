@@ -18,12 +18,12 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.test.junit.BQTestFactory;
+import io.bootique.test.junit5.BQTestFactory;
 import org.eclipse.jetty.util.component.LifeCycle;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -34,13 +34,11 @@ import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 
+@Timeout(10)
 public abstract class JettyWebSocketTestBase {
 
-    @Rule
+    @RegisterExtension
     public final BQTestFactory testFactory = new BQTestFactory();
-
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(10);
 
     protected WebSocketContainer client;
 
@@ -52,12 +50,12 @@ public abstract class JettyWebSocketTestBase {
         return client.connectToServer(clientSocketType, URI.create("ws://127.0.0.1:8080/" + path));
     }
 
-    @Before
+    @BeforeEach
     public void startClient() {
         client = ContainerProvider.getWebSocketContainer();
     }
 
-    @After
+    @AfterEach
     public void stopClient() throws Exception {
         // some jetty thing... see:
         // https://github.com/jetty-project/embedded-jetty-websocket-examples/blob/master/javax.websocket-example/src/main/java/org/eclipse/jetty/demo/EventClient.java#L32

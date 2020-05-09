@@ -19,10 +19,10 @@
 
 package io.bootique.jetty;
 
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -35,11 +35,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ServletInitParametersIT {
 
-	@Rule
+	@RegisterExtension
 	public BQTestFactory testFactory = new BQTestFactory();
 
 	@Test

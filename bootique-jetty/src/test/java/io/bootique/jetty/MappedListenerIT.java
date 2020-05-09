@@ -19,10 +19,10 @@
 
 package io.bootique.jetty;
 
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletRequestEvent;
@@ -30,18 +30,18 @@ import javax.servlet.ServletRequestListener;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class MappedListenerIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Servlet mockServlet1;
 
 
-    @Before
+    @BeforeEach
     public void before() {
         SharedState.reset();
         this.mockServlet1 = mock(Servlet.class);

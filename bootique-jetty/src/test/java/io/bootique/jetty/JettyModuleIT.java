@@ -22,10 +22,10 @@ package io.bootique.jetty;
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -45,17 +45,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class JettyModuleIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Servlet mockServlet1;
@@ -64,7 +61,7 @@ public class JettyModuleIT {
     private Filter mockFilter2;
     private Filter mockFilter3;
 
-    @Before
+    @BeforeEach
     public void before() {
 
         this.mockServlet1 = mock(Servlet.class);

@@ -21,12 +21,12 @@ package io.bootique.jetty.websocket;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.servlet.ServletEnvironment;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.websocket.server.ServerContainer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class WebSocketPolicyFactoryIT extends JettyWebSocketTestBase {
 

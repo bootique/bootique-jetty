@@ -25,15 +25,15 @@ import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
 import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.HealthCheckRegistry;
 import io.bootique.metrics.health.HealthCheckStatus;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ThreadPoolChecksIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
@@ -85,7 +85,7 @@ public class ThreadPoolChecksIT {
 
         AssertExtras.assertWithRetry(() -> {
             HealthCheckOutcome result = registry.runHealthCheck(JettyHealthChecksFactory.POOL_UTILIZATION_CHECK);
-            assertEquals(result.toString(), expectedStatus, result.getStatus());
+            assertEquals(expectedStatus, result.getStatus(), result.toString());
         });
     }
 
@@ -94,7 +94,7 @@ public class ThreadPoolChecksIT {
 
         AssertExtras.assertWithRetry(() -> {
             HealthCheckOutcome result = registry.runHealthCheck(JettyHealthChecksFactory.QUEUED_REQUESTS_CHECK);
-            assertEquals(result.toString(), expectedStatus, result.getStatus());
+            assertEquals(expectedStatus, result.getStatus(), result.toString());
         });
     }
 }

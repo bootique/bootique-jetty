@@ -19,8 +19,8 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.websocket.DeploymentException;
 import javax.websocket.OnError;
@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
 
-    @Before
+    @BeforeEach
     public void reset() {
         ServerSocket.reset();
     }

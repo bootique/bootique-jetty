@@ -23,15 +23,15 @@ import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.metrics.MetricsModule;
 import io.bootique.metrics.health.HealthCheckModule;
-import io.bootique.test.junit.BQModuleProviderChecker;
-import io.bootique.test.junit.BQRuntimeChecker;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQModuleProviderChecker;
+import io.bootique.test.junit5.BQRuntimeChecker;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class JettyInstrumentedModuleProviderTest {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory();
 
     @Test

@@ -19,16 +19,16 @@
 
 package io.bootique.jetty.servlet;
 
-import io.bootique.di.Binder;
 import io.bootique.di.BQModule;
+import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -42,17 +42,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class ServletEnvironmentIT {
 
 	private Runnable assertion;
 
-	@Rule
+	@RegisterExtension
 	public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-	@After
+	@AfterEach
 	public void after() {
 		assertion = null;
 	}

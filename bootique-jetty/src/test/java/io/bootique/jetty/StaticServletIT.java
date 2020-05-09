@@ -20,20 +20,20 @@ package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
 import io.bootique.command.CommandOutcome;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.Rule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestFactory;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StaticServletIT {
 
-    @Rule
+    @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
@@ -135,7 +135,7 @@ public class StaticServletIT {
                 })
                 .run();
 
-        assertTrue("failed to start with invalid folder", run.isSuccess());
+        assertTrue(run.isSuccess(), "failed to start with invalid folder");
     }
 
     @Test

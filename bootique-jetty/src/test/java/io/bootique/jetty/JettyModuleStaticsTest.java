@@ -19,13 +19,13 @@
 
 package io.bootique.jetty;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyModuleStaticsTest {
 
@@ -36,8 +36,6 @@ public class JettyModuleStaticsTest {
 	
 	@Test
 	public void testMaxOrder() {
-		
-		
 		Set<MappedFilter> filters = new LinkedHashSet<>();
 		filters.add(new MappedFilter(null, null, -1));
 		filters.add(new MappedFilter(null, null, 35));

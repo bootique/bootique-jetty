@@ -19,15 +19,15 @@
 
 package io.bootique.jetty;
 
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Key;
-import io.bootique.di.BQModule;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
-import io.bootique.test.junit.BQTestFactory;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import io.bootique.test.junit5.BQTestClassFactory;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.inject.Singleton;
 import javax.servlet.Filter;
@@ -45,16 +45,16 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyModule_MappedContributionsIT {
 
-    @ClassRule
-    public static BQTestFactory TEST_FACTORY = new BQTestFactory();
+    @RegisterExtension
+    public static BQTestClassFactory TEST_FACTORY = new BQTestClassFactory();
 
     private static WebTarget BASE;
 
-    @BeforeClass
+    @BeforeAll
     public static void start() {
         TEST_FACTORY.app("-s")
                 .autoLoadModules()

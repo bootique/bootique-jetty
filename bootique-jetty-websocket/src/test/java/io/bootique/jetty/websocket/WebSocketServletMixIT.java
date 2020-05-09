@@ -20,7 +20,7 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WebSocketServletMixIT extends JettyWebSocketTestBase {
 

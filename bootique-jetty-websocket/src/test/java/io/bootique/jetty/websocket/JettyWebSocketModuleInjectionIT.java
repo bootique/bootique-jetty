@@ -19,7 +19,7 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import javax.websocket.DeploymentException;
@@ -30,7 +30,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
 
