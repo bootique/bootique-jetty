@@ -38,6 +38,8 @@ import static org.mockito.Mockito.*;
 
 public class MappedServletIT {
 
+    private static final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
+
     @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
     private Servlet mockServlet;
@@ -56,15 +58,13 @@ public class MappedServletIT {
                 .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-
-        Response r1 = base.path("/a").request().get();
+        Response r1 = target.path("/a").request().get();
         assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
-        Response r2 = base.path("/b").request().get();
+        Response r2 = target.path("/b").request().get();
         assertEquals(Status.OK.getStatusCode(), r2.getStatus());
 
-        Response r3 = base.path("/c").request().get();
+        Response r3 = target.path("/c").request().get();
         assertEquals(Status.NOT_FOUND.getStatusCode(), r3.getStatus());
 
         verify(mockServlet, times(2)).service(any(), any());
@@ -82,15 +82,13 @@ public class MappedServletIT {
                 .module(b -> JettyModule.extend(b).addMappedServlet(mappedServlet))
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-
-        Response r1 = base.path("/a").request().get();
+        Response r1 = target.path("/a").request().get();
         assertEquals(Status.NOT_FOUND.getStatusCode(), r1.getStatus());
 
-        Response r2 = base.path("/b").request().get();
+        Response r2 = target.path("/b").request().get();
         assertEquals(Status.NOT_FOUND.getStatusCode(), r2.getStatus());
 
-        Response r3 = base.path("/c").request().get();
+        Response r3 = target.path("/c").request().get();
         assertEquals(Status.OK.getStatusCode(), r3.getStatus());
 
         verify(mockServlet).service(any(), any());

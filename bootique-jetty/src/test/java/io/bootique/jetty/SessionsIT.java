@@ -40,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SessionsIT {
 
+    private static final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
+
     @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory();
 
@@ -51,16 +53,14 @@ public class SessionsIT {
                 .autoLoadModules()
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-
-        Response r1 = base.path("/").request().get();
+        Response r1 = target.path("/").request().get();
         assertEquals(Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("count: 1", r1.readEntity(String.class));
         NewCookie sessionId = r1.getCookies().get("JSESSIONID");
 
         assertNotNull(sessionId);
 
-        Response r2 = base.path("/").request().cookie(sessionId).get();
+        Response r2 = target.path("/").request().cookie(sessionId).get();
         assertEquals(Status.OK.getStatusCode(), r2.getStatus());
         assertEquals("count: 2", r2.readEntity(String.class));
     }
@@ -73,9 +73,7 @@ public class SessionsIT {
                 .autoLoadModules()
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-
-        Response r1 = base.path("/").request().get();
+        Response r1 = target.path("/").request().get();
         assertEquals(Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("nosessions", r1.readEntity(String.class));
     }

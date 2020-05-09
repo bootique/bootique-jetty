@@ -1,33 +1,34 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty;
 
+import io.bootique.BQRuntime;
+import io.bootique.Bootique;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Key;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
-import io.bootique.test.junit5.BQTestClassFactory;
-import org.junit.jupiter.api.BeforeAll;
+import io.bootique.test.junit5.BQApp;
+import io.bootique.test.junit5.BQTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.inject.Singleton;
 import javax.servlet.Filter;
@@ -47,26 +48,21 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class JettyModule_MappedContributionsIT {
 
-    @RegisterExtension
-    public static BQTestClassFactory TEST_FACTORY = new BQTestClassFactory();
+    @BQApp
+    public static BQRuntime app = Bootique.app("-s")
+            .autoLoadModules()
+            .module(new TestModule())
+            .createRuntime();
 
-    private static WebTarget BASE;
-
-    @BeforeAll
-    public static void start() {
-        TEST_FACTORY.app("-s")
-                .autoLoadModules()
-                .module(new TestModule())
-                .run();
-        BASE = ClientBuilder.newClient().target("http://localhost:8080");
-    }
+    private static WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
     @Test
     public void testAnnotatedMapping() {
 
-        Response r1 = BASE.path("/s1").request().get();
+        Response r1 = target.path("/s1").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("f1_s1r", r1.readEntity(String.class));
     }
@@ -74,7 +70,7 @@ public class JettyModule_MappedContributionsIT {
     @Test
     public void testByTypeMapping1() {
 
-        Response r1 = BASE.path("/s2").request().get();
+        Response r1 = target.path("/s2").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("f2_s2r", r1.readEntity(String.class));
     }
@@ -82,7 +78,7 @@ public class JettyModule_MappedContributionsIT {
     @Test
     public void testByTypeMapping2() {
 
-        Response r1 = BASE.path("/s3").request().get();
+        Response r1 = target.path("/s3").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("f3_s3r", r1.readEntity(String.class));
     }

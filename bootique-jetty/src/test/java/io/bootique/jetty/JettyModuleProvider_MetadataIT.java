@@ -20,6 +20,7 @@
 package io.bootique.jetty;
 
 import io.bootique.BQRuntime;
+import io.bootique.Bootique;
 import io.bootique.meta.config.ConfigListMetadata;
 import io.bootique.meta.config.ConfigMapMetadata;
 import io.bootique.meta.config.ConfigMetadataNode;
@@ -28,9 +29,7 @@ import io.bootique.meta.config.ConfigObjectMetadata;
 import io.bootique.meta.config.ConfigValueMetadata;
 import io.bootique.meta.module.ModuleMetadata;
 import io.bootique.meta.module.ModulesMetadata;
-import io.bootique.test.junit5.BQTestFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -40,15 +39,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JettyModuleProvider_MetadataIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory();
+    public static BQRuntime app = Bootique.app().autoLoadModules().createRuntime();
 
     @Test
     public void testMetadata() {
 
-        BQRuntime runtime = testFactory.app().autoLoadModules().createRuntime();
-
-        ModulesMetadata modulesMetadata = runtime.getInstance(ModulesMetadata.class);
+        ModulesMetadata modulesMetadata = app.getInstance(ModulesMetadata.class);
         Optional<ModuleMetadata> jettyOpt = modulesMetadata.getModules()
                 .stream()
                 .filter(m -> "JettyModule".equals(m.getName()))

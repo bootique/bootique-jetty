@@ -39,6 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ServletInitParametersIT {
 
+	private static final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
+
 	@RegisterExtension
 	public BQTestFactory testFactory = new BQTestFactory();
 
@@ -51,9 +53,7 @@ public class ServletInitParametersIT {
 				.module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
 				.run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://127.0.0.1:8080");
-
-		Response r1 = base.path("/").request().get();
+		Response r1 = target.path("/").request().get();
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
 		assertEquals("s1_a1_b2", r1.readEntity(String.class));
@@ -69,9 +69,7 @@ public class ServletInitParametersIT {
 				.module(b -> JettyModule.extend(b).setServletParam("s1", "a", "a1").setServletParam("s1", "b", "b2"))
 				.run();
 
-		WebTarget base = ClientBuilder.newClient().target("http://127.0.0.1:8080");
-
-		Response r1 = base.path("/").request().get();
+		Response r1 = target.path("/").request().get();
 		assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
 		assertEquals("s1_a1_b2", r1.readEntity(String.class));
