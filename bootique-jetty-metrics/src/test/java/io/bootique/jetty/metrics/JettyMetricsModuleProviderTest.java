@@ -40,7 +40,7 @@ public class JettyMetricsModuleProviderTest {
 
     @Test
     public void testModuleDeclaresDependencies() {
-        final BQRuntime bqRuntime = testFactory.app().module(new JettyMetricsModuleProvider()).createRuntime();
+        final BQRuntime bqRuntime = testFactory.app().moduleProvider(new JettyMetricsModuleProvider()).createRuntime();
         BQRuntimeChecker.testModulesLoaded(bqRuntime,
                 JettyModule.class,
                 HealthCheckModule.class
