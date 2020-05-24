@@ -21,8 +21,8 @@ package io.bootique.jetty;
 
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.test.junit5.BQApp;
-import io.bootique.test.junit5.BQTest;
+import io.bootique.junit5.BQApp;
+import io.bootique.junit5.BQTest;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletConfig;

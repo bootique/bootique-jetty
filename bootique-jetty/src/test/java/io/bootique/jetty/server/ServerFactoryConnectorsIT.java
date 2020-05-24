@@ -23,7 +23,7 @@ import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
-import io.bootique.test.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;

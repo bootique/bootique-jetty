@@ -26,8 +26,8 @@ import io.bootique.di.Binder;
 import io.bootique.di.Key;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
-import io.bootique.test.junit5.BQApp;
-import io.bootique.test.junit5.BQTest;
+import io.bootique.junit5.BQApp;
+import io.bootique.junit5.BQTest;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Singleton;

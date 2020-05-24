@@ -21,7 +21,7 @@ package io.bootique.jetty.command;
 
 import io.bootique.command.CommandOutcome;
 import io.bootique.jetty.JettyModule;
-import io.bootique.test.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

@@ -20,7 +20,7 @@
 package io.bootique.jetty.server;
 
 import io.bootique.BQRuntime;
-import io.bootique.test.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
