@@ -42,6 +42,7 @@
         <module>bootique-jetty-instrumented</module>
         <module>bootique-jetty-metrics</module>
         <module>bootique-jetty-websocket</module>
+        <module>bootique-jetty-junit5</module>
     </modules>
 
     <properties>
@@ -100,7 +101,8 @@
                 <artifactId>jetty-servlets</artifactId>
                 <version>${jetty.version}</version>
             </dependency>
-            <dependency><!-- Transitive dependency of jersey-client -->
+            <!-- Transitive dependency of jersey-client -->
+            <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
