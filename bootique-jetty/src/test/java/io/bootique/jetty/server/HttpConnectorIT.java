@@ -22,9 +22,6 @@ package io.bootique.jetty.server;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTestFactory;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,7 +34,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpConnectorIT {
 
@@ -52,8 +50,8 @@ public class HttpConnectorIT {
 
         BQRuntime app = startJetty("classpath:io/bootique/jetty/server/HttpConnectorIT_multipleConnectors.yml");
 
-        Connector[] connectors = app.getInstance(Server.class).getConnectors();
-        assertEquals(2, connectors.length);
+        ServerHolder serverHolder = app.getInstance(ServerHolder.class);
+        assertEquals(2, serverHolder.getConnectorsCount());
 
         Response r1 = ClientBuilder.newClient().target("http://localhost:14001/").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
@@ -70,15 +68,13 @@ public class HttpConnectorIT {
 
         BQRuntime app = startJetty("classpath:io/bootique/jetty/server/HttpConnectorIT_dynamicPort.yml");
 
-        Connector[] connectors = app.getInstance(Server.class).getConnectors();
-        assertEquals(1, connectors.length);
-
-        ServerConnector connector = (ServerConnector) connectors[0];
+        ServerHolder serverHolder = app.getInstance(ServerHolder.class);
+        ConnectorHolder connector = serverHolder.getConnector();
         int port = connector.getPort();
 
         assertTrue(port >= 1024);
 
-        Response r = ClientBuilder.newClient().target("http://localhost:" + port + "/").request().get();
+        Response r = ClientBuilder.newClient().target("http://127.0.0.1:" + port + "/").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals(OUT_CONTENT, r.readEntity(String.class));
     }

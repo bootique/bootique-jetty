@@ -67,7 +67,7 @@ class PortFinder {
     }
 
     static InetAddress resolveHost(String host) {
-        String hostname = host != null && !host.isEmpty() ? host : "localhost";
+        String hostname = host != null && !host.isEmpty() ? host : "127.0.0.1";
         try {
             return InetAddress.getByName(hostname);
         } catch (UnknownHostException e) {

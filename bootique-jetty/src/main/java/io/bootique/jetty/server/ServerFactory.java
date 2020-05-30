@@ -79,7 +79,10 @@ public class ServerFactory {
         this.compression = true;
     }
 
-    public Server createServer(
+    /**
+     * @since 2.0
+     */
+    public ServerHolder createServerHolder(
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
             Set<MappedListener> listeners,
@@ -113,7 +116,7 @@ public class ServerFactory {
 
         Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
 
-        Collection<ConnectorDescriptor> connectorDescriptors = new ArrayList<>(2);
+        Collection<ConnectorHolder> connectorHolders = new ArrayList<>(2);
 
         if (connectorFactories.isEmpty()) {
             LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
@@ -121,12 +124,13 @@ public class ServerFactory {
             connectorFactories.forEach(cf -> {
                 NetworkConnector connector = cf.createConnector(server);
                 server.addConnector(connector);
-                connectorDescriptors.add(new ConnectorDescriptor(connector));
+                connectorHolders.add(new ConnectorHolder(connector));
             });
         }
 
-        server.addLifeCycleListener(new ServerLifecycleLogger(connectorDescriptors, context));
-        return server;
+        ServerHolder serverHolder = new ServerHolder(server, context, connectorHolders);
+        server.addLifeCycleListener(new ServerLifecycleLogger(serverHolder));
+        return serverHolder;
     }
 
     protected void postConfigHandler(ServletContextHandler handler, Set<ServletContextHandlerExtender> contextHandlerExtenders) {
@@ -311,7 +315,7 @@ public class ServerFactory {
     }
 
     protected String resolveContext() {
-        if(context == null) {
+        if (context == null) {
             return "/";
         }
 

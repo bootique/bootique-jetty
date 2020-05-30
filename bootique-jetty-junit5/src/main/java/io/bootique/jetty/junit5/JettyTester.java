@@ -21,9 +21,7 @@ package io.bootique.jetty.junit5;
 import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import io.bootique.jetty.server.ServerHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,36 +53,22 @@ public class JettyTester {
      * @return a WebTarget to access the test Jetty server.
      */
     public WebTarget getClient(BQRuntime app) {
-        Connector[] connectors = app.getInstance(Server.class).getConnectors();
+        ServerHolder serverHolder = app.getInstance(ServerHolder.class);
 
-        switch (connectors.length) {
+        switch (serverHolder.getConnectorsCount()) {
             case 0:
-                throw new IllegalStateException("Application has no Jetty connectors configured");
+                throw new IllegalStateException("Can't connect to the application. It has no Jetty connectors configured");
             case 1:
-                return getClient(connectors[0]);
+                return getClient(serverHolder.getUrl());
             default:
-                LOGGER.warn("Application has multiple Jetty connectors. Returning the client for the first one");
-                return getClient(connectors[0]);
+                String url = serverHolder.getUrls().findFirst().get();
+                LOGGER.warn("Application has multiple Jetty connectors. Returning the client for the first one at '{}'", url);
+                return getClient(url);
         }
     }
 
-    protected WebTarget getClient(Connector connector) {
-
-        if (!(connector instanceof ServerConnector)) {
-            throw new IllegalStateException("Jetty connector is not a ServerConnector: " + connector);
-        }
-
-        ServerConnector serverConnector = (ServerConnector) connector;
-        String url = baseUrl(serverConnector);
+    protected WebTarget getClient(String url) {
         return ClientBuilder.newClient().target(url);
-    }
-
-    protected String baseUrl(ServerConnector connector) {
-        String host = connector.getHost() != null ? connector.getHost() : "localhost";
-        int port = connector.getPort();
-        String protocol = "http"; // TODO: get protocol from the connector
-        String context = "/"; // TODO: non-default context
-        return protocol + "://" + host + ":" + port + context;
     }
 
     public BQModule registerTestHooks() {

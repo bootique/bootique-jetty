@@ -56,7 +56,7 @@ public class JettyTester_ContextIT {
         WebTarget client = jetty.getClient(app);
         Assertions.assertNotNull(client);
 
-        assertEquals("http://localhost:8080/myapp/", client.getUri().toString());
+        assertEquals("http://127.0.0.1:8080/myapp", client.getUri().toString());
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
