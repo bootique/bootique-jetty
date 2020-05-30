@@ -26,11 +26,7 @@ import io.bootique.config.PolymorphicConfiguration;
 import io.bootique.value.Duration;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.io.ByteBufferPool;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.ForwardedRequestCustomizer;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -46,7 +42,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     private int acceptorThreads;
     private int selectorThreads;
-    private int port;
+    private PortFactory port;
     private String host;
     private int responseHeaderSize;
     private int requestHeaderSize;
@@ -54,7 +50,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
     private boolean sendServerVersion;
 
     public ConnectorFactory() {
-        this.port = 8080;
         this.requestHeaderSize = 8 * 1024;
         this.responseHeaderSize = 8 * 1024;
     }
@@ -85,7 +80,7 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
                 selectorThreads,
                 connectionFactories);
 
-        connector.setPort(getPort());
+        connector.setPort(resolvePort());
         connector.setIdleTimeout(getIdleTimeoutMs());
         connector.setHost(getHost());
 
@@ -122,16 +117,21 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
         return new ArrayByteBufferPool(64, 1024, 64 * 1024);
     }
 
-    /**
-     * @return configured listen port.
-     * @since 0.15
-     */
-    public int getPort() {
+    protected int resolvePort() {
+        return port != null
+                // passing "host" is important as the connector can listen on specific interfaces
+                // that have different port availability situation.
+                ? port.resolve(getHost())
+                : PortFactory.DEFAULT_PORT;
+    }
+
+    public PortFactory getPort() {
         return port;
     }
 
-    @BQConfigProperty
-    public void setPort(int port) {
+    @BQConfigProperty("Connector listen port. Can be either a positive integer or a string 'any'. The latter " +
+            "would cause Jetty to listen on an arbitrary available port determined during startup")
+    public void setPort(PortFactory port) {
         this.port = port;
     }
 

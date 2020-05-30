@@ -24,6 +24,7 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTestFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -36,7 +37,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpConnectorIT {
 
@@ -54,13 +55,32 @@ public class HttpConnectorIT {
         Connector[] connectors = app.getInstance(Server.class).getConnectors();
         assertEquals(2, connectors.length);
 
-        Response r1NormalConnector = ClientBuilder.newClient().target("http://localhost:14001/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r1NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r1NormalConnector.readEntity(String.class));
+        Response r1 = ClientBuilder.newClient().target("http://localhost:14001/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals(OUT_CONTENT, r1.readEntity(String.class));
 
-        Response r2NormalConnector = ClientBuilder.newClient().target("http://localhost:14002/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r2NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r2NormalConnector.readEntity(String.class));
+        Response r2 = ClientBuilder.newClient().target("http://localhost:14002/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals(OUT_CONTENT, r2.readEntity(String.class));
+    }
+
+    @Test
+    @DisplayName("port: any")
+    public void testDynamicPort() {
+
+        BQRuntime app = startJetty("classpath:io/bootique/jetty/server/HttpConnectorIT_dynamicPort.yml");
+
+        Connector[] connectors = app.getInstance(Server.class).getConnectors();
+        assertEquals(1, connectors.length);
+
+        ServerConnector connector = (ServerConnector) connectors[0];
+        int port = connector.getPort();
+
+        assertTrue(port >= 1024);
+
+        Response r = ClientBuilder.newClient().target("http://localhost:" + port + "/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(OUT_CONTENT, r.readEntity(String.class));
     }
 
     private BQRuntime startJetty(String config) {
