@@ -27,7 +27,7 @@ public class SendServerVersionIT {
         BQRuntime runtime = testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/server/sendServerVersion.yml")
                 .autoLoadModules()
-                .module(b -> JettyModule.extend(b).addServlet(ServerFactoryConnectorsIT.ContentServlet.class))
+                .module(b -> JettyModule.extend(b).addServlet(HttpConnectorIT.ContentServlet.class))
                 .createRuntime();
         runtime.run();
 
@@ -45,7 +45,7 @@ public class SendServerVersionIT {
         BQRuntime runtime = testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/server/sendServerVersion.yml")
                 .autoLoadModules()
-                .module(b -> JettyModule.extend(b).addServlet(ServerFactoryConnectorsIT.ContentServlet.class))
+                .module(b -> JettyModule.extend(b).addServlet(HttpConnectorIT.ContentServlet.class))
                 .createRuntime();
         runtime.run();
 
