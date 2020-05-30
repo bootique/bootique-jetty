@@ -1,21 +1,25 @@
 package io.bootique.jetty.server;
 
-import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SendServerVersionIT {
 
-    private static final String OUT_CONTENT = "xcontent_stream_content_stream";
+    private static final String OUT_CONTENT = "____content_stream____";
 
     @RegisterExtension
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
@@ -24,38 +28,43 @@ public class SendServerVersionIT {
 
     @Test
     public void testSendServerHeaderOn() {
-        BQRuntime runtime = testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/server/sendServerVersion.yml")
-                .autoLoadModules()
-                .module(b -> JettyModule.extend(b).addServlet(HttpConnectorIT.ContentServlet.class))
-                .createRuntime();
-        runtime.run();
+        startJetty("classpath:io/bootique/jetty/server/sendServerVersion.yml");
 
-        Response r1NormalConnector = client.target("http://localhost:14001/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r1NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r1NormalConnector.readEntity(String.class));
+        Response r = client.target("http://localhost:14001/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(OUT_CONTENT, r.readEntity(String.class));
 
-        MultivaluedMap<String, Object> headers = r1NormalConnector.getHeaders();
+        MultivaluedMap<String, Object> headers = r.getHeaders();
         assertEquals(4, headers.size());
         assertNotNull(headers.get("Server"));
     }
 
     @Test
     public void testSendServerHeaderOff() {
-        BQRuntime runtime = testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/server/sendServerVersion.yml")
-                .autoLoadModules()
-                .module(b -> JettyModule.extend(b).addServlet(HttpConnectorIT.ContentServlet.class))
-                .createRuntime();
-        runtime.run();
+        startJetty("classpath:io/bootique/jetty/server/sendServerVersion.yml");
 
-        Response r1NormalConnector = client.target("http://localhost:14002/").request().get();
-        assertEquals(Response.Status.OK.getStatusCode(), r1NormalConnector.getStatus());
-        assertEquals(OUT_CONTENT, r1NormalConnector.readEntity(String.class));
+        Response r = client.target("http://localhost:14002/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(OUT_CONTENT, r.readEntity(String.class));
 
-        MultivaluedMap<String, Object> headers = r1NormalConnector.getHeaders();
+        MultivaluedMap<String, Object> headers = r.getHeaders();
         assertEquals(3, headers.size());
         assertNull(headers.get("Server"));
     }
 
+    private void startJetty(String config) {
+        testFactory.app("-s", "-c", config)
+                .autoLoadModules()
+                .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+                .run();
+    }
+
+    @WebServlet(urlPatterns = "/*")
+    static class ContentServlet extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.getWriter().append(OUT_CONTENT);
+        }
+    }
 }
