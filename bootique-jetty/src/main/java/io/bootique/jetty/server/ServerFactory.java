@@ -39,13 +39,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
@@ -77,7 +71,6 @@ public class ServerFactory {
     private Map<Integer, String> errorPages;
 
     public ServerFactory() {
-        this.context = "/";
         this.minThreads = 4;
         this.maxThreads = 200;
         this.maxQueuedRequests = 1024;
@@ -92,8 +85,10 @@ public class ServerFactory {
             Set<MappedListener> listeners,
             Set<ServletContextHandlerExtender> contextHandlerExtenders) {
 
+        String context = resolveContext();
+
         ThreadPool threadPool = createThreadPool();
-        ServletContextHandler contextHandler = createHandler(servlets, filters, listeners);
+        ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
 
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
@@ -139,6 +134,7 @@ public class ServerFactory {
     }
 
     protected ServletContextHandler createHandler(
+            String context,
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
             Set<MappedListener> listeners) {
@@ -309,9 +305,21 @@ public class ServerFactory {
         return context;
     }
 
-    @BQConfigProperty("Web application context path. Default is '/'.")
+    @BQConfigProperty("Web application context path. The default is '/'.")
     public void setContext(String context) {
         this.context = context;
+    }
+
+    protected String resolveContext() {
+        if(context == null) {
+            return "/";
+        }
+
+        // context must start with a slash and must not end with a slash...
+        // fix sloppy configuration on the fly
+        String c1 = context.startsWith("/") ? context : "/" + context;
+        String c2 = (c1.length() > 1 && c1.endsWith("/")) ? c1.substring(0, c1.length() - 1) : c1;
+        return c2;
     }
 
     /**
