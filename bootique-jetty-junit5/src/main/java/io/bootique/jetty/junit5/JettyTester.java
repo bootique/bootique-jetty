@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.junit5;
 
+import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
@@ -76,6 +77,6 @@ public class JettyTester {
     }
 
     protected void configure(Binder binder) {
-        throw new UnsupportedOperationException("TODO");
+        BQCoreModule.extend(binder).addPostConfig("classpath:io/bootique/jetty/junit5/JettyTester.yml");
     }
 }
