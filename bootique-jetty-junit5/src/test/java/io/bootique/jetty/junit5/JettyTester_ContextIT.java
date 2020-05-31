@@ -42,8 +42,6 @@ public class JettyTester_ContextIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
-    static final JettyTester jetty = JettyTester.create();
-
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
@@ -53,7 +51,7 @@ public class JettyTester_ContextIT {
 
     @Test
     public void testGetClient() {
-        WebTarget client = jetty.getClient(app);
+        WebTarget client = JettyTester.getClient(app);
         Assertions.assertNotNull(client);
 
         assertEquals("http://127.0.0.1:8080/myapp", client.getUri().toString());

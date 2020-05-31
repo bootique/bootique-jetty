@@ -46,8 +46,6 @@ public class JettyTester_ReplaceConnectorsIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
-    static final JettyTester jetty = JettyTester.create();
-
     @RegisterExtension
     static final BQTestFactory testFactory = new BQTestFactory();
 
@@ -80,13 +78,13 @@ public class JettyTester_ReplaceConnectorsIT {
 
     @Test
     @DisplayName("Connectors from YAML must be replaced by the test connector")
-    public void testRegisterTestHooks() {
+    public void testModuleReplacingConnectors() {
 
         BQRuntime app = testFactory
                 .app("-s", "-c", "classpath:io/bootique/jetty/junit5/JettyTester_ReplaceConnectorsIT.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
-                .module(jetty.registerTestHooks())
+                .module(JettyTester.moduleReplacingConnectors())
                 .createRuntime();
 
         ServerHolder serverHolder = app.getInstance(ServerHolder.class);
@@ -97,7 +95,7 @@ public class JettyTester_ReplaceConnectorsIT {
         CommandOutcome out = app.run();
         assertTrue(out.isSuccess());
 
-        WebTarget client = jetty.getClient(app);
+        WebTarget client = JettyTester.getClient(app);
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());

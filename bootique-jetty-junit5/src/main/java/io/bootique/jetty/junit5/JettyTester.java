@@ -41,10 +41,6 @@ public class JettyTester {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyTester.class);
 
-    public static JettyTester create() {
-        return new JettyTester();
-    }
-
     protected JettyTester() {
     }
 
@@ -54,7 +50,7 @@ public class JettyTester {
      * @param app test Jetty server app
      * @return a WebTarget to access the test Jetty server.
      */
-    public WebTarget getClient(BQRuntime app) {
+    public static WebTarget getClient(BQRuntime app) {
         ServerHolder serverHolder = app.getInstance(ServerHolder.class);
 
         switch (serverHolder.getConnectorsCount()) {
@@ -69,35 +65,39 @@ public class JettyTester {
         }
     }
 
-    protected WebTarget getClient(String url) {
+    protected static WebTarget getClient(String url) {
         return ClientBuilder.newClient().target(url);
     }
 
-    public BQModule registerTestHooks() {
-        return this::configure;
+    /**
+     * Returns a module that replaces all preconfigured Jetty connectors with a single test connector. The test connector
+     * will listen on an arbitrary port and will use default settings for the protocol (unencrypted HTTP), header size
+     * limits, etc.
+     */
+    public static BQModule moduleReplacingConnectors() {
+        return JettyTester::configure;
     }
 
     /**
      * Returns a {@link ResponseMatcher} that helps to assert the response state.
      */
-    public ResponseMatcher matcher(Response response) {
+    public static ResponseMatcher matcher(Response response) {
         return new ResponseMatcher(response);
     }
 
-    public ResponseMatcher assertStatus(Response response, int expectedStatus) {
+    public static ResponseMatcher assertStatus(Response response, int expectedStatus) {
         return matcher(response).assertStatus(expectedStatus);
     }
 
-    public ResponseMatcher assertOk(Response response) {
+    public static ResponseMatcher assertOk(Response response) {
         return matcher(response).assertOk();
     }
 
-    public ResponseMatcher assertNotFound(Response response) {
+    public static ResponseMatcher assertNotFound(Response response) {
         return matcher(response).assertNotFound();
     }
 
-    protected void configure(Binder binder) {
+    protected static void configure(Binder binder) {
         BQCoreModule.extend(binder).addPostConfig("classpath:io/bootique/jetty/junit5/JettyTester.yml");
     }
-
 }
