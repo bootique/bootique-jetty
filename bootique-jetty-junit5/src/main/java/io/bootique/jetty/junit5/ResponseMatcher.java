@@ -85,6 +85,13 @@ public class ResponseMatcher {
         return this;
     }
 
+    public ResponseMatcher assertHeader(String headerName, String expectedValue) {
+        String actualValue = response.getHeaderString(headerName);
+        assertNotNull(actualValue, "'" + headerName + "' is undefined");
+        assertEquals(expectedValue, actualValue);
+        return this;
+    }
+
     protected String getContent() {
 
         // cache content locally in case we need to do multiple assertions
