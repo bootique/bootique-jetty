@@ -25,18 +25,20 @@ import java.util.Random;
 
 /**
  * Find a port on a host machine that is not taken.
+ *
+ * @since 2.0
  */
 // high-level idea is inspired by Spring SocketUtils
-class PortFinder {
+public class PortFinder {
 
     static final int MIN_PORT = 1024;
     static final int MAX_PORT = 65535;
 
-    static int findAvailablePort(String host) {
+    public static int findAvailablePort(String host) {
         return findAvailablePort(host, MIN_PORT, MAX_PORT);
     }
 
-    static int findAvailablePort(String host, int minPort, int maxPort) {
+    public static int findAvailablePort(String host, int minPort, int maxPort) {
 
         if (minPort <= 0) {
             throw new IllegalArgumentException("Illegal min port: " + minPort);
