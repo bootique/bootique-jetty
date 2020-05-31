@@ -51,7 +51,7 @@ public class JettyTester_DefaultConfigIT {
     public void testGetServerUrl() {
         String url = JettyTester.getServerUrl(app);
         Assertions.assertNotNull(url);
-        assertEquals("http://127.0.0.1:8080/", url);
+        assertEquals("http://127.0.0.1:8080", url);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class JettyTester_DefaultConfigIT {
         WebTarget client = JettyTester.getTarget(app);
         Assertions.assertNotNull(client);
 
-        assertEquals("http://127.0.0.1:8080/", client.getUri().toString());
+        assertEquals("http://127.0.0.1:8080", client.getUri().toString());
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());

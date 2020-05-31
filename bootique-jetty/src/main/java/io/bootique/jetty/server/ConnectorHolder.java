@@ -47,7 +47,10 @@ public class ConnectorHolder {
             url.append(":").append(port);
         }
 
-        url.append(context);
+        // make sure the URL doesn't end in a slash
+        if (!"/".equals(context)) {
+            url.append(context);
+        }
 
         return url.toString();
     }
