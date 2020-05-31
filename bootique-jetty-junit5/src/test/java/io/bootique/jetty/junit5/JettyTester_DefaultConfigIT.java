@@ -48,6 +48,13 @@ public class JettyTester_DefaultConfigIT {
             .createRuntime();
 
     @Test
+    public void testGetServerUrl() {
+        String url = JettyTester.getServerUrl(app);
+        Assertions.assertNotNull(url);
+        assertEquals("http://127.0.0.1:8080/", url);
+    }
+
+    @Test
     public void testGetClient() {
         WebTarget client = JettyTester.getClient(app);
         Assertions.assertNotNull(client);

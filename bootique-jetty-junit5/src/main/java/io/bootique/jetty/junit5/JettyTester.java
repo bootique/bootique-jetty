@@ -51,17 +51,21 @@ public class JettyTester {
      * @return a WebTarget to access the test Jetty server.
      */
     public static WebTarget getClient(BQRuntime app) {
+        return getClient(getServerUrl(app));
+    }
+
+    public static String getServerUrl(BQRuntime app) {
         ServerHolder serverHolder = app.getInstance(ServerHolder.class);
 
         switch (serverHolder.getConnectorsCount()) {
             case 0:
                 throw new IllegalStateException("Can't connect to the application. It has no Jetty connectors configured");
             case 1:
-                return getClient(serverHolder.getUrl());
+                return serverHolder.getUrl();
             default:
                 String url = serverHolder.getUrls().findFirst().get();
                 LOGGER.warn("Application has multiple Jetty connectors. Returning the client for the first one at '{}'", url);
-                return getClient(url);
+                return url;
         }
     }
 
