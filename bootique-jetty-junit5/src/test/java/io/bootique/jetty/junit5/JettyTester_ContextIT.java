@@ -59,7 +59,7 @@ public class JettyTester_ContextIT {
 
     @Test
     public void testGetClient() {
-        WebTarget client = JettyTester.getClient(app);
+        WebTarget client = JettyTester.getTarget(app);
         Assertions.assertNotNull(client);
 
         assertEquals("http://127.0.0.1:8080/myapp", client.getUri().toString());

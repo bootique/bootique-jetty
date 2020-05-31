@@ -95,7 +95,7 @@ public class JettyTester_ReplaceConnectorsIT {
         CommandOutcome out = app.run();
         assertTrue(out.isSuccess());
 
-        WebTarget client = JettyTester.getClient(app);
+        WebTarget client = JettyTester.getTarget(app);
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());

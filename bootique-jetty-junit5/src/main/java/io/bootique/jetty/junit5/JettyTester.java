@@ -45,13 +45,14 @@ public class JettyTester {
     }
 
     /**
-     * Returns an HTTP client pointing to the root of the test Jetty server.
+     * Returns a "target" with URL pointing to the root of the test Jetty server. It can be used to send HTTP
+     * requests to the server.
      *
      * @param app test Jetty server app
      * @return a WebTarget to access the test Jetty server.
      */
-    public static WebTarget getClient(BQRuntime app) {
-        return getClient(getServerUrl(app));
+    public static WebTarget getTarget(BQRuntime app) {
+        return getTarget(getServerUrl(app));
     }
 
     public static String getServerUrl(BQRuntime app) {
@@ -69,7 +70,7 @@ public class JettyTester {
         }
     }
 
-    protected static WebTarget getClient(String url) {
+    protected static WebTarget getTarget(String url) {
         return ClientBuilder.newClient().target(url);
     }
 
