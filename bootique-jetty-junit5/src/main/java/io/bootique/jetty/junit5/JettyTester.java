@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 /**
  * A helper class that is declared in a unit test, manages test Jetty configuration and provides the test with access
@@ -76,7 +77,27 @@ public class JettyTester {
         return this::configure;
     }
 
+    /**
+     * Returns a {@link ResponseMatcher} that helps to assert the response state.
+     */
+    public ResponseMatcher matcher(Response response) {
+        return new ResponseMatcher(response);
+    }
+
+    public ResponseMatcher assertStatus(Response response, int expectedStatus) {
+        return matcher(response).assertStatus(expectedStatus);
+    }
+
+    public ResponseMatcher assertOk(Response response) {
+        return matcher(response).assertOk();
+    }
+
+    public ResponseMatcher assertNotFound(Response response) {
+        return matcher(response).assertNotFound();
+    }
+
     protected void configure(Binder binder) {
         BQCoreModule.extend(binder).addPostConfig("classpath:io/bootique/jetty/junit5/JettyTester.yml");
     }
+
 }

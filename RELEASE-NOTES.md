@@ -2,6 +2,7 @@
 
 * #95 Safer default value for ServerFactory.maxThreads
 * #96 Support "classpath:" URLs for "resourceBase" of static servlets
+* #97 "bootique-jetty-junit5" - a test module for Jetty 
 * #98 "any" port - selecting port dynamically
 
 ## 1.1
