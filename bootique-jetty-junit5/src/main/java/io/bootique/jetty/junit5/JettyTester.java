@@ -19,10 +19,13 @@
 package io.bootique.jetty.junit5;
 
 import io.bootique.BQCoreModule;
+import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
+import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
 import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
 import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHookProvider;
+import io.bootique.jetty.server.ServerHolder;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -42,6 +45,35 @@ public class JettyTester {
 
     protected JettyTester() {
         this.bootiqueHook = new JettyTesterBootiqueHook();
+    }
+
+    /**
+     * Returns an HTTP client WebTarget for the jetty server running within the app passed as a "jettyApp" parameter.
+     * Usually a JettyTester instance is associated with a specific app, so the instance's {@link #getTarget()} method is
+     * used. This static method is for special occasions when JettyTester is not allowed to replace the app's connector.
+     *
+     * @param jettyApp a Bootique runtime object that includes a Jetty server
+     * @return a WebTarget to access the test Jetty server.
+     */
+    public static WebTarget getTarget(BQRuntime jettyApp) {
+        return getTarget(getUrl(jettyApp));
+    }
+
+    /**
+     * Returns a URL of the jetty server running within the app passed as a "jettyApp" parameter.
+     * Usually a JettyTester instance is associated with a specific app, so the instance's {@link #getUrl()} method is
+     * used. This static method is for special occasions when JettyTester is not allowed to replace the app's connector.
+     *
+     * @param jettyApp a Bootique runtime object that includes a Jetty server
+     * @return a URL to access the Jetty server
+     */
+    public static String getUrl(BQRuntime jettyApp) {
+        ServerHolder serverHolder = jettyApp.getInstance(ServerHolder.class);
+        return JettyConnectorAccessor.getConnectorHolder(serverHolder).getUrl(serverHolder.getContext());
+    }
+
+    protected static WebTarget getTarget(String url) {
+        return ClientBuilder.newClient().target(url);
     }
 
     public static JettyTester create() {
@@ -72,10 +104,6 @@ public class JettyTester {
 
     protected String findUrl() {
         return bootiqueHook.getUrl();
-    }
-
-    protected static WebTarget getTarget(String url) {
-        return ClientBuilder.newClient().target(url);
     }
 
     /**

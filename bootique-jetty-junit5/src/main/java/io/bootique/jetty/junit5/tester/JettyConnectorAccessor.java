@@ -18,34 +18,28 @@
  */
 package io.bootique.jetty.junit5.tester;
 
+import io.bootique.jetty.server.ConnectorHolder;
 import io.bootique.jetty.server.ServerHolder;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 2.0
  */
-public class JettyTesterBootiqueHookProvider implements Provider<JettyTesterBootiqueHook> {
+public class JettyConnectorAccessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyConnectorAccessor.class);
 
-    @Inject
-    ServerHolder serverHolder;
-
-    private JettyTesterBootiqueHook instance;
-
-    public JettyTesterBootiqueHookProvider(JettyTesterBootiqueHook instance) {
-        this.instance = instance;
+    public static ConnectorHolder getConnectorHolder(ServerHolder serverHolder) {
+        switch (serverHolder.getConnectorsCount()) {
+            case 0:
+                throw new IllegalStateException("Can't connect to the application. It has no Jetty connectors configured");
+            case 1:
+                return serverHolder.getConnector();
+            default:
+                ConnectorHolder connectorHolder = serverHolder.getConnectors().findFirst().get();
+                LOGGER.warn("Application has multiple Jetty connectors. Using the first one on port '{}'", connectorHolder.getPort());
+                return connectorHolder;
+        }
     }
-
-    @Override
-    public JettyTesterBootiqueHook get() {
-        assertNotNull(serverHolder, "ServerHolder is not initialized");
-        instance.init(serverHolder.getContext(), JettyConnectorAccessor.getConnectorHolder(serverHolder));
-        return instance;
-    }
-
-
 }
