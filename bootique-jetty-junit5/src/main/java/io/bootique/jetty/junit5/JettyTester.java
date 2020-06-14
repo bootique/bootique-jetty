@@ -19,12 +19,10 @@
 package io.bootique.jetty.junit5;
 
 import io.bootique.BQCoreModule;
-import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
-import io.bootique.jetty.server.ServerHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
+import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHookProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -39,35 +37,41 @@ import javax.ws.rs.core.Response;
  */
 public class JettyTester {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JettyTester.class);
+    private JettyTesterBootiqueHook bootiqueHook;
+    private String serverUrl;
 
     protected JettyTester() {
+        this.bootiqueHook = new JettyTesterBootiqueHook();
+    }
+
+    public static JettyTester create() {
+        return new JettyTester();
     }
 
     /**
      * Returns a "target" with URL pointing to the root of the test Jetty server. It can be used to send HTTP
      * requests to the server.
      *
-     * @param app test Jetty server app
      * @return a WebTarget to access the test Jetty server.
      */
-    public static WebTarget getTarget(BQRuntime app) {
-        return getTarget(getServerUrl(app));
+    public WebTarget getTarget() {
+        return getTarget(getUrl());
     }
 
-    public static String getServerUrl(BQRuntime app) {
-        ServerHolder serverHolder = app.getInstance(ServerHolder.class);
-
-        switch (serverHolder.getConnectorsCount()) {
-            case 0:
-                throw new IllegalStateException("Can't connect to the application. It has no Jetty connectors configured");
-            case 1:
-                return serverHolder.getUrl();
-            default:
-                String url = serverHolder.getUrls().findFirst().get();
-                LOGGER.warn("Application has multiple Jetty connectors. Returning the client for the first one at '{}'", url);
-                return url;
+    public String getUrl() {
+        if (serverUrl == null) {
+            serverUrl = findUrl();
         }
+
+        return serverUrl;
+    }
+
+    public int getPort() {
+        return bootiqueHook.getConnectorHolder().getPort();
+    }
+
+    protected String findUrl() {
+        return bootiqueHook.getUrl();
     }
 
     protected static WebTarget getTarget(String url) {
@@ -79,8 +83,8 @@ public class JettyTester {
      * will listen on an arbitrary port and will use default settings for the protocol (unencrypted HTTP), header size
      * limits, etc.
      */
-    public static BQModule moduleReplacingConnectors() {
-        return JettyTester::configure;
+    public BQModule moduleReplacingConnectors() {
+        return this::configure;
     }
 
     /**
@@ -102,7 +106,14 @@ public class JettyTester {
         return matcher(response).assertNotFound();
     }
 
-    protected static void configure(Binder binder) {
+    protected void configure(Binder binder) {
+        binder.bind(JettyTesterBootiqueHook.class)
+                // wrapping the hook in provider to be able to run the checks for when this tester is erroneously
+                // used for multiple runtimes
+                .toProviderInstance(new JettyTesterBootiqueHookProvider(bootiqueHook))
+                // using "initOnStartup" to ensure the hook is resolved before the test start. Any downsides?
+                .initOnStartup();
+
         BQCoreModule.extend(binder).addPostConfig("classpath:io/bootique/jetty/junit5/JettyTester.yml");
     }
 }

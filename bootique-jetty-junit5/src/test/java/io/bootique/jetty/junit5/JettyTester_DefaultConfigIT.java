@@ -41,25 +41,28 @@ public class JettyTester_DefaultConfigIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
+    static final JettyTester jetty = JettyTester.create();
+
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+            .module(jetty.moduleReplacingConnectors())
             .createRuntime();
 
     @Test
     public void testGetServerUrl() {
-        String url = JettyTester.getServerUrl(app);
+        String url = jetty.getUrl();
         Assertions.assertNotNull(url);
-        assertEquals("http://127.0.0.1:8080", url);
+        assertEquals("http://127.0.0.1:" + jetty.getPort(), url);
     }
 
     @Test
     public void testGetClient() {
-        WebTarget client = JettyTester.getTarget(app);
+        WebTarget client = jetty.getTarget();
         Assertions.assertNotNull(client);
 
-        assertEquals("http://127.0.0.1:8080", client.getUri().toString());
+        assertEquals("http://127.0.0.1:" + jetty.getPort(), client.getUri().toString());
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());

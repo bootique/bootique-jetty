@@ -41,40 +41,42 @@ public class JettyTester_MatcherIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
+    static final JettyTester jetty = JettyTester.create();
+
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
-            .module(JettyTester.moduleReplacingConnectors())
+            .module(jetty.moduleReplacingConnectors())
             .createRuntime();
 
     @Test
     public void testMatch200() {
-        Response r1 = JettyTester.getTarget(app).request().get();
+        Response r1 = jetty.getTarget().request().get();
         JettyTester.matcher(r1).assertOk().assertContent(OUT_CONTENT);
 
         // try a different style
-        Response r2 = JettyTester.getTarget(app).request().get();
+        Response r2 = jetty.getTarget().request().get();
         JettyTester.assertOk(r2).assertContent(OUT_CONTENT);
     }
 
     @Test
     public void testMatch200_ContentType() {
-        Response r1 = JettyTester.getTarget(app).queryParam("wantedType", "application/json").request().get();
+        Response r1 = jetty.getTarget().queryParam("wantedType", "application/json").request().get();
         JettyTester.matcher(r1).assertOk().assertContentType(MediaType.APPLICATION_JSON_TYPE);
 
         // non-standard type
-        Response r2 = JettyTester.getTarget(app).queryParam("wantedType", "application/geo+json").request().get();
+        Response r2 = jetty.getTarget().queryParam("wantedType", "application/geo+json").request().get();
         JettyTester.matcher(r2).assertOk().assertContentType(new MediaType("application", "*"));
 
         // string comparision
-        Response r3 = JettyTester.getTarget(app).queryParam("wantedType", "application/geo+json").request().get();
+        Response r3 = jetty.getTarget().queryParam("wantedType", "application/geo+json").request().get();
         JettyTester.matcher(r3).assertOk().assertContentType("application/*");
     }
 
     @Test
     public void testMatch200_CustomAssertions() {
-        Response r = JettyTester.getTarget(app).request().get();
+        Response r = jetty.getTarget().request().get();
         JettyTester.matcher(r).assertOk().assertContent(c -> {
             assertNotNull(c);
             assertTrue(c.contains("_stream_"));
@@ -83,21 +85,21 @@ public class JettyTester_MatcherIT {
 
     @Test
     public void testMatch400() {
-        Response r1 = JettyTester.getTarget(app).queryParam("wantedStatus", "404").request().get();
+        Response r1 = jetty.getTarget().queryParam("wantedStatus", "404").request().get();
         JettyTester.matcher(r1).assertNotFound();
 
         // try a different style
-        Response r2 = JettyTester.getTarget(app).queryParam("wantedStatus", "404").request().get();
+        Response r2 = jetty.getTarget().queryParam("wantedStatus", "404").request().get();
         JettyTester.assertNotFound(r2);
     }
 
     @Test
     public void testMatch500() {
-        Response r1 = JettyTester.getTarget(app).queryParam("wantedStatus", "500").request().get();
+        Response r1 = jetty.getTarget().queryParam("wantedStatus", "500").request().get();
         JettyTester.matcher(r1).assertStatus(500);
 
         // try a different style
-        Response r2 = JettyTester.getTarget(app).queryParam("wantedStatus", "500").request().get();
+        Response r2 = jetty.getTarget().queryParam("wantedStatus", "500").request().get();
         JettyTester.assertStatus(r2, 500);
     }
 

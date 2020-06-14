@@ -42,27 +42,30 @@ public class JettyTester_ContextIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
+    static final JettyTester jetty = JettyTester.create();
+
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
             .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.context", "myapp"))
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+            .module(jetty.moduleReplacingConnectors())
             .createRuntime();
 
     @Test
     public void testGetServerUrl() {
-        String url = JettyTester.getServerUrl(app);
+        String url = jetty.getUrl();
         Assertions.assertNotNull(url);
 
-        assertEquals("http://127.0.0.1:8080/myapp", url);
+        assertEquals("http://127.0.0.1:" + jetty.getPort() + "/myapp", url);
     }
 
     @Test
-    public void testGetClient() {
-        WebTarget client = JettyTester.getTarget(app);
+    public void testGetTarget() {
+        WebTarget client = jetty.getTarget();
         Assertions.assertNotNull(client);
 
-        assertEquals("http://127.0.0.1:8080/myapp", client.getUri().toString());
+        assertEquals("http://127.0.0.1:" + jetty.getPort() + "/myapp", client.getUri().toString());
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
