@@ -4,6 +4,7 @@
 * #96 Support "classpath:" URLs for "resourceBase" of static servlets
 * #97 "bootique-jetty-junit5" - a test module for Jetty 
 * #98 "any" port - selecting port dynamically
+* #99 SSL context factory class should be changed to comply with recent versions of Jetty
 
 ## 1.1
 

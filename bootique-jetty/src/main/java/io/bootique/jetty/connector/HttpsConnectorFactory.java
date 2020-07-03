@@ -76,7 +76,7 @@ public class HttpsConnectorFactory extends ConnectorFactory {
 
         Objects.requireNonNull(keyStore, "'keyStore' must be specified");
 
-        SslContextFactory contextFactory = new SslContextFactory();
+        SslContextFactory contextFactory = new SslContextFactory.Server();
         URL keystoreUrl = keyStore.getUrl();
         contextFactory.setKeyStoreResource(new URLResource(keystoreUrl, null) {
         });
