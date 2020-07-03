@@ -2,6 +2,7 @@
 
 * #88 Turning off "Server" header
 * #91 Upgrade Jetty to 9.4.19.v20190610
+* #100 SSL context factory class should be changed to comply with recent versions of Jetty (1.x)
 
 ## 1.0
 
