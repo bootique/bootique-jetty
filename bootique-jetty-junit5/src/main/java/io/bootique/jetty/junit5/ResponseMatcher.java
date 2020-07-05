@@ -18,10 +18,15 @@
  */
 package io.bootique.jetty.junit5;
 
+import io.bootique.resource.ResourceFactory;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,6 +67,30 @@ public class ResponseMatcher {
     public ResponseMatcher assertContent(Consumer<String> assertionChecker) {
         assertionChecker.accept(getContent());
         return this;
+    }
+
+    public ResponseMatcher assertContent(ResourceFactory expectedContentSource) {
+        return assertContent(resourceContent(expectedContentSource, "UTF-8"));
+    }
+
+    protected String resourceContent(ResourceFactory resource, String encoding) {
+        URL url = resource.getUrl();
+
+        try (InputStream in = url.openStream()) {
+
+            // read as bytes to preserve line breaks
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            int nRead;
+            byte[] data = new byte[1024];
+            while ((nRead = in.read(data, 0, data.length)) != -1) {
+                out.write(data, 0, nRead);
+            }
+
+            return new String(out.toByteArray(), encoding);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading resource contents: " + url, e);
+        }
     }
 
     public ResponseMatcher assertContentType(MediaType expectedType) {
