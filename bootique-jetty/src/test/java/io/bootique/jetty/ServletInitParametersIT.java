@@ -19,10 +19,11 @@
 
 package io.bootique.jetty;
 
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -37,12 +38,13 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class ServletInitParametersIT {
 
 	private static final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
-	@RegisterExtension
-	public BQTestFactory testFactory = new BQTestFactory();
+	@BQTestTool
+	final BQTestFactory testFactory = new BQTestFactory();
 
 	@Test
 	@DisplayName("Params passed from YAML")

@@ -21,10 +21,11 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
-import io.bootique.metrics.health.HealthCheckRegistry;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
+import io.bootique.metrics.health.HealthCheckRegistry;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,10 +33,11 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class JettyInstrumentedModuleIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
     public void testMetrics() {

@@ -23,9 +23,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,9 +41,10 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class RequestTimerIT {
 
-    @RegisterExtension
+    @BQTestTool
     public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test

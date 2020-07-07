@@ -20,9 +20,10 @@ package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
 import io.bootique.command.CommandOutcome;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -31,10 +32,11 @@ import javax.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@BQTest
 public class StaticServletIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testCommonResourceBase() {

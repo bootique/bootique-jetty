@@ -19,10 +19,11 @@
 
 package io.bootique.jetty;
 
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Servlet;
 import javax.ws.rs.client.ClientBuilder;
@@ -36,12 +37,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@BQTest
 public class MappedServletIT {
 
     private static final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+
     private Servlet mockServlet;
 
     @BeforeEach

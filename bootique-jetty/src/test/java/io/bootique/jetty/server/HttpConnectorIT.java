@@ -21,10 +21,11 @@ package io.bootique.jetty.server;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,11 +38,12 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@BQTest
 public class HttpConnectorIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
-    @RegisterExtension
+    @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test

@@ -21,9 +21,10 @@ package io.bootique.jetty.command;
 
 import io.bootique.command.CommandOutcome;
 import io.bootique.jetty.JettyModule;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,10 +38,11 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@BQTest
 public class ServerCommandIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testRun() {

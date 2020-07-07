@@ -19,10 +19,11 @@
 
 package io.bootique.jetty;
 
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletRequestEvent;
@@ -33,13 +34,13 @@ import javax.ws.rs.client.WebTarget;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+@BQTest
 public class MappedListenerIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     private Servlet mockServlet1;
-
 
     @BeforeEach
     public void before() {

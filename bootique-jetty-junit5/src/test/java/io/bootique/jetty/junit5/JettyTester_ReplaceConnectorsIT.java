@@ -22,12 +22,13 @@ import io.bootique.BQRuntime;
 import io.bootique.command.CommandOutcome;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.server.ServerHolder;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.net.ServerSocketFactory;
 import javax.servlet.annotation.WebServlet;
@@ -42,11 +43,12 @@ import java.net.ServerSocket;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@BQTest
 public class JettyTester_ReplaceConnectorsIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
-    @RegisterExtension
+    @BQTestTool
     static final BQTestFactory testFactory = new BQTestFactory();
 
     private static ServerSocket _42001;

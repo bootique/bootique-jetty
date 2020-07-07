@@ -20,10 +20,11 @@
 package io.bootique.jetty.server;
 
 import io.bootique.jetty.JettyModule;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,10 +40,11 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class MaxFormSettingsIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory();
 
     private WebTarget target = ClientBuilder.newClient().register(GZipEncoder.class)
             .target("http://localhost:8080/");

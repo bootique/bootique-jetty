@@ -24,9 +24,10 @@ import io.bootique.di.Binder;
 import io.bootique.di.DIRuntimeException;
 import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,10 +37,11 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@BQTest
 public class NotAnnotatedServletIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testServletContainerState() {

@@ -18,11 +18,12 @@
  */
 package io.bootique.jetty.cors;
 
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -31,13 +32,14 @@ import javax.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@BQTest
 public class BootiqueCorsFilterIT {
 
     private static final String RESTRICTED_HEADERS_PROP = "sun.net.http.allowRestrictedHeaders";
     private static String ORIGINAL_RESTRICTED_HEADERS;
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @BeforeAll
     public static void configJavaForCors() {

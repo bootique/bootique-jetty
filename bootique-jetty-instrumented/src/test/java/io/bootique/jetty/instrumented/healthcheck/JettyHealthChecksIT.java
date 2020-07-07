@@ -20,20 +20,22 @@
 package io.bootique.jetty.instrumented.healthcheck;
 
 import io.bootique.BQRuntime;
+import io.bootique.junit5.BQTest;
+import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.HealthCheckRegistry;
-import io.bootique.junit5.BQTestFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@BQTest
 public class JettyHealthChecksIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testChecksLoaded() {

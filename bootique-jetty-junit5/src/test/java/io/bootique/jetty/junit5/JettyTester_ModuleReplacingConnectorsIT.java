@@ -21,16 +21,19 @@ package io.bootique.jetty.junit5;
 import io.bootique.BQRuntime;
 import io.bootique.di.DIRuntimeException;
 import io.bootique.jetty.server.ServerHolder;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@BQTest
 public class JettyTester_ModuleReplacingConnectorsIT {
 
-    @RegisterExtension
+    @BQTestTool
     static final BQTestFactory testFactory = new BQTestFactory();
 
     @Test

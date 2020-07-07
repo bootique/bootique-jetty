@@ -22,19 +22,21 @@ package io.bootique.jetty.instrumented.healthcheck;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.instrumented.unit.AssertExtras;
 import io.bootique.jetty.instrumented.unit.ThreadPoolTester;
+import io.bootique.junit5.BQTest;
+import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.HealthCheckRegistry;
 import io.bootique.metrics.health.HealthCheckStatus;
-import io.bootique.junit5.BQTestFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@BQTest
 public class ThreadPoolChecksIT {
 
-    @RegisterExtension
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    @BQTestTool
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
     public void testUtilization_2() throws InterruptedException {

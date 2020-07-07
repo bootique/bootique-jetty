@@ -25,10 +25,11 @@ import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
+import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -45,12 +46,13 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+@BQTest
 public class ServletEnvironmentIT {
 
 	private Runnable assertion;
 
-	@RegisterExtension
-	public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+	@BQTestTool
+	final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
 	@AfterEach
 	public void after() {
