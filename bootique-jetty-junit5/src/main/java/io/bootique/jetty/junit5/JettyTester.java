@@ -126,6 +126,10 @@ public class JettyTester {
         return matcher(response).assertStatus(expectedStatus);
     }
 
+    public static ResponseMatcher assertStatus(Response response, int expectedStatus, String message) {
+        return matcher(response).assertStatus(expectedStatus, message);
+    }
+
     public static ResponseMatcher assertOk(Response response) {
         return matcher(response).assertOk();
     }
