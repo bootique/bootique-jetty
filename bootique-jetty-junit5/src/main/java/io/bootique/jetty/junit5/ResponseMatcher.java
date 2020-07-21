@@ -48,16 +48,66 @@ public class ResponseMatcher {
         return this;
     }
 
+    public ResponseMatcher assertStatus(int expectedStatus, String message) {
+        assertEquals(expectedStatus, response.getStatus(), message);
+        return this;
+    }
+
     public ResponseMatcher assertOk() {
         return assertStatus(200);
+    }
+
+    public ResponseMatcher assertOk(String message) {
+        return assertStatus(200, message);
+    }
+
+    public ResponseMatcher assertCreated() {
+        return assertStatus(201);
+    }
+
+    public ResponseMatcher assertCreated(String message) {
+        return assertStatus(201, message);
+    }
+
+    public ResponseMatcher assertBadRequest() {
+        return assertStatus(400);
+    }
+
+    public ResponseMatcher assertBadRequest(String message) {
+        return assertStatus(400, message);
+    }
+
+    public ResponseMatcher assertUnauthorized() {
+        return assertStatus(401);
+    }
+
+    public ResponseMatcher assertUnauthorized(String message) {
+        return assertStatus(401, message);
+    }
+
+    public ResponseMatcher assertForbidden() {
+        return assertStatus(403);
+    }
+
+    public ResponseMatcher assertForbidden(String message) {
+        return assertStatus(403, message);
     }
 
     public ResponseMatcher assertNotFound() {
         return assertStatus(404);
     }
 
+    public ResponseMatcher assertNotFound(String message) {
+        return assertStatus(404, message);
+    }
+
     public ResponseMatcher assertContent(String expectedContent) {
         assertEquals(expectedContent, getContent());
+        return this;
+    }
+
+    public ResponseMatcher assertContent(String expectedContent, String message) {
+        assertEquals(expectedContent, getContent(), message);
         return this;
     }
 

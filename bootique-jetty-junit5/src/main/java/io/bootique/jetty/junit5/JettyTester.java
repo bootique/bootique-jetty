@@ -130,8 +130,48 @@ public class JettyTester {
         return matcher(response).assertOk();
     }
 
+    public static ResponseMatcher assertOk(Response response, String message) {
+        return matcher(response).assertOk(message);
+    }
+
+    public static ResponseMatcher assertCreated(Response response) {
+        return matcher(response).assertCreated();
+    }
+
+    public static ResponseMatcher assertCreated(Response response, String message) {
+        return matcher(response).assertCreated(message);
+    }
+
+    public static ResponseMatcher assertBadRequest(Response response) {
+        return matcher(response).assertBadRequest();
+    }
+
+    public static ResponseMatcher assertBadRequest(Response response, String message) {
+        return matcher(response).assertBadRequest(message);
+    }
+
+    public static ResponseMatcher assertUnauthorized(Response response) {
+        return matcher(response).assertUnauthorized();
+    }
+
+    public static ResponseMatcher assertUnauthorized(Response response, String message) {
+        return matcher(response).assertUnauthorized(message);
+    }
+
+    public static ResponseMatcher assertForbidden(Response response) {
+        return matcher(response).assertForbidden();
+    }
+
+    public static ResponseMatcher assertForbidden(Response response, String message) {
+        return matcher(response).assertForbidden(message);
+    }
+
     public static ResponseMatcher assertNotFound(Response response) {
         return matcher(response).assertNotFound();
+    }
+
+    public static ResponseMatcher assertNotFound(Response response, String message) {
+        return matcher(response).assertNotFound(message);
     }
 
     protected void configure(Binder binder) {
