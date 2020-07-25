@@ -41,7 +41,7 @@ test class variable, so that both the runtime and the test code can access it pe
 <2> `JettyTester` helps to bootstrap a test BQRuntime. It resets all connectors configured in the app,
 and creates a connector on a randomly selected unoccupied port.
 
-NOTE: Not hardcoding the connector port improves your chances that the test would work regardless of
+NOTE: Not hardcoding the connector port improves your chances of tests working regardless of
 what else is running on the same machine. Also it may reduce the amount of test configuration (previously
 it was common to create a test `.yml` file that would define a specific Jetty port). Bootique uses the dynamic port
 approach in other test helpers too.
