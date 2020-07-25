@@ -1,0 +1,55 @@
+// Licensed to ObjectStyle LLC under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ObjectStyle LLC licenses
+// this file to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+[#jetty-testing]
+== Testing Jetty Services
+
+NOTE: "bootique-jetty" provides integration for JUnit 5. You can still test Jetty apps using JUnit 4 with
+generic Bootique test tools (`BQTestFactory`), however this would require a bit more setup, and doesn't provide
+all the cool features like dynamic ports and response assertions.
+
+To use "bootique-jetty" test extensions, import the following module in the "test" scope:
+[source,xml]
+----
+<dependency>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+Most Jetty tests start like this:
+[source,java,indent=0]
+----
+include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=declarations]
+----
+<1> `JettyTester` doesn't have a need for lifecycle annotations, so you just need to create one instance per BQRuntime.
+<2> `JettyTester` helps to bootstrap a test BQRuntime. It resets all connectors configured in the app,
+and created a connector on a randomly selected unoccupied port.
+
+NOTE: Not hardcoding the connector port improves your chances that the test would work regardless of
+what else is running on the same machine. Often it also reduces the amount of test configuration (previously
+it was common to create a test `.yml` file that would define a specific Jetty port). Bootique uses the dynamic port
+approach in other test helpers too.
+
+The actual test looks as follows:
+[source,java,indent=0]
+----
+include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=test]
+----
+<1> JettyHelper provides access to an HTTP client "target", so we don't need to worry about the dynamic port or service
+host name.
+<2> JettyHelper has a number of static methods that help with response assertions.

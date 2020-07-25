@@ -21,5 +21,6 @@
 include::_chapters/_01_jetty_integration.adoc[]
 include::_chapters/_02_programming_jetty_apps.adoc[]
 include::_chapters/_03_extension_modules.adoc[]
-include::_chapters/_04_configuration.adoc[]
+include::_chapters/_04_testing.adoc[]
+include::_chapters/_05_configuration.adoc[]
 
