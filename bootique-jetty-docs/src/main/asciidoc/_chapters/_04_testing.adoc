@@ -36,12 +36,12 @@ Most Jetty tests start like this:
 ----
 include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=declarations]
 ----
-<1> `JettyTester` doesn't have a need for lifecycle annotations, so you just need to create one instance per BQRuntime.
+<1> `JettyTester` doesn't require lifecycle annotations. But you need to create one instance per BQRuntime.
 <2> `JettyTester` helps to bootstrap a test BQRuntime. It resets all connectors configured in the app,
-and created a connector on a randomly selected unoccupied port.
+and creates a connector on a randomly selected unoccupied port.
 
 NOTE: Not hardcoding the connector port improves your chances that the test would work regardless of
-what else is running on the same machine. Often it also reduces the amount of test configuration (previously
+what else is running on the same machine. Also it may reduce the amount of test configuration (previously
 it was common to create a test `.yml` file that would define a specific Jetty port). Bootique uses the dynamic port
 approach in other test helpers too.
 
@@ -50,6 +50,6 @@ The actual test looks as follows:
 ----
 include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=test]
 ----
-<1> JettyHelper provides access to an HTTP client "target", so we don't need to worry about the dynamic port or service
-host name.
-<2> JettyHelper has a number of static methods that help with response assertions.
+<1> Web requests are sent using JAX-RS HTTP client API. JettyHelper provides access to the client "target", so we don't
+need to know about the dynamic port or service host name.
+<2> JettyHelper provides a simple "DSL" for response assertions.
