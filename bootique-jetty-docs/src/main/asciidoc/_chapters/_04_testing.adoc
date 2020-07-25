@@ -46,7 +46,7 @@ what else is running on the same machine. Also it may reduce the amount of test 
 it was common to create a test `.yml` file that would define a specific Jetty port). Bootique uses the dynamic port
 approach in other test helpers too.
 
-The actual test looks as follows:
+An actual test looks as follows:
 [source,java,indent=0]
 ----
 include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=test]
