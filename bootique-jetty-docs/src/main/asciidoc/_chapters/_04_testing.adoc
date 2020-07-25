@@ -52,4 +52,4 @@ include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=test]
 ----
 <1> Web requests are sent using JAX-RS HTTP client API. JettyHelper provides access to the client "target", so we don't
 need to know about the dynamic port or service host name.
-<2> JettyHelper provides a simple "DSL" for response assertions.
+<2> JettyHelper provides a simple DSL for response assertions.
