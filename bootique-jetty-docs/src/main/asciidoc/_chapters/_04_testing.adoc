@@ -36,7 +36,8 @@ Most Jetty tests start like this:
 ----
 include::../../../test/java/io/bootique/jetty/docs/JettyIT.java[tags=declarations]
 ----
-<1> `JettyTester` doesn't require lifecycle annotations. But you need to create one instance per BQRuntime.
+<1> `JettyTester` doesn't require lifecycle annotations. All you need is one instance per BQRuntime. Declaring it as a
+test class variable, so that both the runtime and the test code can access it per examples below.
 <2> `JettyTester` helps to bootstrap a test BQRuntime. It resets all connectors configured in the app,
 and creates a connector on a randomly selected unoccupied port.
 
