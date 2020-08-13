@@ -23,6 +23,10 @@ generic Bootique test tools (`BQTestFactory`), however this would require a bit 
 all the cool features like dynamic ports and response assertions.
 
 To use "bootique-jetty" test extensions, import the following module in the "test" scope:
+
+.Maven
+[%collapsible%open]
+====
 [source,xml]
 ----
 <dependency>
@@ -31,6 +35,19 @@ To use "bootique-jetty" test extensions, import the following module in the "tes
     <scope>test</scope>
 </dependency>
 ----
+====
+
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+{
+  testImplementation: 'io.bootique.jetty:bootique-jetty-junit5:test'
+}
+----
+====
+
 Most Jetty tests start like this:
 [source,java,indent=0]
 ----

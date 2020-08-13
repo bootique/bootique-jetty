@@ -26,6 +26,10 @@ extensions.
 
 You may use an "instrumented" version `bootique-jetty`, that will extend the server with a number of metrics
 and health checks for your running app:
+
+.Maven
+[%collapsible%open]
+====
 [source,xml]
 ----
 <dependency>
@@ -33,11 +37,25 @@ and health checks for your running app:
     <artifactId>bootique-jetty-instrumented</artifactId>
 </dependency>
 ----
+====
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+{
+  implementation: 'io.bootique.jetty:bootique-jetty-instrumented'
+}
+----
+====
 
 === Support for CORS
 If the services running on Jetty are accessed from other domains, you may need to explicitly configure CORS rules to
 to prevent the browsers from blocking access. To achieve that include the following module:
 
+.Maven
+[%collapsible%open]
+====
 [source,xml]
 ----
 <dependency>
@@ -45,6 +63,17 @@ to prevent the browsers from blocking access. To achieve that include the follow
     <artifactId>bootique-jetty-cors</artifactId>
 </dependency>
 ----
+====
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+{
+  implementation: 'io.bootique.jetty:bootique-jetty-cors'
+}
+----
+====
 
 and then configure rules in YAML under "jettycors" root element (see details <<jettycors, here>>).
 
@@ -52,6 +81,9 @@ and then configure rules in YAML under "jettycors" root element (see details <<j
 If in addition to HTTP requests, you'd like your server to provide access via websockets, you need to add the following
 module:
 
+.Maven
+[%collapsible%open]
+====
 [source,xml]
 ----
 <dependency>
@@ -59,6 +91,18 @@ module:
     <artifactId>bootique-jetty-websocket</artifactId>
 </dependency>
 ----
+====
+
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+{
+  implementation: 'io.bootique.jetty:bootique-jetty-websocket'
+}
+----
+====
 
 Somewhat similar to servlets, the application will need to provide its own classes for websocket endpoints (that must
 follow JSR-356 API to be recognized as endpoonts). Then you need to register them using `JettyWebSocketModule` extender:
