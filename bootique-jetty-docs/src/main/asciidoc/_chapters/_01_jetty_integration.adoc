@@ -26,6 +26,9 @@ Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns an
 `bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the
 `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
 
+.Maven
+[%collapsible%open]
+====
 [source,xml]
 ----
 <dependency>
@@ -33,6 +36,18 @@ Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns an
     <artifactId>bootique-jetty</artifactId>
 </dependency>
 ----
+====
+
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+{
+  implementation: 'io.bootique.jetty:bootique-jetty'
+}
+----
+====
 
 Alternatively you may include an <<merics-and-healthchecks,"instrumented" version>> of `bootique-jetty` that will
 enable a number of metrics for your running app. Either the regular or the instrumented Jetty modules provide `--server`
