@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.junit5;
 
+import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.jetty.JettyModule;
@@ -48,6 +49,8 @@ public class JettyTester_DefaultConfigIT {
             .autoLoadModules()
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
             .module(jetty.moduleReplacingConnectors())
+            // for predictable URL assertions
+            .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.connectors[0].host", "127.0.0.1"))
             .createRuntime();
 
     @Test

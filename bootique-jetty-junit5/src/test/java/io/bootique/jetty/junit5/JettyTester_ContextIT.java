@@ -50,6 +50,8 @@ public class JettyTester_ContextIT {
             .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.context", "myapp"))
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
             .module(jetty.moduleReplacingConnectors())
+            // for predictable URL assertions
+            .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.connectors[0].host", "127.0.0.1"))
             .createRuntime();
 
     @Test

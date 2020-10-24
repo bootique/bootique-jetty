@@ -1,3 +1,7 @@
+## 2.0.B1
+
+* #103 Upgrade Jetty to 9.4.33.v20201020
+
 ## 2.0.M1
 
 * #95 Safer default value for ServerFactory.maxThreads
