@@ -36,8 +36,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ResponseMatcher {
 
-    private Response response;
+    private final Response response;
     private String content;
+    private byte[] binContent;
 
     public ResponseMatcher(Response response) {
         this.response = response;
@@ -102,12 +103,12 @@ public class ResponseMatcher {
     }
 
     public ResponseMatcher assertContent(String expectedContent) {
-        assertEquals(expectedContent, getContent());
+        assertEquals(expectedContent, getContentAsString());
         return this;
     }
 
     public ResponseMatcher assertContent(String expectedContent, String message) {
-        assertEquals(expectedContent, getContent(), message);
+        assertEquals(expectedContent, getContentAsString(), message);
         return this;
     }
 
@@ -115,7 +116,7 @@ public class ResponseMatcher {
      * Performs content assertions using a custom assertion checker. E.g. Hamcrest or AssertJ.
      */
     public ResponseMatcher assertContent(Consumer<String> assertionChecker) {
-        assertionChecker.accept(getContent());
+        assertionChecker.accept(getContentAsString());
         return this;
     }
 
@@ -171,13 +172,44 @@ public class ResponseMatcher {
         return this;
     }
 
-    protected String getContent() {
+    public String getContentAsString() {
 
-        // cache content locally in case we need to do multiple assertions
+        if (binContent != null) {
+            throw new IllegalStateException("Response already read as binary");
+        }
+
+        // cache read content, as Response won't allow to read it twice..
         if (content == null) {
             content = response.readEntity(String.class);
         }
 
         return content;
+    }
+
+    public byte[] getContentAsBytes() {
+        if (content != null) {
+            throw new IllegalStateException("Response already read as String");
+        }
+
+        // cache read content, as Response won't allow to read it twice..
+        if (binContent == null) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            try (InputStream in = response.readEntity(InputStream.class)) {
+
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer, 0, buffer.length)) >= 0) {
+                    out.write(buffer, 0, read);
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            this.binContent = out.toByteArray();
+        }
+
+        return binContent;
     }
 }
