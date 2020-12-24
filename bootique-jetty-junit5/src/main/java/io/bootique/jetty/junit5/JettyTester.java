@@ -186,6 +186,6 @@ public class JettyTester {
                 // using "initOnStartup" to ensure the hook is resolved before the test start. Any downsides?
                 .initOnStartup();
 
-        BQCoreModule.extend(binder).addPostConfig("classpath:io/bootique/jetty/junit5/JettyTester.yml");
+        BQCoreModule.extend(binder).addConfigLoader(JettyTesterConfigLoader.class);
     }
 }
