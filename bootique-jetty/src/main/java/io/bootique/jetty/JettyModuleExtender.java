@@ -80,7 +80,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public JettyModuleExtender addListener(EventListener listener) {
-        contributeListeners().add(listener);
+        contributeListeners().addInstance(listener);
         return this;
     }
 
@@ -96,7 +96,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
-        contributeMappedListeners().add(mappedListener);
+        contributeMappedListeners().addInstance(mappedListener);
         return this;
     }
 
@@ -164,7 +164,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public <T extends Servlet> JettyModuleExtender addMappedServlet(MappedServlet<T> mappedServlet) {
-        contributeMappedServlets().add(mappedServlet);
+        contributeMappedServlets().addInstance(mappedServlet);
         return this;
     }
 
@@ -201,7 +201,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     public <T extends Filter> JettyModuleExtender addMappedFilter(MappedFilter<T> mappedFilter) {
-        contributeMappedFilters().add(mappedFilter);
+        contributeMappedFilters().addInstance(mappedFilter);
         return this;
     }
 
@@ -224,7 +224,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @since 1.0.RC1
      */
     public JettyModuleExtender addContextHandlerExtender(ServletContextHandlerExtender extender) {
-        contributeContextHandlerExtenders().add(extender);
+        contributeContextHandlerExtenders().addInstance(extender);
         return this;
     }
 

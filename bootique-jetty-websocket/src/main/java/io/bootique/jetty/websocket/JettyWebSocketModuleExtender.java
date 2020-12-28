@@ -49,7 +49,7 @@ public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketM
      * @return this extender instance
      */
     public JettyWebSocketModuleExtender addEndpoint(Key<?> endpointDiKey) {
-        contributeEndpointKeys().add(new EndpointKeyHolder(endpointDiKey));
+        contributeEndpointKeys().addInstance(new EndpointKeyHolder(endpointDiKey));
         return this;
     }
 
