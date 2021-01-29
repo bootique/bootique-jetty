@@ -47,8 +47,7 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
 
-    // goes inside REQUEST_MDC_LISTENER_ORDER
-    public static final int REQUEST_TIMER_LISTENER_ORDER = JettyModule.REQUEST_MDC_LISTENER_ORDER + 200;
+    public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
 
     public JettyInstrumentedModule() {
         // reusing overridden module prefix

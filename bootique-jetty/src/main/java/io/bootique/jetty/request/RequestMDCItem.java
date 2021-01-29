@@ -18,7 +18,8 @@
  */
 package io.bootique.jetty.request;
 
-import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 /**
  * Handles creating and resetting a single MDC context value.
@@ -27,7 +28,7 @@ import javax.servlet.ServletRequestEvent;
  */
 public interface RequestMDCItem {
 
-    void initMDC(ServletRequestEvent sre);
+    void initMDC(ServletContext sc, ServletRequest request);
 
-    void cleanupMDC(ServletRequestEvent sre);
+    void cleanupMDC(ServletContext sc, ServletRequest request);
 }

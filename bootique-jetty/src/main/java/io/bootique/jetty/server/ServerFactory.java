@@ -27,6 +27,7 @@ import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
+import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
@@ -86,7 +87,8 @@ public class ServerFactory {
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
             Set<MappedListener> listeners,
-            Set<ServletContextHandlerExtender> contextHandlerExtenders) {
+            Set<ServletContextHandlerExtender> contextHandlerExtenders,
+            RequestMDCManager mdcManager) {
 
         String context = resolveContext();
 
@@ -123,6 +125,7 @@ public class ServerFactory {
         } else {
             connectorFactories.forEach(cf -> {
                 NetworkConnector connector = cf.createConnector(server);
+                connector.addBean(mdcManager);
                 server.addConnector(connector);
                 connectorHolders.add(new ConnectorHolder(connector));
             });

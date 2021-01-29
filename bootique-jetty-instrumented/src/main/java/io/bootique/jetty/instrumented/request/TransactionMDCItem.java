@@ -23,15 +23,16 @@ import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 
-import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 
 /**
  * @since 0.25
  */
 public class TransactionMDCItem implements RequestMDCItem {
 
-    private TransactionIdMDC transactionIdMDC;
-    private TransactionIdGenerator idGenerator;
+    private final TransactionIdMDC transactionIdMDC;
+    private final TransactionIdGenerator idGenerator;
 
     public TransactionMDCItem(TransactionIdGenerator idGenerator, TransactionIdMDC transactionIdMDC) {
         this.transactionIdMDC = transactionIdMDC;
@@ -39,13 +40,13 @@ public class TransactionMDCItem implements RequestMDCItem {
     }
 
     @Override
-    public void initMDC(ServletRequestEvent sre) {
+    public void initMDC(ServletContext sc, ServletRequest request) {
         String id = idGenerator.nextId();
         transactionIdMDC.reset(id);
     }
 
     @Override
-    public void cleanupMDC(ServletRequestEvent sre) {
+    public void cleanupMDC(ServletContext sc, ServletRequest request) {
         transactionIdMDC.clear();
     }
 }

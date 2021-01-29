@@ -24,7 +24,6 @@ import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
-import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.request.RequestMDCManager;
@@ -45,10 +44,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 public class JettyModule extends ConfigModule {
-
-    // Request MDC listener must be the outermost listener in any app. It is a good idea to order your other listeners
-    // relative to this one , using higher ordering values.
-    public static final int REQUEST_MDC_LISTENER_ORDER = Integer.MIN_VALUE + 800;
 
     public JettyModule(String configPrefix) {
         super(configPrefix);
@@ -84,9 +79,7 @@ public class JettyModule extends ConfigModule {
         // trigger extension points creation and init defaults
         JettyModule.extend(binder)
                 .initAllExtensions()
-                .addListener(DefaultServletEnvironment.class)
-                .addMappedListener(new TypeLiteral<MappedListener<RequestMDCManager>>() {
-                });
+                .addListener(DefaultServletEnvironment.class);
     }
 
     @Singleton
@@ -118,6 +111,7 @@ public class JettyModule extends ConfigModule {
             Set<EventListener> listeners,
             Set<MappedListener> mappedListeners,
             Set<ServletContextHandlerExtender> contextHandlerExtenders,
+            RequestMDCManager mdcManager,
             BootLogger bootLogger,
             ShutdownManager shutdownManager) {
 
@@ -125,7 +119,8 @@ public class JettyModule extends ConfigModule {
                 allServlets(servlets, mappedServlets),
                 allFilters(filters, mappedFilters),
                 allListeners(listeners, mappedListeners),
-                contextHandlerExtenders);
+                contextHandlerExtenders,
+                mdcManager);
 
         shutdownManager.addShutdownHook(() -> {
             bootLogger.trace(() -> "stopping Jetty...");
@@ -137,9 +132,8 @@ public class JettyModule extends ConfigModule {
 
     @Provides
     @Singleton
-    MappedListener<RequestMDCManager> provideRequestMDCManager(Set<RequestMDCItem> items) {
-        RequestMDCManager mdcManager = new RequestMDCManager(items);
-        return new MappedListener<>(mdcManager, REQUEST_MDC_LISTENER_ORDER);
+    RequestMDCManager provideRequestMDCManager(Set<RequestMDCItem> items) {
+        return new RequestMDCManager(items);
     }
 
     private Set<MappedServlet> allServlets(Set<Servlet> servlets, Set<MappedServlet> mappedServlets) {

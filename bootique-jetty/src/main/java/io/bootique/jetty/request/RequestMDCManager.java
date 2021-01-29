@@ -19,8 +19,9 @@
 
 package io.bootique.jetty.request;
 
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
+import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.Request;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,7 +30,9 @@ import java.util.Set;
  *
  * @since 2.0.B1
  */
-public class RequestMDCManager implements ServletRequestListener {
+// Not using the standard ServletListener, and going for the internal Jetty API to intercept maximally wide scope
+// to provide context to
+public class RequestMDCManager implements HttpChannel.Listener {
 
     private final Set<RequestMDCItem> items;
 
@@ -38,12 +41,12 @@ public class RequestMDCManager implements ServletRequestListener {
     }
 
     @Override
-    public void requestInitialized(ServletRequestEvent sre) {
-        items.forEach(e -> e.initMDC(sre));
+    public void onRequestBegin(Request request) {
+        items.forEach(e -> e.initMDC(request.getContext(), request));
     }
 
     @Override
-    public void requestDestroyed(ServletRequestEvent sre) {
-        items.forEach(e -> e.cleanupMDC(sre));
+    public void onComplete(Request request) {
+        items.forEach(e -> e.cleanupMDC(request.getContext(), request));
     }
 }
