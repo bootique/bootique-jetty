@@ -24,10 +24,11 @@ import io.bootique.di.Binder;
 import io.bootique.di.Injector;
 import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.request.RequestMDCManager;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 
-import java.util.Set;
 import javax.inject.Singleton;
+import java.util.Set;
 
 /**
  * @since 1.0.RC1
@@ -49,14 +50,21 @@ public class JettyWebSocketModule extends ConfigModule {
     JettyWebSocketConfigurator provideWebSocketConfigurator(
             Injector injector,
             WebSocketPolicy policy,
-            Set<EndpointKeyHolder> endpointKeys) {
+            Set<EndpointKeyHolder> endpointKeys,
+            RequestMDCManager mdcManager) {
 
-        return new JettyWebSocketConfigurator(injector, policy, endpointKeys);
+        return new JettyWebSocketConfigurator(injector, policy, endpointKeys, mdcManager);
     }
 
     @Provides
     @Singleton
     WebSocketPolicy provideWebSocketPolicy(ConfigurationFactory configFactory) {
         return config(WebSocketPolicyFactory.class, configFactory).createPolicy();
+    }
+
+    @Provides
+    @Singleton
+    WebSocketMDCManager provideWebSocketMDCManager() {
+        return new WebSocketMDCManager();
     }
 }

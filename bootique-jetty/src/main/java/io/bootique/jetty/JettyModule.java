@@ -39,6 +39,7 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import java.util.EventListener;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -132,7 +133,7 @@ public class JettyModule extends ConfigModule {
 
     @Provides
     @Singleton
-    RequestMDCManager provideRequestMDCManager(Set<RequestMDCItem> items) {
+    RequestMDCManager provideRequestMDCManager(Map<String, RequestMDCItem> items) {
         return new RequestMDCManager(items);
     }
 

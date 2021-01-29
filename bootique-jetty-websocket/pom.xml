@@ -63,9 +63,10 @@
 			<artifactId>bootique-junit5</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Using logback instead of SLF4J for tests to have access to a real MDC implementation -->
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
+			<groupId>io.bootique.logback</groupId>
+			<artifactId>bootique-logback</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

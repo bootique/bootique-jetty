@@ -22,6 +22,7 @@ package io.bootique.jetty.request;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,19 +35,23 @@ import java.util.Set;
 // to provide context to
 public class RequestMDCManager implements HttpChannel.Listener {
 
-    private final Set<RequestMDCItem> items;
+    private final Map<String, RequestMDCItem> items;
 
-    public RequestMDCManager(Set<RequestMDCItem> items) {
+    public RequestMDCManager(Map<String, RequestMDCItem> items) {
         this.items = Objects.requireNonNull(items);
     }
 
     @Override
     public void onRequestBegin(Request request) {
-        items.forEach(e -> e.initMDC(request.getContext(), request));
+        items.values().forEach(e -> e.initMDC(request.getContext(), request));
     }
 
     @Override
     public void onComplete(Request request) {
-        items.forEach(e -> e.cleanupMDC(request.getContext(), request));
+        items.values().forEach(e -> e.cleanupMDC(request.getContext(), request));
+    }
+
+    public Set<String> mdcKeys() {
+        return items.keySet();
     }
 }

@@ -21,10 +21,7 @@ package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
 import io.bootique.ModuleExtender;
-import io.bootique.di.Binder;
-import io.bootique.di.Key;
-import io.bootique.di.SetBuilder;
-import io.bootique.di.TypeLiteral;
+import io.bootique.di.*;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.jetty.servlet.MultiBaseStaticServlet;
@@ -51,7 +48,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     private SetBuilder<MappedFilter> mappedFilters;
     private SetBuilder<MappedServlet> mappedServlets;
     private SetBuilder<MappedListener> mappedListeners;
-    private SetBuilder<RequestMDCItem> mdcItems;
+    private MapBuilder<String, RequestMDCItem> mdcItems;
 
     private SetBuilder<ServletContextHandlerExtender> contextHandlerExtenders;
 
@@ -85,16 +82,16 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     /**
      * @since 2.0.B1
      */
-    public JettyModuleExtender addRequestMDCItem(RequestMDCItem item) {
-        contributeMdcItems().addInstance(item);
+    public JettyModuleExtender addRequestMDCItem(String mdcKey, RequestMDCItem item) {
+        contributeMdcItems().putInstance(mdcKey, item);
         return this;
     }
 
     /**
      * @since 2.0.B1
      */
-    public JettyModuleExtender addRequestMDCItem(Class<? extends RequestMDCItem> itemType) {
-        contributeMdcItems().add(itemType);
+    public JettyModuleExtender addRequestMDCItem(String mdcKey, Class<? extends RequestMDCItem> itemType) {
+        contributeMdcItems().put(mdcKey, itemType);
         return this;
     }
 
@@ -286,8 +283,8 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
         return mappedListeners != null ? mappedListeners : (mappedListeners = newSet(MappedListener.class));
     }
 
-    protected SetBuilder<RequestMDCItem> contributeMdcItems() {
-        return mdcItems != null ? mdcItems : (mdcItems = newSet(RequestMDCItem.class));
+    protected MapBuilder<String, RequestMDCItem> contributeMdcItems() {
+        return mdcItems != null ? mdcItems : (mdcItems = newMap(String.class, RequestMDCItem.class));
     }
 
     protected SetBuilder<ServletContextHandlerExtender> contributeContextHandlerExtenders() {

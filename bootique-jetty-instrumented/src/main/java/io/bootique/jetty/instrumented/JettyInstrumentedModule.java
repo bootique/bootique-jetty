@@ -63,7 +63,7 @@ public class JettyInstrumentedModule extends ConfigModule {
         JettyModule.extend(binder)
                 .addMappedListener(new TypeLiteral<MappedListener<RequestTimer>>() {
                 })
-                .addRequestMDCItem(TransactionMDCItem.class);
+                .addRequestMDCItem(TransactionIdMDC.MDC_KEY, TransactionMDCItem.class);
 
         HealthCheckModule.extend(binder).addHealthCheckGroup(JettyHealthChecks.class);
     }

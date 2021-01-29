@@ -20,6 +20,7 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.di.Injector;
 import io.bootique.di.Key;
+import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
@@ -27,11 +28,16 @@ import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -47,18 +53,21 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketConfigurator.class);
 
-    private Set<EndpointKeyHolder> endpointDiKeys;
-    private Injector injector;
-    private WebSocketPolicy webSocketPolicy;
+    private final RequestMDCManager mdcManager;
+    private final Set<EndpointKeyHolder> endpointDiKeys;
+    private final Injector injector;
+    private final WebSocketPolicy webSocketPolicy;
 
     public JettyWebSocketConfigurator(
             Injector injector,
             WebSocketPolicy webSocketPolicy,
-            Set<EndpointKeyHolder> endpointDiKeys) {
+            Set<EndpointKeyHolder> endpointDiKeys,
+            RequestMDCManager mdcManager) {
 
         this.injector = injector;
         this.endpointDiKeys = endpointDiKeys;
         this.webSocketPolicy = webSocketPolicy;
+        this.mdcManager = mdcManager;
     }
 
     @Override
@@ -167,6 +176,27 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
         @Override
         public <T> T getEndpointInstance(Class<T> endpointClass) {
             return (T) endpointSupplier.get();
+        }
+
+        @Override
+        public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
+
+            // clone MDC data into session
+            Set<String> keys = mdcManager.mdcKeys();
+            if (!keys.isEmpty()) {
+                Map<String, String> mdcData = new HashMap<>(3);
+
+                for (String key : keys) {
+                    String value = MDC.get(key);
+                    if (value != null) {
+                        mdcData.put(key, value);
+                    }
+                }
+
+                if (!mdcData.isEmpty()) {
+                    sec.getUserProperties().put(WebSocketMDCManager.MDC_MAP_KEY, mdcData);
+                }
+            }
         }
     }
 }
