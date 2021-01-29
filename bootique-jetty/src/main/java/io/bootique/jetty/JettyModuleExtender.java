@@ -25,6 +25,7 @@ import io.bootique.di.Binder;
 import io.bootique.di.Key;
 import io.bootique.di.SetBuilder;
 import io.bootique.di.TypeLiteral;
+import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.jetty.servlet.MultiBaseStaticServlet;
 
@@ -43,7 +44,6 @@ import java.util.Set;
  */
 public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
-
     private SetBuilder<Filter> filters;
     private SetBuilder<Servlet> servlets;
     private SetBuilder<EventListener> listeners;
@@ -51,6 +51,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     private SetBuilder<MappedFilter> mappedFilters;
     private SetBuilder<MappedServlet> mappedServlets;
     private SetBuilder<MappedListener> mappedListeners;
+    private SetBuilder<RequestMDCItem> mdcItems;
 
     private SetBuilder<ServletContextHandlerExtender> contextHandlerExtenders;
 
@@ -76,6 +77,24 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
         contributeContextHandlerExtenders();
 
+        contributeMdcItems();
+
+        return this;
+    }
+
+    /**
+     * @since 2.0.B1
+     */
+    public JettyModuleExtender addRequestMDCItem(RequestMDCItem item) {
+        contributeMdcItems().addInstance(item);
+        return this;
+    }
+
+    /**
+     * @since 2.0.B1
+     */
+    public JettyModuleExtender addRequestMDCItem(Class<? extends RequestMDCItem> itemType) {
+        contributeMdcItems().add(itemType);
         return this;
     }
 
@@ -265,6 +284,10 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     protected SetBuilder<MappedListener> contributeMappedListeners() {
         return mappedListeners != null ? mappedListeners : (mappedListeners = newSet(MappedListener.class));
+    }
+
+    protected SetBuilder<RequestMDCItem> contributeMdcItems() {
+        return mdcItems != null ? mdcItems : (mdcItems = newSet(RequestMDCItem.class));
     }
 
     protected SetBuilder<ServletContextHandlerExtender> contributeContextHandlerExtenders() {

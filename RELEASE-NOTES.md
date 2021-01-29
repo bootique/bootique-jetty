@@ -1,6 +1,7 @@
 ## 2.0.B1
 
 * #103 Upgrade Jetty to 9.4.33.v20201020
+* #104 Centralized MDC management service
 
 ## 2.0.M1
 
