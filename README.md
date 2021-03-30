@@ -17,7 +17,7 @@
    under the License.
   -->
 
-[![Build Status](https://travis-ci.org/bootique/bootique-jetty.svg)](https://travis-ci.org/bootique/bootique-jetty)
+[![build test deploy](https://github.com/bootique/bootique-jetty/actions/workflows/maven.yml/badge.svg)](https://github.com/bootique/bootique-jetty/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.bootique.jetty/bootique-jetty.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.jetty/bootique-jetty/)
 
 
