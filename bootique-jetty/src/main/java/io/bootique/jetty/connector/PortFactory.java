@@ -18,6 +18,8 @@
  */
 package io.bootique.jetty.connector;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Encapsulates either an explicit or a dynamic network port.
  *
@@ -45,6 +47,11 @@ public class PortFactory {
      */
     public PortFactory(String portString) {
         this.portString = portString;
+    }
+
+    @JsonValue
+    public String getPortString() {
+        return portString;
     }
 
     public int resolve(String host) {
