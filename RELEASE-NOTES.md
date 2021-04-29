@@ -4,6 +4,7 @@
 * #104 Centralized MDC management service
 * #105 WebSocket: API to use initiating request MDC
 * #106 Upgrade Jetty to 9.4.36.v20210114
+* #107 Upgrade Jetty to 9.4.40.v20210413
 
 ## 2.0.M1
 
