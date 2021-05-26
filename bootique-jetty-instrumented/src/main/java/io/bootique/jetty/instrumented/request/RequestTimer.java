@@ -29,8 +29,6 @@ import java.util.Objects;
 
 /**
  * Provides timing metrics for request execution, optionally logging of request start and finish marks.
- *
- * @since 0.15
  */
 public class RequestTimer implements ServletRequestListener {
 

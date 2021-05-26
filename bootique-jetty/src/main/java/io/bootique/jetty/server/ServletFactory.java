@@ -31,9 +31,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * @since 0.13
- */
 @BQConfig
 public class ServletFactory extends WebArtifactFactory {
 

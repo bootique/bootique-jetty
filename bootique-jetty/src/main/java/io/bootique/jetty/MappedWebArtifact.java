@@ -22,9 +22,6 @@ package io.bootique.jetty;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @since 0.15
- */
 public abstract class MappedWebArtifact<T> {
 
 	private T artifact;
@@ -52,7 +49,6 @@ public abstract class MappedWebArtifact<T> {
 	}
 
 	/**
-	 * @since 0.13
 	 * @return an optional servlet name.
 	 */
 	public String getName() {

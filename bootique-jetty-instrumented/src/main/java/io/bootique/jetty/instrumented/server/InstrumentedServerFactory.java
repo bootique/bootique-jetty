@@ -30,9 +30,6 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * @since 0.11
- */
 @BQConfig
 public class InstrumentedServerFactory extends ServerFactory {
 
@@ -52,7 +49,6 @@ public class InstrumentedServerFactory extends ServerFactory {
 
     /**
      * @return a new configured {@link JettyHealthChecks}.
-     * @since 0.25
      */
     public JettyHealthChecks createHealthCheckGroup() {
         return getHealth().createHealthCheckGroup(getMetricRegistry());
@@ -64,7 +60,6 @@ public class InstrumentedServerFactory extends ServerFactory {
 
     /**
      * @param health a factory for Jetty-related health checks.
-     * @since 0.25
      */
     @BQConfigProperty
     public void setHealth(JettyHealthChecksFactory health) {

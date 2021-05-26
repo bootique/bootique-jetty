@@ -24,9 +24,7 @@ import io.bootique.value.Bytes;
 import io.bootique.value.Duration;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 
-/**
- * @since 1.0.RC1
- */
+
 @BQConfig
 public class WebSocketPolicyFactory {
 

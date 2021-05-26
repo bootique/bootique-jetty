@@ -29,8 +29,6 @@ import java.util.Optional;
  * <p>
  * Take extra care to avoid inadvertently caching returned objects as they
  * should not be retained once they go out of scope of Jetty threads.
- * 
- * @since 0.12
  */
 public interface ServletEnvironment {
 

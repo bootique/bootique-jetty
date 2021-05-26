@@ -25,8 +25,6 @@ import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 /**
  * Extending Jetty request logger without adding any functionality, simply to separate logging configuration between
  * Jetty and Bootique.
- *
- * @since 0.18
  */
 public class RequestLogger extends CustomRequestLog {
 

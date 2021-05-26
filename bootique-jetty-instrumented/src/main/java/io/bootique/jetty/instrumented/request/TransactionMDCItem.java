@@ -26,9 +26,6 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 
-/**
- * @since 0.25
- */
 public class TransactionMDCItem implements RequestMDCItem {
 
     private final TransactionIdMDC transactionIdMDC;

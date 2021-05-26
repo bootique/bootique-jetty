@@ -27,9 +27,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @since 1.0.RC1
- */
+
 public class JettyCorsModuleProvider implements BQModuleProvider {
 
     @Override

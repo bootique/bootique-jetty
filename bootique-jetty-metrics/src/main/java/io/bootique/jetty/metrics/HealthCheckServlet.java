@@ -34,8 +34,6 @@ import java.util.Map;
 /**
  * A servlet that executes app healthchecks and returns text status document. By default mapped as "/health" in the
  * web application context.
- *
- * @since 0.20
  */
 // inspired com.yammer.metrics.servlet.HealthCheckServlet, only better integrated to Bootique and using our own format
 // TODO: config-driven verbosity levels .. perhaps use nagios plugin format?

@@ -19,20 +19,17 @@
 
 package io.bootique.jetty.metrics;
 
-import io.bootique.di.Binder;
 import io.bootique.di.BQModule;
+import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.metrics.health.HealthCheckRegistry;
 
-import java.util.Collections;
 import javax.inject.Singleton;
+import java.util.Collections;
 
-/**
- * @since 0.20
- */
 public class JettyMetricsModule implements BQModule {
 
     @Override

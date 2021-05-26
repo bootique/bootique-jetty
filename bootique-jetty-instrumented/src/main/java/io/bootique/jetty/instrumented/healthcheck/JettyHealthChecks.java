@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * A container of Jetty-specific health checks.
- *
- * @since 0.25
  */
 public class JettyHealthChecks implements HealthCheckGroup {
 

@@ -28,9 +28,6 @@ import java.util.Collection;
 
 import static java.util.Arrays.asList;
 
-/**
- * @since 0.8
- */
 public class JettyMetricsModuleProvider implements BQModuleProvider {
 
     @Override

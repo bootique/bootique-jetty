@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @since 0.11
- */
 public class MappedFilter<T extends Filter> extends MappedWebArtifact<T> {
 
     private int order;
@@ -42,7 +39,6 @@ public class MappedFilter<T extends Filter> extends MappedWebArtifact<T> {
      * @param order       an order of the filter among all the filters in a given app.
      *                    If two filters match the same request, filter with lower
      *                    ordering will be an outer filter and will be called first.
-     * @since 0.13
      */
     public MappedFilter(T filter, Set<String> urlPatterns, String name, int order) {
         this(filter, urlPatterns, name, Collections.emptyMap(), order);
@@ -56,7 +52,6 @@ public class MappedFilter<T extends Filter> extends MappedWebArtifact<T> {
      * @param order       an order of the filter among all the filters in a given app.
      *                    If two filters match the same request, filter with lower
      *                    ordering will be an outer filter and will be called first.
-     * @since 0.13
      */
     public MappedFilter(T filter, Set<String> urlPatterns, String name, Map<String, String> params, int order) {
         super(filter, urlPatterns, name, params);

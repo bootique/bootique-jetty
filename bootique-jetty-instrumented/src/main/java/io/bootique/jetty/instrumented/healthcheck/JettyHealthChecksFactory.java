@@ -37,9 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * @since 0.25
- */
 @BQConfig("Configures Jetty-related health checks.")
 public class JettyHealthChecksFactory {
 

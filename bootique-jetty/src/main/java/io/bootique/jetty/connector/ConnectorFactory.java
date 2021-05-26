@@ -33,9 +33,6 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 
 import java.util.Objects;
 
-/**
- * @since 0.18
- */
 @BQConfig
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = HttpConnectorFactory.class)
 public abstract class ConnectorFactory implements PolymorphicConfiguration {
@@ -137,7 +134,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @return configured host value.
-     * @since 0.18
      */
     public String getHost() {
         return host;
@@ -148,7 +144,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * By default connector binds to all interfaces.
      *
      * @param host the network interface this connector binds to, either as IP or hostname.
-     * @since 0.18
      */
     @BQConfigProperty
     public void setHost(String host) {
@@ -157,7 +152,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @return max size of Jetty request headers (and GET URLs).
-     * @since 0.15
      */
     public int getRequestHeaderSize() {
         return requestHeaderSize;
@@ -168,7 +162,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * default it is 8K.
      *
      * @param requestHeaderSize request header size value in bytes.
-     * @since 0.15
      */
     @BQConfigProperty
     public void setRequestHeaderSize(int requestHeaderSize) {
@@ -177,7 +170,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @return max size of Jetty response headers.
-     * @since 0.15
      */
     public int getResponseHeaderSize() {
         return responseHeaderSize;
@@ -187,7 +179,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
      * Sets a max size in bytes of Jetty response headers. By default it is 8K.
      *
      * @param responseHeaderSize response header size value in bytes.
-     * @since 0.15
      */
     @BQConfigProperty
     public void setResponseHeaderSize(int responseHeaderSize) {
@@ -196,7 +187,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @return a configured number of acceptor threads.
-     * @since 0.25
      */
     public int getAcceptorThreads() {
         return acceptorThreads;
@@ -204,7 +194,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @param acceptorThreads A desired number of acceptor threads.
-     * @since 0.25
      */
     @BQConfigProperty("A desired number of acceptor threads. If not provided, Jetty will calculate an optimal value based " +
             "on the number of available processor cores.")
@@ -214,7 +203,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @return a configured number of selector threads.
-     * @since 0.25
      */
     public int getSelectorThreads() {
         return selectorThreads;
@@ -222,7 +210,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @param selectorThreads A desired number of selector threads.
-     * @since 0.25
      */
     @BQConfigProperty("A desired number of selector threads. If not provided, Jetty will calculate an optimal" +
             " value based on the number of available processor cores.")
@@ -232,7 +219,6 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
     /**
      * @param idleTimeout
-     * @since 1.0.RC1
      */
     @BQConfigProperty
     public void setIdleTimeout(Duration idleTimeout) {

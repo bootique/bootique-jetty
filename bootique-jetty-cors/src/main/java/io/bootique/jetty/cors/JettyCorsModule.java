@@ -19,8 +19,6 @@
 
 package io.bootique.jetty.cors;
 
-import javax.inject.Singleton;
-
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
@@ -30,9 +28,8 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
-/**
- * @since 1.0.RC1
- */
+import javax.inject.Singleton;
+
 public class JettyCorsModule extends ConfigModule {
 
     @Override

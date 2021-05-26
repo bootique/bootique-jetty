@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @since 0.10
- */
 public class MappedServlet<T extends  Servlet> extends MappedWebArtifact<T> {
 
 	public MappedServlet(T servlet, Set<String> urlPatterns) {
@@ -34,7 +31,6 @@ public class MappedServlet<T extends  Servlet> extends MappedWebArtifact<T> {
 	}
 
 	/**
-	 * @since 0.13
 	 * @param servlet
 	 *            underlying servlet instance.
 	 * @param urlPatterns
@@ -47,7 +43,6 @@ public class MappedServlet<T extends  Servlet> extends MappedWebArtifact<T> {
 	}
 
 	/**
-	 * @since 0.15
 	 * @param servlet
 	 *            underlying servlet instance.
 	 * @param urlPatterns

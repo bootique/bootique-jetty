@@ -30,9 +30,7 @@ import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import javax.inject.Singleton;
 import java.util.Set;
 
-/**
- * @since 1.0.RC1
- */
+
 public class JettyWebSocketModule extends ConfigModule {
 
     public static JettyWebSocketModuleExtender extend(Binder binder) {

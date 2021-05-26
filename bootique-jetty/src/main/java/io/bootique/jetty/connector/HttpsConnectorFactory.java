@@ -35,9 +35,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import java.net.URL;
 import java.util.Objects;
 
-/**
- * @since 0.18
- */
 @BQConfig
 @JsonTypeName("https")
 public class HttpsConnectorFactory extends ConnectorFactory {

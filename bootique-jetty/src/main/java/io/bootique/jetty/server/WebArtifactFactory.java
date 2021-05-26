@@ -25,9 +25,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @since 0.15
- */
 public abstract class WebArtifactFactory {
 
 	private Map<String, String> params;

@@ -277,7 +277,6 @@ public class ServerFactory {
 
     /**
      * @return a List of server connectors, each listening on its own unique port.
-     * @since 0.18
      */
     public List<ConnectorFactory> getConnectors() {
         return connectors;
@@ -287,7 +286,6 @@ public class ServerFactory {
      * Sets a list of connector factories for this server. Each connectors would listen on its own unique port.
      *
      * @param connectors a list of preconfigured connector factories.
-     * @since 0.18
      */
     @BQConfigProperty("A list of objects specifying properties of the server network connectors.")
     public void setConnectors(List<ConnectorFactory> connectors) {
@@ -306,7 +304,6 @@ public class ServerFactory {
 
     /**
      * @return web application context path.
-     * @since 0.15
      */
     public String getContext() {
         return context;
@@ -330,9 +327,7 @@ public class ServerFactory {
     }
 
     /**
-     * @return a period in milliseconds specifying how long it takes until an
-     * idle thread is terminated.
-     * @since 0.15
+     * @return a period in milliseconds specifying how long it takes until an idle thread is terminated.
      */
     public int getIdleThreadTimeout() {
         return idleThreadTimeout;
@@ -345,7 +340,6 @@ public class ServerFactory {
 
     /**
      * @return a maximum number of requests to queue if the thread pool is busy.
-     * @since 0.15
      */
     public int getMaxQueuedRequests() {
         return maxQueuedRequests;
@@ -359,7 +353,6 @@ public class ServerFactory {
 
     /**
      * @return a maximum number of request processing threads in the pool.
-     * @since 0.15
      */
     public int getMaxThreads() {
         return maxThreads;
@@ -372,7 +365,6 @@ public class ServerFactory {
 
     /**
      * @return an initial number of request processing threads in the pool.
-     * @since 0.15
      */
     public int getMinThreads() {
         return minThreads;
@@ -384,9 +376,7 @@ public class ServerFactory {
     }
 
     /**
-     * @return a map of arbitrary key/value parameters that are used as "init"
-     * parameters of the ServletContext.
-     * @since 0.15
+     * @return a map of arbitrary key/value parameters that are used as "init" parameters of the ServletContext.
      */
     public Map<String, String> getParams() {
         return params != null ? Collections.unmodifiableMap(params) : Collections.emptyMap();
@@ -394,7 +384,6 @@ public class ServerFactory {
 
     /**
      * @param params a map of context init parameters.
-     * @since 0.13
      */
     @BQConfigProperty("A map of application-specific key/value parameters that are used as \"init\" parameters of the " +
             "ServletContext.")
@@ -405,7 +394,6 @@ public class ServerFactory {
     /**
      * @return a boolean specifying whether servlet sessions should be supported
      * by Jetty.
-     * @since 0.15
      */
     public boolean isSessions() {
         return sessions;
@@ -418,7 +406,6 @@ public class ServerFactory {
 
     /**
      * @return a base location for resources of the Jetty context.
-     * @since 0.15
      */
     public FolderResourceFactory getStaticResourceBase() {
         return staticResourceBase;
@@ -441,7 +428,6 @@ public class ServerFactory {
      * @see <a href=
      * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
      * DefaultServlet</a>.
-     * @since 0.13
      */
     @BQConfigProperty("Defines a base location for resources of the Jetty context. It can be a filesystem path, a URL " +
             "or a special \"classpath:\" URL (giving the ability to bundle resources in the app, not unlike a JavaEE " +
@@ -454,7 +440,6 @@ public class ServerFactory {
 
     /**
      * @return whether content compression is supported.
-     * @since 0.15
      */
     public boolean isCompression() {
         return compression;
@@ -466,7 +451,6 @@ public class ServerFactory {
      * "Accept-Encoding:" header. Default is true.
      *
      * @param compression whether gzip compression should be supported.
-     * @since 0.15
      */
     @BQConfigProperty("A boolean specifying whether gzip compression should be supported. When enabled " +
             "responses will be compressed if a client indicates it supports compression via " +
@@ -479,7 +463,6 @@ public class ServerFactory {
      * Compact URLs with multiple '/'s with a single '/'.
      *
      * @param compactPath Compact URLs with multiple '/'s with a single '/'. Default value is 'false'
-     * @since 1.0.RC1
      */
     @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
     public void setCompactPath(boolean compactPath) {
@@ -490,7 +473,6 @@ public class ServerFactory {
      * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).
      *
      * @param maxFormContentSize maximum size of submitted forms in bytes. Default is 200000 (~195K)
-     * @since 0.22
      */
     @BQConfigProperty("Maximum size of submitted forms in bytes. Default is 200000 (~195K).")
     public void setMaxFormContentSize(int maxFormContentSize) {
@@ -501,7 +483,6 @@ public class ServerFactory {
      * Sets the maximum number of form fields. Default is 1000.
      *
      * @param maxFormKeys maximum number of form fields. Default is 1000.
-     * @since 0.22
      */
     @BQConfigProperty("Maximum number of form fields. Default is 1000.")
     public void setMaxFormKeys(int maxFormKeys) {
@@ -510,7 +491,6 @@ public class ServerFactory {
 
     /**
      * @return a potentially null map of error pages configuration.
-     * @since 0.24
      */
     public Map<Integer, String> getErrorPages() {
         return errorPages;
@@ -520,7 +500,6 @@ public class ServerFactory {
      * Sets mappings between HTTP status codes and corresponding pages which will be returned to the user instead.
      *
      * @param errorPages map where keys are HTTP status codes and values are page URLs which will be used to handle them
-     * @since 0.24
      */
     @BQConfigProperty("A map specifying a mapping between HTTP status codes and pages (URLs) which will be used as their handlers. If no mapping is specified then standard error handler is used.")
     public void setErrorPages(Map<Integer, String> errorPages) {

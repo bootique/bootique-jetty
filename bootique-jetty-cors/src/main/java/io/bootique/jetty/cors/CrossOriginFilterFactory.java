@@ -28,9 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @since 1.0.RC1
- */
 @BQConfig
 public class CrossOriginFilterFactory {
 

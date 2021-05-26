@@ -36,7 +36,6 @@ public class JettyModuleProvider implements BQModuleProvider {
 	}
 
 	/**
-	 * @since 0.19
 	 * @return a single entry map with {@link ServerFactory}.
 	 */
 	@Override

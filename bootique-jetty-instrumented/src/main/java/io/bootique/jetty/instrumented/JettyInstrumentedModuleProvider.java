@@ -31,9 +31,6 @@ import java.util.Collections;
 
 import static java.util.Arrays.asList;
 
-/**
- * @since 0.11
- */
 public class JettyInstrumentedModuleProvider implements BQModuleProvider {
 
     @Override

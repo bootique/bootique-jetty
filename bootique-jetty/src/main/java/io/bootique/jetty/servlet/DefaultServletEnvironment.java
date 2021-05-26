@@ -27,9 +27,6 @@ import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
-/**
- * @since 0.12
- */
 public class DefaultServletEnvironment
 		implements ServletContextListener, ServletRequestListener, ServletEnvironment {
 

@@ -40,9 +40,6 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
 
 import javax.inject.Singleton;
 
-/**
- * @since 0.11
- */
 public class JettyInstrumentedModule extends ConfigModule {
 
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);

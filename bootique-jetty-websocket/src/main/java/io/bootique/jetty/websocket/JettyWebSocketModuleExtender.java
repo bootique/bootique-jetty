@@ -23,9 +23,7 @@ import io.bootique.di.Binder;
 import io.bootique.di.Key;
 import io.bootique.di.SetBuilder;
 
-/**
- * @since 1.0.RC1
- */
+
 public class JettyWebSocketModuleExtender extends ModuleExtender<JettyWebSocketModuleExtender> {
 
     // see JettyWebSocketContextHandlerExtender for the explanation why endpoints are collected as Keys.

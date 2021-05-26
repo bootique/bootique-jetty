@@ -59,7 +59,6 @@ public class JettyModule extends ConfigModule {
      *
      * @param binder DI binder passed to the Module that invokes this method.
      * @return an instance of {@link JettyModuleExtender} that can be used to load Jetty custom extensions.
-     * @since 0.20
      */
     public static JettyModuleExtender extend(Binder binder) {
         return new JettyModuleExtender(binder);

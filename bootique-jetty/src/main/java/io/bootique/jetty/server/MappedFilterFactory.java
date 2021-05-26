@@ -32,10 +32,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 
 /**
- * A factory that analyzes Filter annotations to create a {@link MappedFilter}
- * out of a {@link Filter}.
- * 
- * @since 0.14
+ * A factory that analyzes Filter annotations to create a {@link MappedFilter} out of a {@link Filter}.
  */
 public class MappedFilterFactory {
 

@@ -22,9 +22,7 @@ package io.bootique.jetty.websocket;
 import io.bootique.di.Key;
 
 /**
- * A wrapper for a Guice DI {@link Key} to make the Key itself injectable.
- *
- * @since 1.0.RC1
+ * A wrapper for a Bootique DI {@link Key} to make the Key itself injectable.
  */
 public class EndpointKeyHolder {
 

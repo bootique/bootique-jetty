@@ -46,8 +46,6 @@ import static java.util.Arrays.asList;
 /**
  * Creates and configures JSR-356 {@link javax.websocket.server.ServerContainer}, linking Bootique and Jetty environments,
  * providing the ability to look up Endpoints via DI.
- *
- * @since 1.0.RC1
  */
 public class JettyWebSocketConfigurator implements ServletContextHandlerExtender {
 

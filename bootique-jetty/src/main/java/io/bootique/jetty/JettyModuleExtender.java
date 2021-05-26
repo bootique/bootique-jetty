@@ -34,10 +34,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Provides API to contribute custom extensions to {@link JettyModule}. This class is a syntactic sugar for Guice
- * MapBinder and Multibinder.
- *
- * @since 0.20
+ * Provides API to contribute custom extensions to {@link JettyModule}. This class is a syntactic sugar for Bootique
+ * MapBuilder and SetBuilder.
  */
 public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
@@ -109,7 +107,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @param mappedListener
      * @param <T>
      * @return
-     * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
         contributeMappedListeners().addInstance(mappedListener);
@@ -120,7 +117,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @param mappedListenerKey
      * @param <T>
      * @return
-     * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(Key<MappedListener<T>> mappedListenerKey) {
         contributeMappedListeners().add(mappedListenerKey);
@@ -131,7 +127,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @param mappedListenerType
      * @param <T>
      * @return this extender instance
-     * @since 0.25
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(TypeLiteral<MappedListener<T>> mappedListenerType) {
         return addMappedListener(Key.get(mappedListenerType));
@@ -237,7 +232,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      *
      * @param extender an "extender" object that can customize {@link org.eclipse.jetty.servlet.ServletContextHandler}.
      * @return this extender instance
-     * @since 1.0.RC1
      */
     public JettyModuleExtender addContextHandlerExtender(ServletContextHandlerExtender extender) {
         contributeContextHandlerExtenders().addInstance(extender);
@@ -252,7 +246,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
      * @param type a class of an "extender" object that can customize
      *             {@link org.eclipse.jetty.servlet.ServletContextHandler}.
      * @return this extender instance
-     * @since 1.0.RC1
      */
     public JettyModuleExtender addContextHandlerExtender(Class<? extends ServletContextHandlerExtender> type) {
         contributeContextHandlerExtenders().add(type);

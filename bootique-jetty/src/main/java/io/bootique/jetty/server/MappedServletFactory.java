@@ -19,24 +19,20 @@
 
 package io.bootique.jetty.server;
 
-import static java.util.Arrays.asList;
+import io.bootique.jetty.MappedServlet;
 
+import javax.servlet.Servlet;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.Servlet;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
-
-import io.bootique.jetty.MappedServlet;
+import static java.util.Arrays.asList;
 
 /**
- * A factory that analyzes Servlet annotations to create a {@link MappedServlet}
- * out of Servlet.
- * 
- * @since 0.14
+ * A factory that analyzes Servlet annotations to create a {@link MappedServlet} out of Servlet.
  */
 public class MappedServletFactory {
 
