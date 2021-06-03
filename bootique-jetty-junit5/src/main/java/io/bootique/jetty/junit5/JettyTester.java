@@ -20,16 +20,19 @@ package io.bootique.jetty.junit5;
 
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
+import io.bootique.command.CommandDecorator;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
+import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
 import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
-import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHookProvider;
+import io.bootique.jetty.junit5.tester.JettyTesterInitCommand;
 import io.bootique.jetty.server.ServerHolder;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A helper class that is declared in a unit test, manages test Jetty configuration and provides the test with access
@@ -40,11 +43,13 @@ import javax.ws.rs.core.Response;
  */
 public class JettyTester {
 
-    private JettyTesterBootiqueHook bootiqueHook;
+    private final JettyTesterBootiqueHook bootiqueHook;
+    private final AtomicBoolean attachedToRuntime;
     private String serverUrl;
 
     protected JettyTester() {
         this.bootiqueHook = new JettyTesterBootiqueHook();
+        this.attachedToRuntime = new AtomicBoolean(false);
     }
 
     /**
@@ -179,13 +184,19 @@ public class JettyTester {
     }
 
     protected void configure(Binder binder) {
-        binder.bind(JettyTesterBootiqueHook.class)
-                // wrapping the hook in provider to be able to run the checks for when this tester is erroneously
-                // used for multiple runtimes
-                .toProviderInstance(new JettyTesterBootiqueHookProvider(bootiqueHook))
-                // using "initOnStartup" to ensure the hook is resolved before the test start. Any downsides?
-                .initOnStartup();
 
-        BQCoreModule.extend(binder).addConfigLoader(JettyTesterConfigLoader.class);
+        if (!attachedToRuntime.compareAndSet(false, true)) {
+            throw new IllegalStateException("JettyTester is already in connected to another BQRuntime. " +
+                    "To fix this error use one JettyTester per BQRuntime.");
+        }
+
+        CommandDecorator decorator = CommandDecorator.beforeRun(JettyTesterInitCommand.class);
+        binder.bind(JettyTesterBootiqueHook.class).toInstance(bootiqueHook);
+
+        BQCoreModule.extend(binder)
+                .addConfigLoader(JettyTesterConfigLoader.class)
+                .addCommand(JettyTesterInitCommand.class)
+                // just before Jetty starts, grab Jetty config and pass it to the tester
+                .decorateCommand(ServerCommand.class, decorator);
     }
 }

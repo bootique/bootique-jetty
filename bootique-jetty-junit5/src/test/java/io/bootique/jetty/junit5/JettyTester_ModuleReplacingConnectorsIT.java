@@ -19,13 +19,13 @@
 package io.bootique.jetty.junit5;
 
 import io.bootique.BQRuntime;
-import io.bootique.di.DIRuntimeException;
 import io.bootique.jetty.server.ServerHolder;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,8 +40,17 @@ public class JettyTester_ModuleReplacingConnectorsIT {
     @DisplayName("Tester should work with BQTestFactory-produced runtimes")
     public void testWithBQTestFactory() {
         JettyTester tester = JettyTester.create();
-        BQRuntime runtime = testFactory.app().autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
+        BQRuntime runtime = testFactory.app("--server").autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
+        runtime.run();
         assertEquals(tester.getPort(), runtime.getInstance(ServerHolder.class).getConnector().getPort());
+    }
+
+    @Test
+    @DisplayName("Port/URL is not known before the runtime is started")
+    public void testRuntimeNotStarted() {
+        JettyTester tester = JettyTester.create();
+        testFactory.app("--server").autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
+        assertThrows(AssertionFailedError.class, () -> tester.getPort());
     }
 
     @Test
@@ -50,7 +59,7 @@ public class JettyTester_ModuleReplacingConnectorsIT {
         JettyTester tester = JettyTester.create();
         testFactory.app().autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
 
-        assertThrows(DIRuntimeException.class, () ->
+        assertThrows(IllegalStateException.class, () ->
                 testFactory.app().autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime());
     }
 }
