@@ -33,22 +33,13 @@ public class JettyTesterBootiqueHook {
     private ConnectorHolder connectorHolder;
 
     protected void init(String context, ConnectorHolder connectorHolder) {
-        checkUnused(connectorHolder);
-
         this.context = Objects.requireNonNull(context);
         this.connectorHolder = Objects.requireNonNull(connectorHolder);
     }
 
-    private void checkUnused(ConnectorHolder connectorHolder) {
-        if (this.connectorHolder != null && this.connectorHolder != connectorHolder) {
-            throw new IllegalStateException("ConnectorHolder is already initialized. " +
-                    "Likely this JettyTester is already in connected to another BQRuntime. " +
-                    "To fix this error use one JettyTester per BQRuntime.");
-        }
-    }
-
     public ConnectorHolder getConnectorHolder() {
-        assertNotNull(connectorHolder, "ConnectorHolder is not initialized. Not connected to Bootique runtime?");
+        assertNotNull(connectorHolder, "ConnectorHolder is not initialized. Reason: either JettyTester is not connected " +
+                "to Bootique runtime or the runtime is not started yet.");
         return connectorHolder;
     }
 
