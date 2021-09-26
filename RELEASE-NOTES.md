@@ -1,6 +1,7 @@
 ## 2.0.RC1
 
 * #109 JettyTester should not cause eager initalization
+* #110 Upgrade Jetty from 9.4.40.v20210413 to 9.4.43.v20210629
 
 ## 2.0.B1
 
