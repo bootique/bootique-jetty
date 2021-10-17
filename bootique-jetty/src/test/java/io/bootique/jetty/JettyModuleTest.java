@@ -34,12 +34,6 @@ public class JettyModuleTest {
 		assertEquals("jetty", getConfigPrefix(m));
 	}
 
-	@Test
-	public void testPrefixConstructor() {
-		JettyModule m = new JettyModule("xyz");
-		assertEquals("xyz", getConfigPrefix(m));
-	}
-
 	private static String getConfigPrefix(JettyModule module) {
 
 		try {
