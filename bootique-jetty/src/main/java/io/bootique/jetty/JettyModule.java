@@ -46,13 +46,6 @@ import java.util.logging.Level;
 
 public class JettyModule extends ConfigModule {
 
-    public JettyModule(String configPrefix) {
-        super(configPrefix);
-    }
-
-    public JettyModule() {
-    }
-
     /**
      * Returns an instance of {@link JettyModuleExtender} used by downstream modules to load custom extensions of
      * services declared in the JettyModule. Should be invoked from a downstream Module's "configure" method.

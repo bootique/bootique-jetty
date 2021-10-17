@@ -46,13 +46,10 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
 
-    public JettyInstrumentedModule() {
+    @Override
+    protected String defaultConfigPrefix() {
         // reusing overridden module prefix
-        super("jetty");
-    }
-
-    public JettyInstrumentedModule(String configPrefix) {
-        super(configPrefix);
+        return "jetty";
     }
 
     @Override
