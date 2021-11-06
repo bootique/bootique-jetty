@@ -91,26 +91,6 @@
                 <artifactId>javax.websocket-api</artifactId>
                 <version>${websocket.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty.websocket</groupId>
-                <artifactId>javax-websocket-server-impl</artifactId>
-                <version>${jetty9.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${jetty9.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlet</artifactId>
-                <version>${jetty9.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlets</artifactId>
-                <version>${jetty9.version}</version>
-            </dependency>
             <!-- Transitive dependency of jersey-client -->
             <dependency>
                 <groupId>javax.activation</groupId>

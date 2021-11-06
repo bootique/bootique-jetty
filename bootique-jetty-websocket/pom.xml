@@ -33,6 +33,16 @@
 	<name>bootique-jetty-websocket: WebSockets (JSR-356) Jetty-based integration for Bootique apps</name>
 	<description>Provides WebSockets (JSR-356) Jetty-based integration for Bootique apps.</description>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-server-impl</artifactId>
+				<version>${jetty9.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<!-- Compile dependencies -->
 		<dependency>
