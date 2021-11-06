@@ -47,7 +47,8 @@ public abstract class JettyWebSocketTestBase {
     }
 
     protected Session createClientSession(Class<?> clientSocketType, String path) throws IOException, DeploymentException {
-        return client.connectToServer(clientSocketType, URI.create("ws://127.0.0.1:" + jetty.getPort() + "/" + path));
+        URI uri = URI.create("ws://127.0.0.1:" + jetty.getPort() + "/" + path);
+        return client.connectToServer(clientSocketType, uri);
     }
 
     @BeforeEach

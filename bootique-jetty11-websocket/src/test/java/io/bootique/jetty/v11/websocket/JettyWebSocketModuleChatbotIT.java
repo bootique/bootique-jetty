@@ -41,7 +41,7 @@ public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
                 .run();
 
         try (Session s1 = createClientSession(ChatClient1.class, "chat")) {
-            try (Session s2 = createClientSession(ChatClient2.class, "chat");) {
+            try (Session s2 = createClientSession(ChatClient2.class, "chat")) {
                 s1.getBasicRemote().sendText("from s1");
 
                 ChatClient2.messageLatch.await();
