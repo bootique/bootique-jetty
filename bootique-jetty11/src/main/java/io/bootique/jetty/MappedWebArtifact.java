@@ -24,10 +24,10 @@ import java.util.Set;
 
 public abstract class MappedWebArtifact<T> {
 
-	private T artifact;
-	private Set<String> urlPatterns;
-	private String name;
-	private Map<String, String> params;
+	private final T artifact;
+	private final Set<String> urlPatterns;
+	private final String name;
+	private final Map<String, String> params;
 
 	public MappedWebArtifact(T artifact, Set<String> urlPatterns, String name, Map<String, String> params) {
 		this.artifact = artifact;

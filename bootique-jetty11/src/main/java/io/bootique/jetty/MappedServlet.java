@@ -19,12 +19,13 @@
 
 package io.bootique.jetty;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-public class MappedServlet<T extends  Servlet> extends MappedWebArtifact<T> {
+public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
 	public MappedServlet(T servlet, Set<String> urlPatterns) {
 		this(servlet, urlPatterns, null);

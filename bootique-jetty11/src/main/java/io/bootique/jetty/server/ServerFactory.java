@@ -132,7 +132,7 @@ public class ServerFactory {
         }
 
         ServerHolder serverHolder = new ServerHolder(server, context, connectorHolders);
-        server.addLifeCycleListener(new ServerLifecycleLogger(serverHolder));
+        server.addEventListener(new ServerLifecycleLogger(serverHolder));
         return serverHolder;
     }
 
@@ -154,6 +154,8 @@ public class ServerFactory {
 
         ServletContextHandler handler = new ServletContextHandler(options);
         handler.setContextPath(context);
+
+        // TODO: deprecated. Recommended to use CompactPathRule with RewriteHandler instead
         handler.setCompactPath(compactPath);
         if (params != null) {
             params.forEach(handler::setInitParameter);
@@ -164,7 +166,7 @@ public class ServerFactory {
         }
 
         if (compression) {
-            handler.setGzipHandler(createGzipHandler());
+            handler.insertHandler(createGzipHandler());
         }
 
         if (errorPages != null) {
@@ -181,9 +183,7 @@ public class ServerFactory {
     }
 
     protected GzipHandler createGzipHandler() {
-        GzipHandler gzipHandler = new GzipHandler();
-        gzipHandler.setCheckGzExists(false);
-        return gzipHandler;
+        return new GzipHandler();
     }
 
     protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {

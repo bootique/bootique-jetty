@@ -25,9 +25,9 @@ import io.bootique.di.*;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.jetty.servlet.MultiBaseStaticServlet;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
@@ -153,7 +153,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     /**
      * Adds a servlet of the specified type to the set of Jetty servlets. "servletType" must be annotated with
-     * {@link javax.servlet.annotation.WebServlet}. Otherwise it should be mapped via other add(Mapped)Servlet methods,
+     * {@link jakarta.servlet.annotation.WebServlet}. Otherwise it should be mapped via other add(Mapped)Servlet methods,
      * where you can explicitly specify URL patterns.
      *
      * @param servletType a class of the servlet to map.
@@ -190,7 +190,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     /**
      * Adds a filter of the specified type to the set of Jetty filters. "filterType" must be annotated with
-     * {@link javax.servlet.annotation.WebFilter}. Otherwise it should be mapped via other add(Mapped)Filter methods,
+     * {@link jakarta.servlet.annotation.WebFilter}. Otherwise it should be mapped via other add(Mapped)Filter methods,
      * where you can explicitly specify URL patterns, ordering, etc.
      *
      * @param filterType a class of the filter to map.

@@ -28,8 +28,8 @@ import java.util.EventListener;
  */
 public class MappedListener<T extends EventListener> {
 
-    private T listener;
-    private int order;
+    private final T listener;
+    private final int order;
 
     public MappedListener(T listener, int order) {
         this.listener = listener;

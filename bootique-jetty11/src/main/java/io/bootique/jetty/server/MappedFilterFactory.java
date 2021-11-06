@@ -20,10 +20,10 @@
 package io.bootique.jetty.server;
 
 import io.bootique.jetty.MappedFilter;
+import jakarta.servlet.Filter;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
-import javax.servlet.Filter;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

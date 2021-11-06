@@ -20,10 +20,10 @@
 package io.bootique.jetty.server;
 
 import io.bootique.jetty.MappedServlet;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.annotation.WebInitParam;
+import jakarta.servlet.annotation.WebServlet;
 
-import javax.servlet.Servlet;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

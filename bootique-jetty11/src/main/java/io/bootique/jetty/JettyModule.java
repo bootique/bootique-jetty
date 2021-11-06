@@ -32,11 +32,11 @@ import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import io.bootique.jetty.servlet.ServletEnvironment;
 import io.bootique.log.BootLogger;
 import io.bootique.shutdown.ShutdownManager;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 import org.eclipse.jetty.server.Server;
 
 import javax.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Map;

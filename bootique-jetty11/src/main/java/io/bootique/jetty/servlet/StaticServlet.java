@@ -18,11 +18,11 @@
  */
 package io.bootique.jetty.servlet;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -32,7 +32,7 @@ public class StaticServlet extends DefaultServlet {
 
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
-    private String resourceBase;
+    private final String resourceBase;
 
     public StaticServlet(String resourceBase) {
         this.resourceBase = resourceBase;

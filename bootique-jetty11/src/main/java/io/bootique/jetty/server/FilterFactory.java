@@ -21,17 +21,13 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.jetty.MappedFilter;
+import jakarta.servlet.DispatcherType;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.DispatcherType;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @BQConfig
 public class FilterFactory extends WebArtifactFactory {
@@ -60,7 +56,7 @@ public class FilterFactory extends WebArtifactFactory {
 
 		Map<String, String> params = getParams(mappedFilter.getParams());
 		if (params != null) {
-			params.forEach((k, v) -> holder.setInitParameter(k, v));
+			params.forEach(holder::setInitParameter);
 		}
 
 		EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.REQUEST);

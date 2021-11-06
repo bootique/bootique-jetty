@@ -18,8 +18,9 @@
  */
 package io.bootique.jetty.request;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRequest;
 
 /**
  * Handles creating and resetting a single MDC context value.

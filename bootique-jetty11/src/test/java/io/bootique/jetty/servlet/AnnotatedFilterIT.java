@@ -26,11 +26,11 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.io.IOException;

@@ -19,14 +19,15 @@
 
 package io.bootique.jetty;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 public class MappedFilter<T extends Filter> extends MappedWebArtifact<T> {
 
-    private int order;
+    private final int order;
 
     public MappedFilter(T filter, Set<String> urlPatterns, int order) {
         this(filter, urlPatterns, null, order);
