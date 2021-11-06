@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.cors;
 
+import io.bootique.jetty.junit5.JettyTester;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -40,6 +40,9 @@ public class BootiqueCorsFilterIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+
+    @BQTestTool
+    final JettyTester tester = JettyTester.create();
 
     @BeforeAll
     public static void configJavaForCors() {
@@ -59,24 +62,22 @@ public class BootiqueCorsFilterIT {
 
     @Test
     public void testResponseHeaders_DefaultConfig() {
-        testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/cors/NoConfigCorsFilter.yml")
+        testFactory.app("-s")
+                .module(tester.moduleReplacingConnectors())
                 .run();
 
         // by default matches all paths and all origins
-
-        WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/xp");
-        Response r = target.request().header("Origin", "xo").options();
+        Response r = tester.getTarget().path("xp").request().header("Origin", "xo").options();
         assertEquals("xo", r.getHeaderString("Access-Control-Allow-Origin"));
     }
 
     @Test
     public void testResponseHeaders_ByOrigin() {
-        testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+                .module(tester.moduleReplacingConnectors())
                 .run();
 
-        WebTarget target = ClientBuilder.newClient().target("http://localhost:15001/api");
+        WebTarget target = tester.getTarget().path("api");
 
         Response r1 = target.request().header("Origin", "test").options();
         assertEquals("test", r1.getHeaderString("Access-Control-Allow-Origin"));
@@ -90,18 +91,14 @@ public class BootiqueCorsFilterIT {
 
     @Test
     public void testResponseHeaders_ByPath() {
-        testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+        testFactory.app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
+                .module(tester.moduleReplacingConnectors())
                 .run();
 
-        WebTarget coveredPath = ClientBuilder.newClient().target("http://localhost:15001/api");
-
-        Response r1 = coveredPath.request().header("Origin", "test").options();
+        Response r1 = tester.getTarget().path("api").request().header("Origin", "test").options();
         assertEquals("test", r1.getHeaderString("Access-Control-Allow-Origin"));
 
-
-        WebTarget notCoveredPath = ClientBuilder.newClient().target("http://localhost:15001/notapi");
-        Response r2 = notCoveredPath.request().header("Origin", "test").options();
+        Response r2 = tester.getTarget().path("notapi").request().header("Origin", "test").options();
         assertNull(r2.getHeaderString("Access-Control-Allow-Origin"));
     }
 }

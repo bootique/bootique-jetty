@@ -17,10 +17,6 @@
 # under the License.
 #
 
-jetty:
-  connectors:
-    - port: 15001
-
 jettycors:
   urlPatterns:
     - "/api"
