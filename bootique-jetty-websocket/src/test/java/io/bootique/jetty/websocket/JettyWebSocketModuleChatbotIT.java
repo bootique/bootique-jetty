@@ -41,7 +41,7 @@ public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
     public void testTwoWayMessaging() throws IOException, DeploymentException, InterruptedException {
 
         testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> b.bind(ChatServer.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ChatServer.class))
                 .run();

@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.websocket;
 
+import io.bootique.jetty.junit5.JettyTester;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -35,7 +36,9 @@ import java.net.URI;
 public abstract class JettyWebSocketTestBase {
 
     @BQTestTool
-    final BQTestFactory testFactory = new BQTestFactory();
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+
+    final JettyTester jetty = JettyTester.create();
 
     protected WebSocketContainer client;
 
@@ -44,7 +47,7 @@ public abstract class JettyWebSocketTestBase {
     }
 
     protected Session createClientSession(Class<?> clientSocketType, String path) throws IOException, DeploymentException {
-        return client.connectToServer(clientSocketType, URI.create("ws://127.0.0.1:8080/" + path));
+        return client.connectToServer(clientSocketType, URI.create("ws://127.0.0.1:" + jetty.getPort() + "/" + path));
     }
 
     @BeforeEach

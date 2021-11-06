@@ -45,7 +45,7 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
     public void testEndpointScopeNone() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 // binding endpoint with no scope
                 .module(b -> b.bind(ServerSocket.class))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
@@ -69,7 +69,7 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
     public void testEndpointScopeSingleton() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 // binding with singleton scope
                 .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))

@@ -31,8 +31,6 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -41,15 +39,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WebSocketServletMixIT extends JettyWebSocketTestBase {
 
-    protected WebTarget createWebTarget(String path) {
-        return ClientBuilder.newClient().target("http://127.0.0.1:8080/" + path);
-    }
-
     @Test
     public void testServletCoexistence() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> JettyModule.extend(b).addServlet(ServletSamePath.class).addServlet(ServletDifferentPath.class))
                 .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
@@ -64,12 +58,12 @@ public class WebSocketServletMixIT extends JettyWebSocketTestBase {
             serverSocket.assertBuffer(";socket accessed");
         }
 
-        Response r1 = createWebTarget("servlet").request().get();
+        Response r1 = jetty.getTarget().path("servlet").request().get();
         assertEquals(200, r1.getStatus());
         assertEquals("servlet accessed as /servlet", r1.readEntity(String.class));
 
         // same path as websocket here.. resolution will happen at the protocol level
-        Response r2 = createWebTarget("socket").request().get();
+        Response r2 = jetty.getTarget().path("socket").request().get();
         assertEquals(200, r2.getStatus());
         assertEquals("servlet accessed as /socket", r2.readEntity(String.class));
     }

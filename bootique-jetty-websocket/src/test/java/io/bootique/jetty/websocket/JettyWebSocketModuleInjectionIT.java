@@ -40,7 +40,7 @@ public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
         EchoService service = new EchoService("echo");
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> b.bind(EchoService.class).toInstance(service))
                 .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))

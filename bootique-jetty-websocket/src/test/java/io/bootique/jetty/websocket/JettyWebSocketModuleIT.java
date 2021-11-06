@@ -42,7 +42,7 @@ public class JettyWebSocketModuleIT extends JettyWebSocketTestBase {
     public void testClientToServerMessage() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> b.bind(ServerSocket1.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket1.class))
                 .createRuntime();
@@ -71,7 +71,7 @@ public class JettyWebSocketModuleIT extends JettyWebSocketTestBase {
     public void testDecoderInAnnotation() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> b.bind(ServerSocket2.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket2.class))
                 .createRuntime();

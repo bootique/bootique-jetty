@@ -58,11 +58,6 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.bootique</groupId>
-			<artifactId>bootique-junit5</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<!-- Using logback instead of SLF4J for tests to have access to a real MDC implementation -->
 		<dependency>
 			<groupId>io.bootique.logback</groupId>
@@ -70,24 +65,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- Jersey client on Java 9+ needs these -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
+			<groupId>io.bootique.jetty</groupId>
+			<artifactId>bootique-jetty-junit5</artifactId>
+			<version>${bootique.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

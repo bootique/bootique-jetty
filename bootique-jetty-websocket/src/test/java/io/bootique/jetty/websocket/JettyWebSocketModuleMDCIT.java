@@ -31,7 +31,6 @@ import javax.servlet.ServletRequest;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +41,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
     public void testContextPassed() throws IOException, DeploymentException, InterruptedException {
 
         testFactory.app("-s")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .module(b -> JettyModule.extend(b).addRequestMDCItem("x", new TestMDCItem()))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(WsServer.class))
                 .run();
@@ -51,7 +50,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         assertNull(WsServer.onMessage);
         assertNull(WsServer.onClose);
 
-        try (Session s = client.connectToServer(WsClient.class, URI.create("ws://127.0.0.1:8080/?x=aa"));) {
+        try (Session s = createClientSession("?x=aa")) {
 
             Thread.sleep(500);
             assertEquals("x:aa", WsServer.onOpen);
@@ -59,7 +58,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
             assertNull(WsServer.onMessage);
             assertNull(WsServer.onClose);
 
-            // important to test seding a message, as it will likely happen in a thread different from the original one
+            // important to test sending a message, as it will likely happen in a thread different from the original one
             s.getBasicRemote().sendText("m");
 
             Thread.sleep(500);
@@ -81,14 +80,6 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         @Override
         public void cleanupMDC(ServletContext sc, ServletRequest request) {
             MDC.remove("x");
-        }
-    }
-
-    @ClientEndpoint
-    public static class WsClient {
-        @OnError
-        public void onWebSocketError(Throwable cause) {
-            cause.printStackTrace();
         }
     }
 

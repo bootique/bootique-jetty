@@ -34,7 +34,7 @@ public class WebSocketPolicyFactoryIT extends JettyWebSocketTestBase {
     public void testCustomPolicy() {
 
         BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/websocket/WebSocketPolicyFactoryIT.yml")
-                .autoLoadModules()
+                .module(jetty.moduleReplacingConnectors())
                 .createRuntime();
 
         runtime.run();
