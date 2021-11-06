@@ -44,7 +44,7 @@ public class JettyTesterConfigLoader implements JsonConfigurationLoader {
 
         // remove all connector configs
         JsonNode jetty = mutableInput.get("jetty");
-        if (jetty != null && jetty instanceof ObjectNode) {
+        if (jetty instanceof ObjectNode) {
             ((ObjectNode) jetty).remove("connectors");
         }
 

@@ -23,6 +23,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.junit5.JettyTester;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -32,7 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -45,20 +45,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RequestTimerIT {
 
     @BQTestTool
-    public BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+    final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
+
+    final JettyTester tester = JettyTester.create();
 
     @Test
     public void testInitParametersPassed() {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
+                .module(tester.moduleReplacingConnectors())
                 .createRuntime();
 
         runtime.run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+        WebTarget target = tester.getTarget();
 
-        Response r1 = base.path("/").request().get();
+        Response r1 = target.request().get();
         assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
         assertEquals("test_servlet", r1.readEntity(String.class));
@@ -71,7 +74,7 @@ public class RequestTimerIT {
         Timer timer = timers.iterator().next();
         assertEquals(1, timer.getCount());
 
-        base.path("/").request().get().close();
+        target.request().get().close();
         assertEquals(2, timer.getCount());
     }
 

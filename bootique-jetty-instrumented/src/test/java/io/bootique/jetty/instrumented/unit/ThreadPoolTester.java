@@ -1,20 +1,20 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty.instrumented.unit;
@@ -90,8 +90,7 @@ public class ThreadPoolTester {
 
     private BQRuntime startRuntime(String config, Servlet servlet) {
         BQRuntime runtime = app.app("-s", "-c", config)
-                .module(
-                b -> JettyModule.extend(b).addServlet(servlet, "s1", "/*"))
+                .module(b -> JettyModule.extend(b).addServlet(servlet, "s1", "/*"))
                 .createRuntime();
 
         runtime.run();
@@ -184,6 +183,10 @@ public class ThreadPoolTester {
         private void runWithClientPool(ExecutorService clientPool) throws InterruptedException {
 
             locks.requestFreezeLock.lock();
+
+            // TODO: we could not migrate this to JettyTester because it wipes out custom connector configs
+            //   that we are testing here. Perhaps we need to add some extra capabilities to JettyTester
+            //   that would allow to preserve custom configs beyond the port
             WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
             try {
