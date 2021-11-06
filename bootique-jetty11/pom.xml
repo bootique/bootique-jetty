@@ -50,13 +50,6 @@
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey3.version}</version>
-                <exclusions>
-                    <!-- Bootique includes this one -->
-                    <exclusion>
-                        <groupId>org.glassfish.hk2.external</groupId>
-                        <artifactId>jakarta.inject</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
