@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.bootique.modules.parent</groupId>
 		<artifactId>bootique-modules-parent</artifactId>
-		<version>3.0.4</version>
+		<version>3.0.5</version>
 	</parent>
 
 	<groupId>io.bootique.jetty</groupId>
@@ -48,7 +48,6 @@
     <properties>
         <bootique.version>${project.version}</bootique.version>
         <websocket.version>1.1</websocket.version>
-        <jetty.version>9.4.43.v20210629</jetty.version>
     </properties>
 
 	<scm>
@@ -92,22 +91,22 @@
             <dependency>
                 <groupId>org.eclipse.jetty.websocket</groupId>
                 <artifactId>javax-websocket-server-impl</artifactId>
-                <version>${jetty.version}</version>
+                <version>${jetty9.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>${jetty.version}</version>
+                <version>${jetty9.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlet</artifactId>
-                <version>${jetty.version}</version>
+                <version>${jetty9.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>
-                <version>${jetty.version}</version>
+                <version>${jetty9.version}</version>
             </dependency>
             <!-- Transitive dependency of jersey-client -->
             <dependency>
