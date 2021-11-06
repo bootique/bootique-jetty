@@ -1,3 +1,7 @@
+## 3.0.M1
+
+* #111 Jetty 11 support
+
 ## 2.0.RC1
 
 * #109 JettyTester should not cause eager initalization
