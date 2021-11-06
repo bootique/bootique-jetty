@@ -1,0 +1,5 @@
+jettywebsocket:
+    asyncSendTimeout: "5s"
+    maxSessionIdleTimeout: "30min"
+    maxBinaryMessageBufferSize: "30kb"
+    maxTextMessageBufferSize: "45kb"

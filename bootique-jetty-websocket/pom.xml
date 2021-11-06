@@ -40,6 +40,11 @@
 				<artifactId>javax-websocket-server-impl</artifactId>
 				<version>${jetty9.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.websocket</groupId>
+				<artifactId>javax.websocket-api</artifactId>
+				<version>${websocket.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

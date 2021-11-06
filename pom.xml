@@ -46,6 +46,7 @@
         <module>bootique-jetty11</module>
         <module>bootique-jetty11-cors</module>
         <module>bootique-jetty11-instrumented</module>
+        <module>bootique-jetty11-websocket</module>
         <module>bootique-jetty11-junit5</module>
 
         <module>bootique-jetty-docs</module>
@@ -54,6 +55,7 @@
     <properties>
         <bootique.version>${project.version}</bootique.version>
         <websocket.version>1.1</websocket.version>
+        <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
     </properties>
 
 	<scm>
@@ -88,11 +90,6 @@
                 <groupId>io.bootique.logback</groupId>
                 <artifactId>bootique-logback</artifactId>
                 <version>${bootique.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.websocket</groupId>
-                <artifactId>javax.websocket-api</artifactId>
-                <version>${websocket.version}</version>
             </dependency>
             <!-- Transitive dependency of jersey-client -->
             <dependency>
