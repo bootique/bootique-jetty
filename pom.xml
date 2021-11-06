@@ -38,7 +38,6 @@
 	<modules>
 		<module>bootique-jetty</module>
         <module>bootique-jetty-cors</module>
-        <module>bootique-jetty-docs</module>
         <module>bootique-jetty-instrumented</module>
         <module>bootique-jetty-metrics</module>
         <module>bootique-jetty-websocket</module>
@@ -46,7 +45,10 @@
 
         <module>bootique-jetty11</module>
         <module>bootique-jetty11-cors</module>
+        <module>bootique-jetty11-instrumented</module>
         <module>bootique-jetty11-junit5</module>
+
+        <module>bootique-jetty-docs</module>
     </modules>
 
     <properties>
