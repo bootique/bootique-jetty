@@ -45,6 +45,7 @@
         <module>bootique-jetty-junit5</module>
 
         <module>bootique-jetty11</module>
+        <module>bootique-jetty11-cors</module>
         <module>bootique-jetty11-junit5</module>
     </modules>
 
