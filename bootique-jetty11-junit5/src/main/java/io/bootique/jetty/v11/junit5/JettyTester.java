@@ -28,10 +28,10 @@ import io.bootique.jetty.v11.junit5.tester.JettyConnectorAccessor;
 import io.bootique.jetty.v11.junit5.tester.JettyTesterBootiqueHook;
 import io.bootique.jetty.v11.junit5.tester.JettyTesterInitCommand;
 import io.bootique.jetty.v11.server.ServerHolder;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

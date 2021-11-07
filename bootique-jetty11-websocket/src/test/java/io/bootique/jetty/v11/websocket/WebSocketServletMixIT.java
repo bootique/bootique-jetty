@@ -29,9 +29,9 @@ import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
