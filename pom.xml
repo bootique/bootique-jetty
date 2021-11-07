@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.bootique.modules.parent</groupId>
 		<artifactId>bootique-modules-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.0.6</version>
 	</parent>
 
 	<groupId>io.bootique.jetty</groupId>
@@ -117,7 +117,7 @@
             <dependency>
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-client</artifactId>
-				<version>${jersey.version}</version>
+				<version>${jersey2.version}</version>
                 <exclusions>
                     <!-- Bootique includes this one -->
                     <exclusion>
@@ -129,7 +129,7 @@
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>${jersey.version}</version>
+                <version>${jersey2.version}</version>
             </dependency>
 		</dependencies>
 	</dependencyManagement>
