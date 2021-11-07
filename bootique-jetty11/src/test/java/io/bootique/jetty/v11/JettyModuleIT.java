@@ -22,9 +22,6 @@ package io.bootique.jetty.v11;
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.di.BQModule;
-import io.bootique.jetty.v11.JettyModule;
-import io.bootique.jetty.v11.MappedFilter;
-import io.bootique.jetty.v11.MappedServlet;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -32,13 +29,14 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSessionListener;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -94,7 +92,7 @@ public class JettyModuleIT {
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         Response r1 = base.path("/a").request().get();
-        assertEquals(Status.OK.getStatusCode(), r1.getStatus());
+        Assertions.assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
         Response r2 = base.path("/b").request().get();
         assertEquals(Status.OK.getStatusCode(), r2.getStatus());

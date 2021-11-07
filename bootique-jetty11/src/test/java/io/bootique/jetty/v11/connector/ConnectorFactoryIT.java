@@ -19,9 +19,6 @@
 
 package io.bootique.jetty.v11.connector;
 
-import io.bootique.jetty.v11.connector.ConnectorFactory;
-import io.bootique.jetty.v11.connector.HttpConnectorFactory;
-import io.bootique.jetty.v11.connector.HttpsConnectorFactory;
 import io.bootique.junit5.PolymorphicConfigurationChecker;
 import org.junit.jupiter.api.Test;
 

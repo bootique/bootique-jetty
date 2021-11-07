@@ -18,7 +18,6 @@
  */
 package io.bootique.jetty.v11.cors;
 
-import io.bootique.jetty.v11.cors.JettyCorsModuleProvider;
 import io.bootique.junit5.BQModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 

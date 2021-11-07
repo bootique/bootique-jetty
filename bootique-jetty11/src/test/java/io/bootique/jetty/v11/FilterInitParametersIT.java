@@ -21,19 +21,16 @@ package io.bootique.jetty.v11;
 
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.jetty.v11.JettyModule;
-import io.bootique.jetty.v11.MappedFilter;
-import io.bootique.jetty.v11.MappedServlet;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 import java.io.IOException;
 import java.util.*;
 

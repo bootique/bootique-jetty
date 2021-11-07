@@ -19,8 +19,6 @@
 
 package io.bootique.jetty.v11;
 
-import io.bootique.jetty.v11.JettyModule;
-import io.bootique.jetty.v11.MappedFilter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
