@@ -1,0 +1,513 @@
+/**
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package io.bootique.jetty.jakarta.server;
+
+import io.bootique.annotation.BQConfig;
+import io.bootique.annotation.BQConfigProperty;
+import io.bootique.jetty.jakarta.JettyModuleExtender;
+import io.bootique.jetty.jakarta.MappedFilter;
+import io.bootique.jetty.jakarta.MappedListener;
+import io.bootique.jetty.jakarta.MappedServlet;
+import io.bootique.jetty.jakarta.connector.ConnectorFactory;
+import io.bootique.jetty.jakarta.connector.HttpConnectorFactory;
+import io.bootique.jetty.jakarta.request.RequestMDCManager;
+import io.bootique.resource.FolderResourceFactory;
+import org.eclipse.jetty.server.NetworkConnector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.BlockingArrayQueue;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+
+@BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
+        "thread pool parameters, etc.")
+public class ServerFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
+
+    protected List<ConnectorFactory> connectors;
+    protected String context;
+    protected int idleThreadTimeout;
+    protected Map<String, FilterFactory> filters;
+    protected int maxThreads;
+    protected int minThreads;
+    protected int maxQueuedRequests;
+    protected Map<String, ServletFactory> servlets;
+    protected boolean sessions;
+    private Map<String, String> params;
+    private FolderResourceFactory staticResourceBase;
+    private boolean compression;
+    private boolean compactPath;
+    // defined as "int" in Jetty, so we should not exceed max int
+    private int maxFormContentSize;
+    private int maxFormKeys;
+
+    /**
+     * Maintains a mapping between erroneous response's Status Code and the page (URL) which will be used to handle it further.
+     */
+    private Map<Integer, String> errorPages;
+
+    public ServerFactory() {
+        this.minThreads = 4;
+        this.maxThreads = 200;
+        this.maxQueuedRequests = 1024;
+        this.idleThreadTimeout = 60000;
+        this.sessions = true;
+        this.compression = true;
+    }
+
+    /**
+     * @since 2.0
+     */
+    public ServerHolder createServerHolder(
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners,
+            Set<ServletContextHandlerExtender> contextHandlerExtenders,
+            RequestMDCManager mdcManager) {
+
+        String context = resolveContext();
+
+        ThreadPool threadPool = createThreadPool();
+        ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
+
+        Server server = new Server(threadPool);
+        server.setStopAtShutdown(true);
+
+        // Jetty 11 implements Graceful class that handles shutdown with timeout. Compared to Jetty 9 the actual
+        // shutdown time of a test server increased to between 2 and 3 seconds. It makes tests with Jetty very slow.
+        // This may actually be a bug in Jetty, as even when the timeout is 0, and Graceful is bypassed, it still
+        // stops its components explicitly (e.g. servlets recieve their "destroy" event). So for now leaving it at 0.
+        server.setStopTimeout(0);
+        server.setHandler(contextHandler);
+
+        // postconfig *after* the handler is associated with the Server. Some extensions like WebSocket require access
+        // to the handler's Server
+        postConfigHandler(contextHandler, contextHandlerExtenders);
+
+        if (maxFormContentSize > 0) {
+            server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", maxFormContentSize);
+            contextHandler.setMaxFormContentSize(maxFormContentSize);
+        }
+
+        if (maxFormKeys > 0) {
+            server.setAttribute("org.eclipse.jetty.server.Request.maxFormKeys", maxFormKeys);
+            contextHandler.setMaxFormKeys(maxFormKeys);
+        }
+
+        createRequestLog(server);
+
+        Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
+
+        Collection<ConnectorHolder> connectorHolders = new ArrayList<>(2);
+
+        if (connectorFactories.isEmpty()) {
+            LOGGER.warn("Jetty starts with no connectors configured. Is that expected?");
+        } else {
+            connectorFactories.forEach(cf -> {
+                NetworkConnector connector = cf.createConnector(server);
+                connector.addBean(mdcManager);
+                server.addConnector(connector);
+                connectorHolders.add(new ConnectorHolder(connector));
+            });
+        }
+
+        ServerHolder serverHolder = new ServerHolder(server, context, connectorHolders);
+        server.addEventListener(new ServerLifecycleLogger(serverHolder));
+        return serverHolder;
+    }
+
+    protected void postConfigHandler(ServletContextHandler handler, Set<ServletContextHandlerExtender> contextHandlerExtenders) {
+        contextHandlerExtenders.forEach(c -> c.onHandlerInstalled(handler));
+    }
+
+    protected ServletContextHandler createHandler(
+            String context,
+            Set<MappedServlet> servlets,
+            Set<MappedFilter> filters,
+            Set<MappedListener> listeners) {
+
+        int options = 0;
+
+        if (sessions) {
+            options |= ServletContextHandler.SESSIONS;
+        }
+
+        ServletContextHandler handler = new ServletContextHandler(options);
+        handler.setContextPath(context);
+
+        // TODO: deprecated. Recommended to use CompactPathRule with RewriteHandler instead
+        handler.setCompactPath(compactPath);
+        if (params != null) {
+            params.forEach(handler::setInitParameter);
+        }
+
+        if (staticResourceBase != null) {
+            handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
+        }
+
+        if (compression) {
+            handler.insertHandler(createGzipHandler());
+        }
+
+        if (errorPages != null) {
+            ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+            errorPages.forEach(errorHandler::addErrorPage);
+            handler.setErrorHandler(errorHandler);
+        }
+
+        installListeners(handler, listeners);
+        installServlets(handler, servlets);
+        installFilters(handler, filters);
+
+        return handler;
+    }
+
+    protected GzipHandler createGzipHandler() {
+        return new GzipHandler();
+    }
+
+    protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
+        servlets.forEach(mappedServlet -> getServletFactory(mappedServlet.getName()).createAndAddJettyServlet(handler,
+                mappedServlet));
+    }
+
+    protected ServletFactory getServletFactory(String name) {
+        ServletFactory factory = null;
+        if (servlets != null && name != null) {
+            factory = servlets.get(name);
+        }
+
+        return factory != null ? factory : new ServletFactory();
+    }
+
+    protected void installFilters(ServletContextHandler handler, Set<MappedFilter> filters) {
+        sortedFilters(filters).forEach(mappedFilter -> getFilterFactory(mappedFilter.getName())
+                .createAndAddJettyFilter(handler, mappedFilter));
+    }
+
+    protected FilterFactory getFilterFactory(String name) {
+        FilterFactory factory = null;
+        if (filters != null && name != null) {
+            factory = filters.get(name);
+        }
+
+        return factory != null ? factory : new FilterFactory();
+    }
+
+    protected void installListeners(ServletContextHandler handler, Set<MappedListener> listeners) {
+
+        if (listeners.isEmpty()) {
+            return;
+        }
+
+        sortedListeners(listeners).forEach(listener -> {
+            LOGGER.info("Adding listener {}", listener.getListener().getClass().getName());
+            handler.addEventListener(listener.getListener());
+        });
+    }
+
+    private List<MappedFilter> sortedFilters(Set<MappedFilter> unsorted) {
+        List<MappedFilter> sorted = new ArrayList<>(unsorted);
+
+        sorted.sort(Comparator.comparing(MappedFilter::getOrder));
+        return sorted;
+    }
+
+    private List<MappedListener> sortedListeners(Set<MappedListener> unsorted) {
+        List<MappedListener> sorted = new ArrayList<>(unsorted);
+
+        sorted.sort(Comparator.comparing(MappedListener::getOrder));
+        return sorted;
+    }
+
+    protected Collection<ConnectorFactory> connectorFactories(Server server) {
+        Collection<ConnectorFactory> connectorFactories = new ArrayList<>();
+
+        if (this.connectors != null) {
+            connectorFactories.addAll(this.connectors);
+        }
+
+        // add default connector if none are configured
+        if (connectorFactories.isEmpty()) {
+            connectorFactories.add(new HttpConnectorFactory());
+        }
+
+        return connectorFactories;
+    }
+
+    protected QueuedThreadPool createThreadPool() {
+        BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
+        QueuedThreadPool threadPool = createThreadPool(queue);
+        threadPool.setName("bootique-http");
+
+        return threadPool;
+    }
+
+    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
+        return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
+    }
+
+    protected void createRequestLog(Server server) {
+
+        Logger logger = LoggerFactory.getLogger(RequestLogger.class);
+        if (logger.isInfoEnabled()) {
+            server.setRequestLog(new RequestLogger());
+        }
+    }
+
+    /**
+     * @return a List of server connectors, each listening on its own unique port.
+     */
+    public List<ConnectorFactory> getConnectors() {
+        return connectors;
+    }
+
+    /**
+     * Sets a list of connector factories for this server. Each connectors would listen on its own unique port.
+     *
+     * @param connectors a list of preconfigured connector factories.
+     */
+    @BQConfigProperty("A list of objects specifying properties of the server network connectors.")
+    public void setConnectors(List<ConnectorFactory> connectors) {
+        this.connectors = connectors;
+    }
+
+    @BQConfigProperty("A map of servlet configurations by servlet name. ")
+    public void setServlets(Map<String, ServletFactory> servlets) {
+        this.servlets = servlets;
+    }
+
+    @BQConfigProperty("A map of servlet Filter configurations by filter name.")
+    public void setFilters(Map<String, FilterFactory> filters) {
+        this.filters = filters;
+    }
+
+    /**
+     * @return web application context path.
+     */
+    public String getContext() {
+        return context;
+    }
+
+    @BQConfigProperty("Web application context path. The default is '/'.")
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    protected String resolveContext() {
+        if (context == null) {
+            return "/";
+        }
+
+        // context must start with a slash and must not end with a slash...
+        // fix sloppy configuration on the fly
+        String c1 = context.startsWith("/") ? context : "/" + context;
+        String c2 = (c1.length() > 1 && c1.endsWith("/")) ? c1.substring(0, c1.length() - 1) : c1;
+        return c2;
+    }
+
+    /**
+     * @return a period in milliseconds specifying how long it takes until an idle thread is terminated.
+     */
+    public int getIdleThreadTimeout() {
+        return idleThreadTimeout;
+    }
+
+    @BQConfigProperty("A period in milliseconds specifying how long until an idle thread is terminated. ")
+    public void setIdleThreadTimeout(int idleThreadTimeout) {
+        this.idleThreadTimeout = idleThreadTimeout;
+    }
+
+    /**
+     * @return a maximum number of requests to queue if the thread pool is busy.
+     */
+    public int getMaxQueuedRequests() {
+        return maxQueuedRequests;
+    }
+
+    @BQConfigProperty("Maximum number of requests to queue if the thread pool is busy. If this number is exceeded, " +
+            "the server will start dropping requests.")
+    public void setMaxQueuedRequests(int maxQueuedRequests) {
+        this.maxQueuedRequests = maxQueuedRequests;
+    }
+
+    /**
+     * @return a maximum number of request processing threads in the pool.
+     */
+    public int getMaxThreads() {
+        return maxThreads;
+    }
+
+    @BQConfigProperty("Maximum number of request processing threads in the pool.")
+    public void setMaxThreads(int maxConnectorThreads) {
+        this.maxThreads = maxConnectorThreads;
+    }
+
+    /**
+     * @return an initial number of request processing threads in the pool.
+     */
+    public int getMinThreads() {
+        return minThreads;
+    }
+
+    @BQConfigProperty("Minimal number of request processing threads in the pool.")
+    public void setMinThreads(int minThreads) {
+        this.minThreads = minThreads;
+    }
+
+    /**
+     * @return a map of arbitrary key/value parameters that are used as "init" parameters of the ServletContext.
+     */
+    public Map<String, String> getParams() {
+        return params != null ? Collections.unmodifiableMap(params) : Collections.emptyMap();
+    }
+
+    /**
+     * @param params a map of context init parameters.
+     */
+    @BQConfigProperty("A map of application-specific key/value parameters that are used as \"init\" parameters of the " +
+            "ServletContext.")
+    public void setParams(Map<String, String> params) {
+        this.params = params;
+    }
+
+    /**
+     * @return a boolean specifying whether servlet sessions should be supported
+     * by Jetty.
+     */
+    public boolean isSessions() {
+        return sessions;
+    }
+
+    @BQConfigProperty("A boolean specifying whether servlet sessions should be supported by Jetty. The default is 'true'")
+    public void setSessions(boolean sessions) {
+        this.sessions = sessions;
+    }
+
+    /**
+     * @return a base location for resources of the Jetty context.
+     */
+    public FolderResourceFactory getStaticResourceBase() {
+        return staticResourceBase;
+    }
+
+    /**
+     * Sets a base location for resources of the Jetty context. Used by static
+     * resource servlets, including the "default" servlet. The value can be a
+     * file path or a URL, as well as a special URL starting with "classpath:".
+     * <p>
+     * It can be optionally overridden by DefaultServlet configuration.
+     * <p>
+     * For security reasons this has to be set explicitly. There's no default.
+     *
+     * @param staticResourceBase A base location for resources of the Jetty context, that can
+     *                           be a file path or a URL, as well as a special URL starting
+     *                           with "classpath:".
+     * @see JettyModuleExtender#useDefaultServlet()
+     * @see JettyModuleExtender#addStaticServlet(String, String...)
+     * @see <a href=
+     * "http://download.eclipse.org/jetty/9.3.7.v20160115/apidocs/org/eclipse/jetty/servlet/DefaultServlet.html">
+     * DefaultServlet</a>.
+     */
+    @BQConfigProperty("Defines a base location for resources of the Jetty context. It can be a filesystem path, a URL " +
+            "or a special \"classpath:\" URL (giving the ability to bundle resources in the app, not unlike a JavaEE " +
+            ".war file). This setting only makes sense when some form of \"default\" servlet is in use, that will be " +
+            "responsible for serving static resources. See JettyModule.contributeStaticServlet(..) or " +
+            "JettyModule.contributeDefaultServlet(..). ")
+    public void setStaticResourceBase(FolderResourceFactory staticResourceBase) {
+        this.staticResourceBase = staticResourceBase;
+    }
+
+    /**
+     * @return whether content compression is supported.
+     */
+    public boolean isCompression() {
+        return compression;
+    }
+
+    /**
+     * Sets whether compression whether gzip compression should be supported.
+     * When true, responses will be compressed if a client requests it via
+     * "Accept-Encoding:" header. Default is true.
+     *
+     * @param compression whether gzip compression should be supported.
+     */
+    @BQConfigProperty("A boolean specifying whether gzip compression should be supported. When enabled " +
+            "responses will be compressed if a client indicates it supports compression via " +
+            "\"Accept-Encoding: gzip\" header. Default value is 'true'.")
+    public void setCompression(boolean compression) {
+        this.compression = compression;
+    }
+
+    /**
+     * Compact URLs with multiple '/'s with a single '/'.
+     *
+     * @param compactPath Compact URLs with multiple '/'s with a single '/'. Default value is 'false'
+     */
+    @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
+    public void setCompactPath(boolean compactPath) {
+        this.compactPath = compactPath;
+    }
+
+    /**
+     * Sets the maximum size of submitted forms in bytes. Default is 200000 (~195K).
+     *
+     * @param maxFormContentSize maximum size of submitted forms in bytes. Default is 200000 (~195K)
+     */
+    @BQConfigProperty("Maximum size of submitted forms in bytes. Default is 200000 (~195K).")
+    public void setMaxFormContentSize(int maxFormContentSize) {
+        this.maxFormContentSize = maxFormContentSize;
+    }
+
+    /**
+     * Sets the maximum number of form fields. Default is 1000.
+     *
+     * @param maxFormKeys maximum number of form fields. Default is 1000.
+     */
+    @BQConfigProperty("Maximum number of form fields. Default is 1000.")
+    public void setMaxFormKeys(int maxFormKeys) {
+        this.maxFormKeys = maxFormKeys;
+    }
+
+    /**
+     * @return a potentially null map of error pages configuration.
+     */
+    public Map<Integer, String> getErrorPages() {
+        return errorPages;
+    }
+
+    /**
+     * Sets mappings between HTTP status codes and corresponding pages which will be returned to the user instead.
+     *
+     * @param errorPages map where keys are HTTP status codes and values are page URLs which will be used to handle them
+     */
+    @BQConfigProperty("A map specifying a mapping between HTTP status codes and pages (URLs) which will be used as their handlers. If no mapping is specified then standard error handler is used.")
+    public void setErrorPages(Map<Integer, String> errorPages) {
+        this.errorPages = errorPages;
+    }
+}

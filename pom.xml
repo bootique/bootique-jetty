@@ -43,11 +43,11 @@
         <module>bootique-jetty-websocket</module>
         <module>bootique-jetty-junit5</module>
 
-        <module>bootique-jetty11</module>
-        <module>bootique-jetty11-cors</module>
-        <module>bootique-jetty11-instrumented</module>
-        <module>bootique-jetty11-websocket</module>
-        <module>bootique-jetty11-junit5</module>
+        <module>bootique-jetty-jakarta</module>
+        <module>bootique-jetty-jakarta-cors</module>
+        <module>bootique-jetty-jakarta-instrumented</module>
+        <module>bootique-jetty-jakarta-websocket</module>
+        <module>bootique-jetty-jakarta-junit5</module>
 
         <module>bootique-jetty-docs</module>
     </modules>

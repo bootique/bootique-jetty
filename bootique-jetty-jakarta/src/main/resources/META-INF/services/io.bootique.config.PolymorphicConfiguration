@@ -1,0 +1,3 @@
+io.bootique.jetty.jakarta.connector.ConnectorFactory
+io.bootique.jetty.jakarta.connector.HttpConnectorFactory
+io.bootique.jetty.jakarta.connector.HttpsConnectorFactory
