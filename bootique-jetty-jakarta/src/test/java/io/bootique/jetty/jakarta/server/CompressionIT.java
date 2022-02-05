@@ -19,6 +19,7 @@
 
 package io.bootique.jetty.jakarta.server;
 
+import io.bootique.BQCoreModule;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
@@ -26,6 +27,7 @@ import io.bootique.jetty.jakarta.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import io.bootique.resource.ResourceFactory;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,12 +35,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPOutputStream;
 
@@ -48,21 +51,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @BQTest
 public class CompressionIT {
 
-
-    private static final String content = generateContent();
+    private static final String content = readContent();
     private static final String contentLength_Uncompressed = String.valueOf(content.length());
     private static final String contentLength_Compressed = String.valueOf(compressedSize(content));
 
-    static String generateContent() {
+    static String readContent() {
 
-        // must be > 32 bytes. Shorter content is not compressed by Jetty by default
+        URL contentUrl = new ResourceFactory("classpath:io/bootique/jetty/jakarta/CompressionIT_docroot/index.html").getUrl();
+        try (InputStream in = contentUrl.openStream()) {
 
-        StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            buf.append("content_stream_content_stream_");
+            byte[] data = new byte[in.available()];
+            in.read(data, 0, data.length);
+            return new String(data, 0, data.length, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return buf.toString();
     }
 
     static int compressedSize(String content) {
@@ -83,10 +86,10 @@ public class CompressionIT {
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    private final WebTarget gzipTarget = ClientBuilder
+    private final WebTarget target = ClientBuilder
             .newClient()
             .register(GZipEncoder.class)
-            .target("http://localhost:8080/cs/");
+            .target("http://localhost:8080/");
 
     @Test
     public void testCompression_Flat() {
@@ -95,8 +98,8 @@ public class CompressionIT {
                 .module(new ServletModule())
                 .run();
 
-        Response flatResponse = gzipTarget.request().get();
-        assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
+        Response flatResponse = target.path("cs").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), flatResponse.getStatus());
         assertEquals(content, flatResponse.readEntity(String.class));
         assertNull(flatResponse.getHeaderString("Content-Encoding"));
         assertEquals(contentLength_Uncompressed, flatResponse.getHeaderString("Content-Length"));
@@ -108,8 +111,8 @@ public class CompressionIT {
                 .module(new ServletModule())
                 .run();
 
-        Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
-        assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
+        Response gzipDeflateResponse = target.path("cs").request().acceptEncoding("gzip", "deflate").get();
+        assertEquals(Response.Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
         assertEquals(content, gzipDeflateResponse.readEntity(String.class));
         assertEquals("gzip", gzipDeflateResponse.getHeaderString("Content-Encoding"));
         assertEquals(contentLength_Compressed, gzipDeflateResponse.getHeaderString("Content-Length"));
@@ -121,8 +124,8 @@ public class CompressionIT {
                 .module(new ServletModule())
                 .run();
 
-        Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
-        assertEquals(Status.OK.getStatusCode(), gzipResponse.getStatus());
+        Response gzipResponse = target.path("cs").request().acceptEncoding("gzip").get();
+        assertEquals(Response.Status.OK.getStatusCode(), gzipResponse.getStatus());
         assertEquals(content, gzipResponse.readEntity(String.class));
         assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
         assertEquals(contentLength_Compressed, gzipResponse.getHeaderString("Content-Length"));
@@ -135,22 +138,43 @@ public class CompressionIT {
                 .module(new ServletModule())
                 .run();
 
-        Response flatResponse = gzipTarget.request().get();
-        assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
+        Response flatResponse = target.path("cs").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), flatResponse.getStatus());
         assertEquals(content, flatResponse.readEntity(String.class));
         assertNull(flatResponse.getHeaderString("Content-Encoding"));
 
-        Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
-        assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
+        Response gzipDeflateResponse = target.path("cs").request().acceptEncoding("gzip", "deflate").get();
+        assertEquals(Response.Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
         assertEquals(content, gzipDeflateResponse.readEntity(String.class));
         assertNull(gzipDeflateResponse.getHeaderString("Content-Encoding"));
     }
+
+    @Test
+    public void testCompression_Gzip_DefaultServlet() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .run();
+
+        Response gzipResponse = target.path("/").request().acceptEncoding("gzip").get();
+        assertEquals(Response.Status.OK.getStatusCode(), gzipResponse.getStatus());
+        assertEquals(content, gzipResponse.readEntity(String.class));
+        assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
+        assertEquals(contentLength_Compressed, gzipResponse.getHeaderString("Content-Length"));
+    }
+
 
     static class ServletModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {
-            JettyModule.extend(binder).addServlet(ContentServlet.class);
+            BQCoreModule
+                    .extend(binder)
+                    .setProperty("bq.jetty.staticResourceBase", "classpath:io/bootique/jetty/jakarta/CompressionIT_docroot");
+
+            JettyModule
+                    .extend(binder)
+                    .addServlet(ContentServlet.class)
+                    .useDefaultServlet();
         }
 
         @Provides
@@ -167,5 +191,6 @@ public class CompressionIT {
             }
         }
     }
+
 
 }
