@@ -26,7 +26,6 @@ import io.bootique.jetty.jakarta.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +37,10 @@ import jakarta.ws.rs.core.Response.Status;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,26 +48,48 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @BQTest
 public class CompressionIT {
 
-    // must be big enough.. compression on small strings is skipped
-    private static final String OUT_CONTENT;
-    static {
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<100; i++) {
-            sb.append("content_stream_content_stream_");
+
+    private static final String content = generateContent();
+    private static final String contentLength_Uncompressed = String.valueOf(content.length());
+    private static final String contentLength_Compressed = String.valueOf(compressedSize(content));
+
+    static String generateContent() {
+
+        // must be > 32 bytes. Shorter content is not compressed by Jetty by default
+
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            buf.append("content_stream_content_stream_");
         }
-        OUT_CONTENT = sb.toString();
+
+        return buf.toString();
+    }
+
+    static int compressedSize(String content) {
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+        try {
+            GZIPOutputStream zipper = new GZIPOutputStream(bytes);
+            zipper.write(content.getBytes(StandardCharsets.UTF_8));
+            zipper.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected exception compressing content", e);
+        }
+
+        return bytes.size();
     }
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    private WebTarget gzipTarget = ClientBuilder
+    private final WebTarget gzipTarget = ClientBuilder
             .newClient()
             .register(GZipEncoder.class)
             .target("http://localhost:8080/cs/");
 
     @Test
-    public void testCompression_Flat()  {
+    public void testCompression_Flat() {
 
         testFactory.app("-s")
                 .module(new ServletModule())
@@ -73,8 +97,9 @@ public class CompressionIT {
 
         Response flatResponse = gzipTarget.request().get();
         assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
-        assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
+        assertEquals(content, flatResponse.readEntity(String.class));
         assertNull(flatResponse.getHeaderString("Content-Encoding"));
+        assertEquals(contentLength_Uncompressed, flatResponse.getHeaderString("Content-Length"));
     }
 
     @Test
@@ -85,20 +110,22 @@ public class CompressionIT {
 
         Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
         assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
-        assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
+        assertEquals(content, gzipDeflateResponse.readEntity(String.class));
         assertEquals("gzip", gzipDeflateResponse.getHeaderString("Content-Encoding"));
+        assertEquals(contentLength_Compressed, gzipDeflateResponse.getHeaderString("Content-Length"));
     }
 
     @Test
-    public void testCompression_Gzip() throws Exception {
+    public void testCompression_Gzip() {
         testFactory.app("-s")
                 .module(new ServletModule())
                 .run();
 
         Response gzipResponse = gzipTarget.request().acceptEncoding("gzip").get();
         assertEquals(Status.OK.getStatusCode(), gzipResponse.getStatus());
-        assertEquals(OUT_CONTENT, gzipResponse.readEntity(String.class));
+        assertEquals(content, gzipResponse.readEntity(String.class));
         assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
+        assertEquals(contentLength_Compressed, gzipResponse.getHeaderString("Content-Length"));
     }
 
     @Test
@@ -110,16 +137,16 @@ public class CompressionIT {
 
         Response flatResponse = gzipTarget.request().get();
         assertEquals(Status.OK.getStatusCode(), flatResponse.getStatus());
-        assertEquals(OUT_CONTENT, flatResponse.readEntity(String.class));
+        assertEquals(content, flatResponse.readEntity(String.class));
         assertNull(flatResponse.getHeaderString("Content-Encoding"));
 
         Response gzipDeflateResponse = gzipTarget.request().acceptEncoding("gzip", "deflate").get();
         assertEquals(Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
-        assertEquals(OUT_CONTENT, gzipDeflateResponse.readEntity(String.class));
+        assertEquals(content, gzipDeflateResponse.readEntity(String.class));
         assertNull(gzipDeflateResponse.getHeaderString("Content-Encoding"));
     }
 
-    class ServletModule implements BQModule {
+    static class ServletModule implements BQModule {
 
         @Override
         public void configure(Binder binder) {
@@ -132,14 +159,11 @@ public class CompressionIT {
         }
 
         @WebServlet(urlPatterns = "/cs/*")
-        class ContentServlet extends HttpServlet {
-
-            private static final long serialVersionUID = -8896839263652092254L;
+        static class ContentServlet extends HttpServlet {
 
             @Override
-            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-                    throws ServletException, IOException {
-                resp.getWriter().append(OUT_CONTENT);
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+                resp.getWriter().append(content);
             }
         }
     }
