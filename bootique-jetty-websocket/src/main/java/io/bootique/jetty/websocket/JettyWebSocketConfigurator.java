@@ -23,17 +23,15 @@ import io.bootique.di.Key;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
-import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
-import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import org.eclipse.jetty.websocket.javax.server.config.JavaxWebSocketServletContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.servlet.ServletException;
 import javax.websocket.DeploymentException;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 import java.util.HashMap;
@@ -54,41 +52,32 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
     private final RequestMDCManager mdcManager;
     private final Set<EndpointKeyHolder> endpointDiKeys;
     private final Injector injector;
-    private final WebSocketPolicy webSocketPolicy;
+    private final Config config;
 
     public JettyWebSocketConfigurator(
-            Injector injector,
-            WebSocketPolicy webSocketPolicy,
+            RequestMDCManager mdcManager,
             Set<EndpointKeyHolder> endpointDiKeys,
-            RequestMDCManager mdcManager) {
+            Injector injector,
+            Config config) {
 
-        this.injector = injector;
-        this.endpointDiKeys = endpointDiKeys;
-        this.webSocketPolicy = webSocketPolicy;
         this.mdcManager = mdcManager;
+        this.endpointDiKeys = endpointDiKeys;
+        this.injector = injector;
+        this.config = config;
     }
 
     @Override
     public void onHandlerInstalled(ServletContextHandler handler) {
 
-        ServerContainer wsContainer;
-
-        try {
-            // install Jetty WebSocket support...
-            wsContainer = WebSocketServerContainerInitializer.configureContext(handler);
-        } catch (ServletException e) {
-            throw new RuntimeException("Error initializing WebSocket Jetty extensions", e);
-        }
-
-        configurePolicy(wsContainer);
-        endpointDiKeys.forEach(e -> installEndpoint(e.getKey(), wsContainer));
+        // install Jetty WebSocket support...
+        JavaxWebSocketServletContainerInitializer.configure(
+                handler,
+                (context, wsContainer) -> configWsContainer(wsContainer));
     }
 
-    protected void configurePolicy(ServerContainer wsContainer) {
-        wsContainer.setAsyncSendTimeout(webSocketPolicy.getAsyncWriteTimeout());
-        wsContainer.setDefaultMaxSessionIdleTimeout(webSocketPolicy.getIdleTimeout());
-        wsContainer.setDefaultMaxBinaryMessageBufferSize(webSocketPolicy.getMaxBinaryMessageBufferSize());
-        wsContainer.setDefaultMaxTextMessageBufferSize(webSocketPolicy.getMaxTextMessageBufferSize());
+    protected void configWsContainer(ServerContainer wsContainer) {
+        config.configContainer(wsContainer);
+        endpointDiKeys.forEach(e -> installEndpoint(e.getKey(), wsContainer));
     }
 
     protected <T> void installEndpoint(Key<T> endpointDiKey, ServerContainer wsContainer) {
@@ -195,6 +184,33 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
                     sec.getUserProperties().put(WebSocketMDCManager.MDC_MAP_KEY, mdcData);
                 }
             }
+        }
+    }
+
+    public static class Config {
+
+        private final long asyncSendTimeout;
+        private final long maxSessionIdleTimeout;
+        private final int maxBinaryMessageBufferSize;
+        private final int maxTextMessageBufferSize;
+
+        Config(
+                long asyncSendTimeout,
+                long maxSessionIdleTimeout,
+                int maxBinaryMessageBufferSize,
+                int maxTextMessageBufferSize) {
+
+            this.asyncSendTimeout = asyncSendTimeout;
+            this.maxSessionIdleTimeout = maxSessionIdleTimeout;
+            this.maxBinaryMessageBufferSize = maxBinaryMessageBufferSize;
+            this.maxTextMessageBufferSize = maxTextMessageBufferSize;
+        }
+
+        void configContainer(ServerContainer wsContainer) {
+            wsContainer.setAsyncSendTimeout(asyncSendTimeout);
+            wsContainer.setDefaultMaxSessionIdleTimeout(maxSessionIdleTimeout);
+            wsContainer.setDefaultMaxBinaryMessageBufferSize(maxBinaryMessageBufferSize);
+            wsContainer.setDefaultMaxTextMessageBufferSize(maxTextMessageBufferSize);
         }
     }
 }

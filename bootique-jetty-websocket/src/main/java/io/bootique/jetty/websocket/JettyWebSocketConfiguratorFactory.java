@@ -20,41 +20,36 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.di.Injector;
+import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.value.Bytes;
 import io.bootique.value.Duration;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+
+import java.util.Set;
 
 
 @BQConfig
-public class WebSocketPolicyFactory {
+public class JettyWebSocketConfiguratorFactory {
 
     private Duration asyncSendTimeout;
     private Duration maxSessionIdleTimeout;
     private Bytes maxBinaryMessageBufferSize;
     private Bytes maxTextMessageBufferSize;
 
-    public WebSocketPolicy createPolicy() {
+    public JettyWebSocketConfigurator createConfigurator(
+            Injector injector,
+            Set<EndpointKeyHolder> endpointKeys,
+            RequestMDCManager mdcManager) {
+        return new JettyWebSocketConfigurator(mdcManager, endpointKeys, injector, createConfig());
+    }
 
-        WebSocketPolicy policy = WebSocketPolicy.newServerPolicy();
-
-        // the policy will preserve all the Jetty defaults, so only init values if they are not null
-        if (asyncSendTimeout != null) {
-            policy.setAsyncWriteTimeout(asyncSendTimeout.getDuration().toMillis());
-        }
-
-        if (maxSessionIdleTimeout != null) {
-            policy.setIdleTimeout(maxSessionIdleTimeout.getDuration().toMillis());
-        }
-
-        if (maxBinaryMessageBufferSize != null) {
-            policy.setMaxBinaryMessageBufferSize((int) maxBinaryMessageBufferSize.getBytes());
-        }
-
-        if (maxTextMessageBufferSize != null) {
-            policy.setMaxTextMessageBufferSize((int) maxTextMessageBufferSize.getBytes());
-        }
-
-        return policy;
+    protected JettyWebSocketConfigurator.Config createConfig() {
+        return new JettyWebSocketConfigurator.Config(
+                asyncSendTimeout != null ? asyncSendTimeout.getDuration().toMillis() : 60000L,
+                maxSessionIdleTimeout != null ? maxSessionIdleTimeout.getDuration().toMillis() : 300000L,
+                maxBinaryMessageBufferSize != null ? (int) maxBinaryMessageBufferSize.getBytes() : 32768,
+                maxTextMessageBufferSize != null ? (int) maxTextMessageBufferSize.getBytes() : 32768
+        );
     }
 
     @BQConfigProperty("Time after which the operation will timeout attempting to send a websocket message for all " +

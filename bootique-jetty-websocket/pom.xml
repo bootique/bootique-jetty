@@ -37,8 +37,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>javax-websocket-server-impl</artifactId>
-				<version>${jetty9.version}</version>
+				<artifactId>websocket-javax-server</artifactId>
+				<version>${jetty10.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.websocket</groupId>
@@ -54,17 +54,14 @@
 			<groupId>io.bootique.jetty</groupId>
 			<artifactId>bootique-jetty</artifactId>
 			<version>${project.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.websocket</groupId>
 			<artifactId>javax.websocket-api</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>javax-websocket-server-impl</artifactId>
-			<scope>compile</scope>
+			<artifactId>websocket-javax-server</artifactId>
 		</dependency>
 
 		<!-- Unit test dependencies -->

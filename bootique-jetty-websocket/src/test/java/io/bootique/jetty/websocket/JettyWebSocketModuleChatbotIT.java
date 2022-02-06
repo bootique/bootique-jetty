@@ -18,15 +18,10 @@
  */
 package io.bootique.jetty.websocket;
 
+import io.bootique.command.CommandOutcome;
 import org.junit.jupiter.api.Test;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.DeploymentException;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Map;
@@ -34,17 +29,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
 
     @Test
     public void testTwoWayMessaging() throws IOException, DeploymentException, InterruptedException {
 
-        testFactory.app("-s")
+        CommandOutcome serverStatus = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())
                 .module(b -> b.bind(ChatServer.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ChatServer.class))
                 .run();
+
+        assertTrue(serverStatus.isSuccess(), () -> serverStatus.toString());
 
         try (Session s1 = createClientSession(ChatClient1.class, "chat")) {
             try (Session s2 = createClientSession(ChatClient2.class, "chat")) {
@@ -98,7 +96,7 @@ public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
         }
     }
 
-    @ServerEndpoint("chat")
+    @ServerEndpoint("/chat")
     public static class ChatServer {
 
         private Map<Session, Integer> sessions = new ConcurrentHashMap<>();

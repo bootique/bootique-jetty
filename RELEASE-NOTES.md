@@ -1,5 +1,6 @@
 ## 3.0.M1
 
+* #108 Jetty 10 support
 * #111 Jetty 11 (Jakarta) support
 
 ## 2.0.RC1

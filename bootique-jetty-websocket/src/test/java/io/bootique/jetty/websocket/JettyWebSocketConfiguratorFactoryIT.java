@@ -20,7 +20,6 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.servlet.ServletEnvironment;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.junit.jupiter.api.Test;
 
 import javax.websocket.server.ServerContainer;
@@ -28,7 +27,7 @@ import javax.websocket.server.ServerContainer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class WebSocketPolicyFactoryIT extends JettyWebSocketTestBase {
+public class JettyWebSocketConfiguratorFactoryIT extends JettyWebSocketTestBase {
 
     @Test
     public void testCustomPolicy() {
@@ -38,14 +37,6 @@ public class WebSocketPolicyFactoryIT extends JettyWebSocketTestBase {
                 .createRuntime();
 
         runtime.run();
-
-        // assert policy was created properly
-        WebSocketPolicy policy = runtime.getInstance(WebSocketPolicy.class);
-        assertEquals(5 * 1000L, policy.getAsyncWriteTimeout());
-        assertEquals(30 * 60 * 1000L, policy.getIdleTimeout());
-        assertEquals(30 * 1024, policy.getMaxBinaryMessageBufferSize());
-        assertEquals(45 * 1024, policy.getMaxTextMessageBufferSize());
-
 
         ServerContainer container = (ServerContainer) runtime.getInstance(ServletEnvironment.class)
                 .context()

@@ -98,10 +98,10 @@ public class ServerFactory {
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
 
-        // Jetty 11 implements Graceful class that handles shutdown with timeout. Compared to Jetty 9 the actual
+        // Jetty 10 and 11 implement Graceful class that handles shutdown with timeout. Compared to Jetty 9 the actual
         // shutdown time of a test server increased to between 2 and 3 seconds. It makes tests with Jetty very slow.
         // This may actually be a bug in Jetty, as even when the timeout is 0, and Graceful is bypassed, it still
-        // stops its components explicitly (e.g. servlets recieve their "destroy" event). So for now leaving it at 0.
+        // stops its components explicitly (e.g. servlets receive their "destroy" event). So for now leaving it at 0.
         server.setStopTimeout(0);
         server.setHandler(contextHandler);
 

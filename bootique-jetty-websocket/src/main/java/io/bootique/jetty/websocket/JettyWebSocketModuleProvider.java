@@ -34,6 +34,6 @@ public class JettyWebSocketModuleProvider implements BQModuleProvider {
 
     @Override
     public Map<String, Type> configs() {
-        return Collections.singletonMap("jettywebsocket", WebSocketPolicyFactory.class);
+        return Collections.singletonMap("jettywebsocket", JettyWebSocketConfiguratorFactory.class);
     }
 }
