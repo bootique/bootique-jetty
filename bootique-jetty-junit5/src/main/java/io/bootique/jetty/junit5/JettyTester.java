@@ -186,7 +186,7 @@ public class JettyTester {
     protected void configure(Binder binder) {
 
         if (!attachedToRuntime.compareAndSet(false, true)) {
-            throw new IllegalStateException("JettyTester is already in connected to another BQRuntime. " +
+            throw new IllegalStateException("JettyTester is already connected to another BQRuntime. " +
                     "To fix this error use one JettyTester per BQRuntime.");
         }
 
