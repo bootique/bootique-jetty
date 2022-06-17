@@ -19,8 +19,7 @@
 package io.bootique.jetty.jakarta.junit5;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.junit5.JettyTester;
-import io.bootique.jetty.jakarta.server.ServerHolder;
+import io.bootique.jetty.server.ServerHolder;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;

@@ -19,7 +19,7 @@
 
 package io.bootique.jetty.jakarta.servlet;
 
-import io.bootique.jetty.jakarta.servlet.DefaultServletEnvironment;
+import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletRequest;

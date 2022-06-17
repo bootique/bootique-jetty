@@ -19,7 +19,7 @@
 
 package io.bootique.jetty.jakarta.instrumented.request;
 
-import io.bootique.jetty.jakarta.request.RequestMDCItem;
+import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 import jakarta.servlet.ServletContext;

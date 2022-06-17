@@ -24,7 +24,7 @@ import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.jakarta.instrumented.healthcheck.JettyHealthChecks;
 import io.bootique.jetty.jakarta.instrumented.healthcheck.JettyHealthChecksFactory;
-import io.bootique.jetty.jakarta.server.ServerFactory;
+import io.bootique.jetty.server.ServerFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.Objects;

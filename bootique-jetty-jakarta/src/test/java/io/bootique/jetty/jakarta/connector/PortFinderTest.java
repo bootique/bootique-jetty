@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.jakarta.connector;
 
-import io.bootique.jetty.jakarta.connector.PortFinder;
+import io.bootique.jetty.connector.PortFinder;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 

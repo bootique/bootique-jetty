@@ -19,7 +19,7 @@
 package io.bootique.jetty.jakarta.websocket;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.servlet.ServletEnvironment;
+import io.bootique.jetty.servlet.ServletEnvironment;
 import jakarta.websocket.server.ServerContainer;
 import org.junit.jupiter.api.Test;
 

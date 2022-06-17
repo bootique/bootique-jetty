@@ -23,8 +23,8 @@ import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
 import io.bootique.di.Provides;
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.request.RequestMDCManager;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.request.RequestMDCManager;
 
 import javax.inject.Singleton;
 import java.util.Set;

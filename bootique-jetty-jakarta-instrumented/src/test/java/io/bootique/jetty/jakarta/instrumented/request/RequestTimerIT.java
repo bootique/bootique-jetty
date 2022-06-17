@@ -22,7 +22,7 @@ package io.bootique.jetty.jakarta.instrumented.request;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.JettyModule;
+import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.jakarta.junit5.JettyTester;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;

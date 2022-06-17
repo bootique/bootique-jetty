@@ -21,7 +21,7 @@ package io.bootique.jetty.jakarta.websocket;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.di.Injector;
-import io.bootique.jetty.jakarta.request.RequestMDCManager;
+import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.value.Bytes;
 import io.bootique.value.Duration;
 

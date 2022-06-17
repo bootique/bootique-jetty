@@ -20,8 +20,7 @@ package io.bootique.jetty.jakarta.junit5;
 
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.junit5.JettyTester;
+import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
 import jakarta.servlet.annotation.WebServlet;

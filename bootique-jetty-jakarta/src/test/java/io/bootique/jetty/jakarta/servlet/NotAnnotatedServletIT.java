@@ -23,7 +23,7 @@ import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.DIRuntimeException;
 import io.bootique.di.Provides;
-import io.bootique.jetty.jakarta.JettyModule;
+import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;

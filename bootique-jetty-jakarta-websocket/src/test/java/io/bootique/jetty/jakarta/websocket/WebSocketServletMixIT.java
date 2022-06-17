@@ -19,7 +19,7 @@
 package io.bootique.jetty.jakarta.websocket;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.JettyModule;
+import io.bootique.jetty.JettyModule;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

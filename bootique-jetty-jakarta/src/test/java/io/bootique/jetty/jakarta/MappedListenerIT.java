@@ -19,8 +19,8 @@
 
 package io.bootique.jetty.jakarta;
 
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.MappedListener;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedListener;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;

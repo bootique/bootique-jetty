@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.jakarta.server;
 
-import io.bootique.jetty.jakarta.server.ServerFactory;
+import io.bootique.jetty.server.ServerFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

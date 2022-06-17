@@ -18,8 +18,8 @@
  */
 package io.bootique.jetty.jakarta.junit5.tester;
 
-import io.bootique.jetty.jakarta.server.ConnectorHolder;
-import io.bootique.jetty.jakarta.server.ServerHolder;
+import io.bootique.jetty.server.ConnectorHolder;
+import io.bootique.jetty.server.ServerHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

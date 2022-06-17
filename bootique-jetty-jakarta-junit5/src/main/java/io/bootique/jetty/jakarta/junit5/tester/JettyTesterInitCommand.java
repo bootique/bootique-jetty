@@ -21,7 +21,7 @@ package io.bootique.jetty.jakarta.junit5.tester;
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;
 import io.bootique.command.CommandWithMetadata;
-import io.bootique.jetty.jakarta.server.ServerHolder;
+import io.bootique.jetty.server.ServerHolder;
 import io.bootique.meta.application.CommandMetadata;
 
 import javax.inject.Inject;

@@ -20,8 +20,7 @@
 package io.bootique.jetty.jakarta.instrumented;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.instrumented.JettyInstrumentedModuleProvider;
+import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.*;
 import io.bootique.metrics.MetricsModule;
 import io.bootique.metrics.health.HealthCheckModule;

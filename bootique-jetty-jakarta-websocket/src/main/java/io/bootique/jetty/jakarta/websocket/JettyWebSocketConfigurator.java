@@ -20,8 +20,8 @@ package io.bootique.jetty.jakarta.websocket;
 
 import io.bootique.di.Injector;
 import io.bootique.di.Key;
-import io.bootique.jetty.jakarta.request.RequestMDCManager;
-import io.bootique.jetty.jakarta.server.ServletContextHandlerExtender;
+import io.bootique.jetty.request.RequestMDCManager;
+import io.bootique.jetty.server.ServletContextHandlerExtender;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;

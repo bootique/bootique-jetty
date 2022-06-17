@@ -20,7 +20,7 @@
 package io.bootique.jetty.jakarta;
 
 import io.bootique.ConfigModule;
-import io.bootique.jetty.jakarta.JettyModule;
+import io.bootique.jetty.JettyModule;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;

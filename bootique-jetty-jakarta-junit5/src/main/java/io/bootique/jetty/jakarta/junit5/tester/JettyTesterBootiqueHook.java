@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.jakarta.junit5.tester;
 
-import io.bootique.jetty.jakarta.server.ConnectorHolder;
+import io.bootique.jetty.server.ConnectorHolder;
 
 import java.util.Objects;
 

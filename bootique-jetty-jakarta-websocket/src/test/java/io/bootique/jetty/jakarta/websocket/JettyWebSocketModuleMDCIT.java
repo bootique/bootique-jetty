@@ -18,8 +18,8 @@
  */
 package io.bootique.jetty.jakarta.websocket;
 
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.request.RequestMDCItem;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.request.RequestMDCItem;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.websocket.*;

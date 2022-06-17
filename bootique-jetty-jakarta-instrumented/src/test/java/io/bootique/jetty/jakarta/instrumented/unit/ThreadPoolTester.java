@@ -20,7 +20,7 @@
 package io.bootique.jetty.jakarta.instrumented.unit;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.jakarta.JettyModule;
+import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTestFactory;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;

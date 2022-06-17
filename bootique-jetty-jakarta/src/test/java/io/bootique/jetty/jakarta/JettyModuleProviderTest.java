@@ -19,7 +19,7 @@
 
 package io.bootique.jetty.jakarta;
 
-import io.bootique.jetty.jakarta.JettyModuleProvider;
+import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.junit5.BQModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 

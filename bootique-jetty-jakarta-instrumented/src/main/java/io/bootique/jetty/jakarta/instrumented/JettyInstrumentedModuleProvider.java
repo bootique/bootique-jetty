@@ -21,8 +21,8 @@ package io.bootique.jetty.jakarta.instrumented;
 
 import io.bootique.BQModuleProvider;
 import io.bootique.di.BQModule;
-import io.bootique.jetty.jakarta.JettyModule;
-import io.bootique.jetty.jakarta.JettyModuleProvider;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.metrics.MetricsModuleProvider;
 import io.bootique.metrics.health.HealthCheckModuleProvider;
 

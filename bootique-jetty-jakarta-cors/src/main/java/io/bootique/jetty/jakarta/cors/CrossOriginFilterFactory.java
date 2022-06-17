@@ -20,7 +20,7 @@ package io.bootique.jetty.jakarta.cors;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.jetty.jakarta.MappedFilter;
+import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import java.util.Collections;
