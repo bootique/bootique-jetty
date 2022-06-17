@@ -21,7 +21,6 @@ package io.bootique.jetty.junit5;
 import io.bootique.BQRuntime;
 import io.bootique.command.CommandOutcome;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.junit5.JettyTester;
 import io.bootique.jetty.server.ServerHolder;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
@@ -86,7 +85,7 @@ public class JettyTester_ReplaceConnectorsIT {
         JettyTester jetty = JettyTester.create();
 
         BQRuntime app = testFactory
-                .app("-s", "-c", "classpath:io/bootique/jetty/jakarta/junit5/JettyTester_ReplaceConnectorsIT.yml")
+                .app("-s", "-c", "classpath:io/bootique/jetty/junit5/JettyTester_ReplaceConnectorsIT.yml")
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
                 .module(jetty.moduleReplacingConnectors())
