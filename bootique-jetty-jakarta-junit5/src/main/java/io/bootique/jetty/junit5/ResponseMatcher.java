@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.junit5;
+package io.bootique.jetty.junit5;
 
 import io.bootique.resource.ResourceFactory;
 import jakarta.ws.rs.core.HttpHeaders;

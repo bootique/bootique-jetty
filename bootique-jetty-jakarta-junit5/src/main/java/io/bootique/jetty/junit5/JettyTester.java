@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.junit5;
+package io.bootique.jetty.junit5;
 
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
@@ -24,9 +24,9 @@ import io.bootique.command.CommandDecorator;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.command.ServerCommand;
-import io.bootique.jetty.jakarta.junit5.tester.JettyConnectorAccessor;
-import io.bootique.jetty.jakarta.junit5.tester.JettyTesterBootiqueHook;
-import io.bootique.jetty.jakarta.junit5.tester.JettyTesterInitCommand;
+import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
+import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
+import io.bootique.jetty.junit5.tester.JettyTesterInitCommand;
 import io.bootique.jetty.server.ServerHolder;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;

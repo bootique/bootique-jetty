@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.junit5;
+package io.bootique.jetty.junit5;
 
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
@@ -38,7 +38,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @BQTest
-public class JettyTester_DefaultConfigIT {
+public class JettyTester_ContextIT {
 
     private static final String OUT_CONTENT = "____content_stream____";
 
@@ -47,6 +47,7 @@ public class JettyTester_DefaultConfigIT {
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
+            .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.context", "myapp"))
             .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
             .module(jetty.moduleReplacingConnectors())
             // for predictable URL assertions
@@ -57,15 +58,16 @@ public class JettyTester_DefaultConfigIT {
     public void testGetServerUrl() {
         String url = jetty.getUrl();
         Assertions.assertNotNull(url);
-        assertEquals("http://127.0.0.1:" + jetty.getPort(), url);
+
+        assertEquals("http://127.0.0.1:" + jetty.getPort() + "/myapp", url);
     }
 
     @Test
-    public void testGetClient() {
+    public void testGetTarget() {
         WebTarget client = jetty.getTarget();
         Assertions.assertNotNull(client);
 
-        assertEquals("http://127.0.0.1:" + jetty.getPort(), client.getUri().toString());
+        assertEquals("http://127.0.0.1:" + jetty.getPort() + "/myapp", client.getUri().toString());
 
         Response r = client.request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
