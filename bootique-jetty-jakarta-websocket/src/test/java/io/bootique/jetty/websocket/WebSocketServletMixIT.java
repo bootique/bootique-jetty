@@ -16,32 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.websocket;
+package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
+import io.bootique.jetty.JettyModule;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
+public class WebSocketServletMixIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testInjectionInEndpoint() throws IOException, DeploymentException, InterruptedException {
-
-        EchoService service = new EchoService("echo");
+    public void testServletCoexistence() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())
-                .module(b -> b.bind(EchoService.class).toInstance(service))
+                .module(b -> JettyModule.extend(b).addServlet(ServletSamePath.class).addServlet(ServletDifferentPath.class))
                 .module(b -> b.bind(ServerSocket.class).inSingletonScope())
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(ServerSocket.class))
                 .createRuntime();
@@ -49,34 +52,42 @@ public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
         runtime.run();
 
         ServerSocket serverSocket = runtime.getInstance(ServerSocket.class);
-        serverSocket.assertBuffer("");
-
-        try (Session session = createClientSession("ws")) {
-
-            session.getBasicRemote().sendText("hello");
+        try (Session session = createClientSession("socket")) {
+            session.getBasicRemote().sendText("socket accessed");
             serverSocket.messageLatch.await();
-            serverSocket.assertBuffer("echo[hello]");
+            serverSocket.assertBuffer(";socket accessed");
+        }
+
+        Response r1 = jetty.getTarget().path("servlet").request().get();
+        assertEquals(200, r1.getStatus());
+        assertEquals("servlet accessed as /servlet", r1.readEntity(String.class));
+
+        // same path as websocket here.. resolution will happen at the protocol level
+        Response r2 = jetty.getTarget().path("socket").request().get();
+        assertEquals(200, r2.getStatus());
+        assertEquals("servlet accessed as /socket", r2.readEntity(String.class));
+    }
+
+    @WebServlet(urlPatterns = "/socket")
+    public static class ServletSamePath extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.getWriter().print("servlet accessed as /socket");
         }
     }
 
-    public static class EchoService {
+    @WebServlet(urlPatterns = "/servlet")
+    public static class ServletDifferentPath extends HttpServlet {
 
-        private String prefix;
-
-        EchoService(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public String echo(String message) {
-            return prefix + "[" + message + "]";
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            resp.getWriter().print("servlet accessed as /servlet");
         }
     }
 
-    @ServerEndpoint(value = "/ws")
+    @ServerEndpoint(value = "/socket")
     public static class ServerSocket {
-
-        @Inject
-        EchoService echoService;
 
         CountDownLatch messageLatch = new CountDownLatch(1);
         StringBuilder buffer = new StringBuilder();
@@ -87,7 +98,7 @@ public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
 
         @OnMessage
         public void onMessageText(String message) {
-            buffer.append(echoService.echo(message));
+            buffer.append(";" + message);
             messageLatch.countDown();
         }
 
@@ -96,5 +107,4 @@ public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
             cause.printStackTrace();
         }
     }
-
 }

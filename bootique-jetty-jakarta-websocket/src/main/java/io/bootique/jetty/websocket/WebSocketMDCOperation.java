@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.websocket;
+package io.bootique.jetty.websocket;
 
 /**
  * @since 2.0.B1

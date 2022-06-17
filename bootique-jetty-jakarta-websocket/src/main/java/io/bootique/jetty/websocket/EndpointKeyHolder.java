@@ -16,10 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.websocket;
+package io.bootique.jetty.websocket;
+
+
+import io.bootique.di.Key;
 
 /**
- * @since 3.0.M1
+ * A wrapper for a Bootique DI {@link Key} to make the Key itself injectable.
  */
-public class WebSocketConfigurator {
+public class EndpointKeyHolder {
+
+    private final Key<?> key;
+
+    public EndpointKeyHolder(Key<?> key) {
+        this.key = key;
+    }
+
+    public Key<?> getKey() {
+        return key;
+    }
 }

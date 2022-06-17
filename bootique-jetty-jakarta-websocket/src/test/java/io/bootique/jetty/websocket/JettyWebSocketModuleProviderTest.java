@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.websocket;
+package io.bootique.jetty.websocket;
 
-import io.bootique.jetty.jakarta.websocket.JettyWebSocketModuleProvider;
+import io.bootique.jetty.websocket.JettyWebSocketModuleProvider;
 import io.bootique.junit5.BQModuleProviderChecker;
 import org.junit.jupiter.api.Test;
 

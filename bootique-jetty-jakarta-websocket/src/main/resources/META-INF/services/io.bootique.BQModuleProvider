@@ -17,4 +17,4 @@
 #  under the License.
 #####################################################################
 
-io.bootique.jetty.jakarta.websocket.JettyWebSocketModuleProvider
+io.bootique.jetty.websocket.JettyWebSocketModuleProvider

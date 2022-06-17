@@ -16,23 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.jakarta.websocket;
+package io.bootique.jetty.websocket;
 
+import io.bootique.BQModuleProvider;
+import io.bootique.di.BQModule;
 
-import io.bootique.di.Key;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Map;
 
-/**
- * A wrapper for a Bootique DI {@link Key} to make the Key itself injectable.
- */
-public class EndpointKeyHolder {
+public class JettyWebSocketModuleProvider implements BQModuleProvider {
 
-    private final Key<?> key;
-
-    public EndpointKeyHolder(Key<?> key) {
-        this.key = key;
+    @Override
+    public BQModule module() {
+        return new JettyWebSocketModule();
     }
 
-    public Key<?> getKey() {
-        return key;
+    @Override
+    public Map<String, Type> configs() {
+        return Collections.singletonMap("jettywebsocket", JettyWebSocketConfiguratorFactory.class);
     }
 }
