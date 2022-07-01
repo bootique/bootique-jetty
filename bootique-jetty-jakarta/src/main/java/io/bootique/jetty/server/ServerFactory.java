@@ -21,16 +21,17 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
+import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.resource.FolderResourceFactory;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AllowSymLinkAliasChecker;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -94,6 +95,10 @@ public class ServerFactory {
 
         ThreadPool threadPool = createThreadPool();
         ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
+
+        // Using deprecated symlink alias checker until https://github.com/eclipse/jetty.project/issues/8259
+        // is implemented
+        contextHandler.setAliasChecks(List.of(new AllowSymLinkAliasChecker()));
 
         Server server = new Server(threadPool);
         server.setStopAtShutdown(true);
