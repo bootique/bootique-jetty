@@ -18,8 +18,8 @@
  */
 package io.bootique.jetty.docs;
 
-import javax.websocket.OnMessage;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.server.ServerEndpoint;
 
 // tag::AnnotatedWebsocket[]
 @ServerEndpoint(value = "/ws1")

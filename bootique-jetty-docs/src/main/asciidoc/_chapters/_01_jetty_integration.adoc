@@ -19,12 +19,16 @@
 
 https://github.com/bootique/bootique-jetty[`bootique-jetty`] module embeds http://www.eclipse.org/jetty/[Jetty web
 server] in your application. It provides environment for running servlet specification objects (servlets, servlet
-filters, servlet listeners). Also you will be able to serve static files that are either packaged in the application
+filters, servlet listeners). Also, you will be able to serve static files that are either packaged in the application
 jar or located somewhere on the filesystem. As things go with Bootique, you will be able to centrally configure both
 Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns and pass servlet parameters).
 
 `bootique-jetty` is "drag-and-drop" just like any other Bootique module. It is enabled by simply adding it to the
 `pom.xml` dependencies (assuming `autoLoadModules()` is in effect):
+
+NOTE: Bootique 3.x supports both the legacy JavaEE and the newer Jakarta versions of Jetty. Each Bootique Jetty module
+is shipped in two flavors (with and without `-jakarta` in the name). The examples below a based on the newer Jakarta
+modules. But It is your choice which one to use. The API of both is identical (except for the import package).
 
 .Maven
 [%collapsible%open]
@@ -33,7 +37,7 @@ Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns an
 ----
 <dependency>
     <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty</artifactId>
+    <artifactId>bootique-jetty-jakarta</artifactId>
 </dependency>
 ----
 ====
@@ -44,7 +48,7 @@ Jetty (e.g. set connector ports) and your apps (e.g. map servlet URL patterns an
 [source,groovy]
 ----
 {
-  implementation: 'io.bootique.jetty:bootique-jetty'
+  implementation: 'io.bootique.jetty:bootique-jetty-jakarta'
 }
 ----
 ====

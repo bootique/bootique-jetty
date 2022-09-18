@@ -19,9 +19,9 @@
 package io.bootique.jetty.docs;
 
 import io.bootique.jetty.servlet.ServletEnvironment;
+import jakarta.servlet.http.HttpServletRequest;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 public class ServiceWithServletEnvironment {
 

@@ -21,9 +21,9 @@ package io.bootique.jetty.docs;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 
 public class ModuleWithListener implements BQModule {
 

@@ -31,7 +31,7 @@ To use "bootique-jetty" test extensions, import the following module in the "tes
 ----
 <dependency>
     <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty-junit5</artifactId>
+    <artifactId>bootique-jetty-jakarta-junit5</artifactId>
     <scope>test</scope>
 </dependency>
 ----
@@ -43,7 +43,7 @@ To use "bootique-jetty" test extensions, import the following module in the "tes
 [source,groovy]
 ----
 {
-  testImplementation: 'io.bootique.jetty:bootique-jetty-junit5'
+  testImplementation: 'io.bootique.jetty:bootique-jetty-jakarta-junit5'
 }
 ----
 ====

@@ -22,8 +22,8 @@ import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
+import jakarta.servlet.http.HttpServlet;
 
-import javax.servlet.http.HttpServlet;
 import java.util.Collections;
 
 public class ModuleWithMappedServlet implements BQModule {

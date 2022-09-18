@@ -18,10 +18,9 @@
  */
 package io.bootique.jetty.docs;
 
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-
+import jakarta.servlet.annotation.WebInitParam;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 
 // tag::AnnotatedServlet[]
 @WebServlet(

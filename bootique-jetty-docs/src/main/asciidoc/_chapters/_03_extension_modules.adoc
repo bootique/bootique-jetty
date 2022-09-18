@@ -34,7 +34,7 @@ and health checks for your running app:
 ----
 <dependency>
     <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty-instrumented</artifactId>
+    <artifactId>bootique-jetty-jakarta-instrumented</artifactId>
 </dependency>
 ----
 ====
@@ -44,7 +44,7 @@ and health checks for your running app:
 [source,groovy]
 ----
 {
-  implementation: 'io.bootique.jetty:bootique-jetty-instrumented'
+  implementation: 'io.bootique.jetty:bootique-jetty-jakarta-instrumented'
 }
 ----
 ====
@@ -60,7 +60,7 @@ to prevent the browsers from blocking access. To achieve that include the follow
 ----
 <dependency>
     <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty-cors</artifactId>
+    <artifactId>bootique-jetty-jakarta-cors</artifactId>
 </dependency>
 ----
 ====
@@ -70,7 +70,7 @@ to prevent the browsers from blocking access. To achieve that include the follow
 [source,groovy]
 ----
 {
-  implementation: 'io.bootique.jetty:bootique-jetty-cors'
+  implementation: 'io.bootique.jetty:bootique-jetty-jakarta-cors'
 }
 ----
 ====
@@ -88,7 +88,7 @@ module:
 ----
 <dependency>
     <groupId>io.bootique.jetty</groupId>
-    <artifactId>bootique-jetty-websocket</artifactId>
+    <artifactId>bootique-jetty-jakarta-websocket</artifactId>
 </dependency>
 ----
 ====
@@ -99,13 +99,13 @@ module:
 [source,groovy]
 ----
 {
-  implementation: 'io.bootique.jetty:bootique-jetty-websocket'
+  implementation: 'io.bootique.jetty:bootique-jetty-jakarta-websocket'
 }
 ----
 ====
 
 Somewhat similar to servlets, the application will need to provide its own classes for websocket endpoints (that must
-follow JSR-356 API to be recognized as endpoonts). Then you need to register them using `JettyWebSocketModule` extender:
+follow JSR-356 API to be recognized as endpoints). Then you need to register them using `JettyWebSocketModule` extender:
 
 [source,java,indent=0]
 ----
