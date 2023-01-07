@@ -39,6 +39,12 @@
                 <groupId>org.eclipse.jetty.websocket</groupId>
                 <artifactId>websocket-jakarta-server</artifactId>
                 <version>${jetty11.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>jakarta.websocket</groupId>
