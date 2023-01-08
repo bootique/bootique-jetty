@@ -96,8 +96,8 @@ public class ServerFactory {
         ThreadPool threadPool = createThreadPool();
         ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
 
-        // Using deprecated symlink alias checker until https://github.com/eclipse/jetty.project/issues/8259
-        // is implemented
+        // TODO: Using deprecated noop symlink alias checker until we decide how to implement
+        //  https://github.com/bootique/bootique-jetty/issues/114
         contextHandler.setAliasChecks(List.of(new AllowSymLinkAliasChecker()));
 
         Server server = new Server(threadPool);
