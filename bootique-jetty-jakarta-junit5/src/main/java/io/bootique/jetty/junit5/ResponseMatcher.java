@@ -70,6 +70,34 @@ public class ResponseMatcher {
         return assertStatus(201, message);
     }
 
+    /**
+     * @since 3.0.M2
+     */
+    public ResponseMatcher assertFound() {
+        return assertStatus(302);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public ResponseMatcher assertFound(String message) {
+        return assertStatus(302, message);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public ResponseMatcher assertTempRedirect() {
+        return assertStatus(307);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public ResponseMatcher assertTempRedirect(String message) {
+        return assertStatus(307, message);
+    }
+
     public ResponseMatcher assertBadRequest() {
         return assertStatus(400);
     }

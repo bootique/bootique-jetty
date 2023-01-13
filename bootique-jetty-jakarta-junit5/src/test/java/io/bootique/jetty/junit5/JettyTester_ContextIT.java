@@ -74,12 +74,29 @@ public class JettyTester_ContextIT {
         assertEquals(OUT_CONTENT, r.readEntity(String.class));
     }
 
+    @Test
+    public void testGetTarget_NoRedirects() {
+        WebTarget client = jetty.getTarget(false);
+
+        Response r = client
+                // trailing "/" is needed to prevent servlet redirect
+                .path("/")
+                .queryParam("redirect", "true").request().get();
+
+        JettyTester.assertTempRedirect(r).assertHeader("Location", "/someurl");
+    }
+
     @WebServlet(urlPatterns = "/*")
     static class ContentServlet extends HttpServlet {
 
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            resp.getWriter().append(OUT_CONTENT);
+            if ("true".equals(req.getParameter("redirect"))) {
+                resp.setStatus(Response.Status.TEMPORARY_REDIRECT.getStatusCode());
+                resp.setHeader("Location", "/someurl");
+            } else {
+                resp.getWriter().append(OUT_CONTENT);
+            }
         }
     }
 }

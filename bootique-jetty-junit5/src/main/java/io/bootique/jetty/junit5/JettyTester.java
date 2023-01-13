@@ -28,6 +28,8 @@ import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
 import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
 import io.bootique.jetty.junit5.tester.JettyTesterInitCommand;
 import io.bootique.jetty.server.ServerHolder;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -61,7 +63,14 @@ public class JettyTester {
      * @return a WebTarget to access the test Jetty server.
      */
     public static WebTarget getTarget(BQRuntime jettyApp) {
-        return getTarget(getUrl(jettyApp));
+        return JettyTester.getTarget(jettyApp, true);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public static WebTarget getTarget(BQRuntime jettyApp, boolean followRedirects) {
+        return JettyTester.getTarget(getUrl(jettyApp), followRedirects);
     }
 
     /**
@@ -77,8 +86,11 @@ public class JettyTester {
         return JettyConnectorAccessor.getConnectorHolder(serverHolder).getUrl(serverHolder.getContext());
     }
 
-    protected static WebTarget getTarget(String url) {
-        return ClientBuilder.newClient().target(url);
+    protected static WebTarget getTarget(String url, boolean followRedirects) {
+        return followRedirects
+                //  by default following redirects; to suppress it add an explicit client property
+                ? ClientBuilder.newClient().target(url)
+                : ClientBuilder.newClient(new ClientConfig().property(ClientProperties.FOLLOW_REDIRECTS, false)).target(url);
     }
 
     public static JettyTester create() {
@@ -92,7 +104,14 @@ public class JettyTester {
      * @return a WebTarget to access the test Jetty server.
      */
     public WebTarget getTarget() {
-        return getTarget(getUrl());
+        return JettyTester.getTarget(getUrl(), true);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public WebTarget getTarget(boolean followRedirects) {
+        return JettyTester.getTarget(getUrl(), followRedirects);
     }
 
     public String getUrl() {
@@ -149,6 +168,34 @@ public class JettyTester {
 
     public static ResponseMatcher assertCreated(Response response, String message) {
         return matcher(response).assertCreated(message);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public static ResponseMatcher assertFound(Response response) {
+        return matcher(response).assertFound();
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public static ResponseMatcher assertFound(Response response, String message) {
+        return matcher(response).assertFound(message);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public static ResponseMatcher assertTempRedirect(Response response) {
+        return matcher(response).assertTempRedirect();
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public static ResponseMatcher assertTempRedirect(Response response, String message) {
+        return matcher(response).assertTempRedirect(message);
     }
 
     public static ResponseMatcher assertBadRequest(Response response) {

@@ -1,6 +1,7 @@
 ## 3.0.M2
 
 * #113 Upgrade to Jetty 10.0.13 / 11.0.13
+* #115 JettyTester - support for testing redirects
 
 ## 3.0.M1
 
