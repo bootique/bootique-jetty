@@ -71,7 +71,7 @@ public class DefaultServlet_ContentTypeIT {
 
     @Test
     public void testApplicationJS() {
-        checkContentType("a.js", "application/javascript");
+        checkContentType("a.js", "text/javascript");
     }
 
     @Test
