@@ -20,6 +20,7 @@ package io.bootique.jetty.junit5;
 
 import io.bootique.resource.ResourceFactory;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,11 +39,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ResponseMatcher {
 
     private final Response response;
-    private String content;
-    private byte[] binContent;
+    private final AtomicBoolean contentRead;
 
     public ResponseMatcher(Response response) {
         this.response = response;
+        this.contentRead = new AtomicBoolean(false);
     }
 
     public ResponseMatcher assertStatus(int expectedStatus) {
@@ -200,44 +202,49 @@ public class ResponseMatcher {
         return this;
     }
 
+    /**
+     * @since 3.0.M2
+     */
+    public <T> T getContent(Class<T> type) {
+        checkCanReadContent();
+        return response.readEntity(type);
+    }
+
+    /**
+     * @since 3.0.M2
+     */
+    public <T> T getContent(GenericType<T> type) {
+        checkCanReadContent();
+        return response.readEntity(type);
+    }
+
     public String getContentAsString() {
-
-        if (binContent != null) {
-            throw new IllegalStateException("Response already read as binary");
-        }
-
-        // cache read content, as Response won't allow to read it twice..
-        if (content == null) {
-            content = response.readEntity(String.class);
-        }
-
-        return content;
+        return getContent(String.class);
     }
 
     public byte[] getContentAsBytes() {
-        if (content != null) {
-            throw new IllegalStateException("Response already read as String");
-        }
+        checkCanReadContent();
 
-        // cache read content, as Response won't allow to read it twice..
-        if (binContent == null) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            try (InputStream in = response.readEntity(InputStream.class)) {
+        try (InputStream in = response.readEntity(InputStream.class)) {
 
-                byte[] buffer = new byte[8192];
-                int read;
-                while ((read = in.read(buffer, 0, buffer.length)) >= 0) {
-                    out.write(buffer, 0, read);
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer, 0, buffer.length)) >= 0) {
+                out.write(buffer, 0, read);
             }
 
-            this.binContent = out.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        return binContent;
+        return out.toByteArray();
+    }
+
+    private void checkCanReadContent() {
+        if (!contentRead.compareAndSet(false, true)) {
+            throw new IllegalStateException("Response data is already read");
+        }
     }
 }

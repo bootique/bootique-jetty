@@ -33,8 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @BQTest
 public class JettyTester_MatcherIT {
@@ -84,6 +83,18 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
+    public void testMatch200_JsonContent() {
+        Response r = jetty.getTarget()
+                .queryParam("wantedContent", "[1,2,3]")
+                .queryParam("wantedType", "application/json")
+                .request()
+                .get();
+
+        String content = JettyTester.matcher(r).assertOk().getContent(String.class);
+        assertEquals("[1,2,3]", content);
+    }
+
+    @Test
     public void testMatch400() {
         Response r1 = jetty.getTarget().queryParam("wantedStatus", "404").request().get();
         JettyTester.matcher(r1).assertNotFound();
@@ -112,16 +123,17 @@ public class JettyTester_MatcherIT {
             String statusString = req.getParameter("wantedStatus");
             int status = statusString != null ? Integer.parseInt(statusString) : 200;
 
-            if(status == 200) {
+            if (status == 200) {
 
                 String contentType = req.getParameter("wantedType");
-                if(contentType != null) {
+                if (contentType != null) {
                     resp.setContentType(contentType);
                 }
 
-                resp.getWriter().append(OUT_CONTENT);
-            }
-            else {
+                String wantedContent = req.getParameter("wantedContent");
+                String content = wantedContent != null ? wantedContent : OUT_CONTENT;
+                resp.getWriter().append(content);
+            } else {
                 resp.setStatus(status);
             }
         }
