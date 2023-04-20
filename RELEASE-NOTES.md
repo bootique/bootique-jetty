@@ -4,6 +4,7 @@
 * #115 JettyTester - support for testing redirects
 * #114 Upgrade of Jetty to 10.0.14 / 11.0.14
 * #117 JettyTester's ResponseMatcher must allow access to any type of content
+* #118 RequestTimer to log request headers at DEBUG level
 
 ## 3.0.M1
 
