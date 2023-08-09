@@ -205,6 +205,14 @@ public class ResponseMatcher {
     /**
      * @since 3.0.M2
      */
+    public ResponseMatcher assertNoHeader(String headerName) {
+        assertNull(response.getHeaderString(headerName));
+        return this;
+    }
+
+    /**
+     * @since 3.0.M2
+     */
     public <T> T getContent(Class<T> type) {
         checkCanReadContent();
         return response.readEntity(type);
