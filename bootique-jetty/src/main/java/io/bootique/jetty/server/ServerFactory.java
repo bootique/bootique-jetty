@@ -21,6 +21,7 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
+import io.bootique.di.Injector;
 import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedListener;
@@ -82,18 +83,19 @@ public class ServerFactory {
     }
 
     /**
-     * @since 2.0
+     * @since 3.0
      */
     public ServerHolder createServerHolder(
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
             Set<MappedListener> listeners,
             Set<ServletContextHandlerExtender> contextHandlerExtenders,
-            RequestMDCManager mdcManager) {
+            RequestMDCManager mdcManager,
+            Injector injector) {
 
         String context = resolveContext();
 
-        ThreadPool threadPool = createThreadPool();
+        ThreadPool threadPool = createThreadPool(injector);
         ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
 
         // TODO: Using deprecated noop symlink alias checker until we decide how to implement
@@ -263,15 +265,15 @@ public class ServerFactory {
         return connectorFactories;
     }
 
-    protected QueuedThreadPool createThreadPool() {
+    protected QueuedThreadPool createThreadPool(Injector injector) {
         BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-        QueuedThreadPool threadPool = createThreadPool(queue);
+        QueuedThreadPool threadPool = createThreadPool(queue, injector);
         threadPool.setName("bootique-http");
 
         return threadPool;
     }
 
-    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
+    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue, Injector injector) {
         return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
     }
 

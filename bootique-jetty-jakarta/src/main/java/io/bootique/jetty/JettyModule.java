@@ -23,6 +23,7 @@ import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
+import io.bootique.di.Injector;
 import io.bootique.di.Provides;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.request.RequestMDCItem;
@@ -106,14 +107,16 @@ public class JettyModule extends ConfigModule {
             Set<ServletContextHandlerExtender> contextHandlerExtenders,
             RequestMDCManager mdcManager,
             BootLogger bootLogger,
-            ShutdownManager shutdownManager) {
+            ShutdownManager shutdownManager,
+            Injector injector) {
 
         ServerHolder holder = factory.createServerHolder(
                 allServlets(servlets, mappedServlets),
                 allFilters(filters, mappedFilters),
                 allListeners(listeners, mappedListeners),
                 contextHandlerExtenders,
-                mdcManager);
+                mdcManager,
+                injector);
 
         shutdownManager.addShutdownHook(() -> {
             bootLogger.trace(() -> "stopping Jetty...");

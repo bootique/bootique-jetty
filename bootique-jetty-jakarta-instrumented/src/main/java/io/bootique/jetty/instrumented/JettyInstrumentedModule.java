@@ -68,8 +68,8 @@ public class JettyInstrumentedModule extends ConfigModule {
     }
 
     @Provides
-    InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory, MetricRegistry metricRegistry) {
-        return config(InstrumentedServerFactory.class, configFactory).initMetricRegistry(metricRegistry);
+    InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory) {
+        return config(InstrumentedServerFactory.class, configFactory);
     }
 
     @Provides
@@ -89,7 +89,9 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Singleton
     @Provides
-    JettyHealthChecks provideHealthCheckGroup(InstrumentedServerFactory serverFactory) {
-        return serverFactory.createHealthCheckGroup();
+    JettyHealthChecks provideHealthCheckGroup(
+            InstrumentedServerFactory serverFactory,
+            MetricRegistry metricRegistry) {
+        return serverFactory.createHealthChecks(metricRegistry);
     }
 }
