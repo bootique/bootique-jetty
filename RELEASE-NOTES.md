@@ -5,6 +5,7 @@
 * #114 Upgrade of Jetty to 10.0.14 / 11.0.14
 * #117 JettyTester's ResponseMatcher must allow access to any type of content
 * #118 RequestTimer to log request headers at DEBUG level
+* #120 Upgrade to minor versions 11.0.16, 10.0.16
 
 ## 3.0.M1
 
