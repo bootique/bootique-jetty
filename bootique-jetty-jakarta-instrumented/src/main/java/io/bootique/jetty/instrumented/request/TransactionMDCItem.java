@@ -27,22 +27,20 @@ import jakarta.servlet.ServletRequest;
 
 public class TransactionMDCItem implements RequestMDCItem {
 
-    private final TransactionIdMDC transactionIdMDC;
     private final TransactionIdGenerator idGenerator;
 
-    public TransactionMDCItem(TransactionIdGenerator idGenerator, TransactionIdMDC transactionIdMDC) {
-        this.transactionIdMDC = transactionIdMDC;
+    public TransactionMDCItem(TransactionIdGenerator idGenerator) {
         this.idGenerator = idGenerator;
     }
 
     @Override
     public void initMDC(ServletContext sc, ServletRequest request) {
         String id = idGenerator.nextId();
-        transactionIdMDC.reset(id);
+        TransactionIdMDC.setId(id);
     }
 
     @Override
     public void cleanupMDC(ServletContext sc, ServletRequest request) {
-        transactionIdMDC.clear();
+        TransactionIdMDC.clearId();
     }
 }

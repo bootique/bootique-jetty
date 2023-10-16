@@ -83,8 +83,8 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Provides
     @Singleton
-    TransactionMDCItem provideTransactionMDCItem(TransactionIdGenerator generator, TransactionIdMDC mdc) {
-        return new TransactionMDCItem(generator, mdc);
+    TransactionMDCItem provideTransactionMDCItem(TransactionIdGenerator generator) {
+        return new TransactionMDCItem(generator);
     }
 
     @Singleton
