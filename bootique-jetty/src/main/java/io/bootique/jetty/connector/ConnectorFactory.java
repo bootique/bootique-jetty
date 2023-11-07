@@ -79,8 +79,9 @@ public abstract class ConnectorFactory implements PolymorphicConfiguration {
 
         connector.setPort(resolvePort());
         connector.setIdleTimeout(getIdleTimeoutMs());
-        connector.setHost(getHost().equals("*") ? "0.0.0.0" : getHost());
 
+        String host = "*".equals(this.host) ? "0.0.0.0" : this.host;
+        connector.setHost(host);
         return connector;
     }
 

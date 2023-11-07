@@ -1,0 +1,5 @@
+jetty:
+  connectors:
+    - host: "*"
+      port: 8080
+      type: http
