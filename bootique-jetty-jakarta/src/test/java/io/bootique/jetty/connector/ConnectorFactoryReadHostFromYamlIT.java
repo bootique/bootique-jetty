@@ -36,7 +36,7 @@ public class ConnectorFactoryReadHostFromYamlIT {
 
     @Test
     @DisplayName("Should read from yaml properly")
-    public void testReadHostFromYaml() throws SocketException {
+    public void readHostFromYaml() throws SocketException {
         BQRuntime app = testFactory.app("-s", "-c", configPath)
                 .autoLoadModules()
                 .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))

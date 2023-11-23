@@ -19,7 +19,6 @@
 package io.bootique.jetty.junit5;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.junit5.JettyTester;
 import io.bootique.jetty.server.ServerHolder;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
@@ -39,7 +38,7 @@ public class JettyTester_ModuleReplacingConnectorsIT {
 
     @Test
     @DisplayName("Tester should work with BQTestFactory-produced runtimes")
-    public void testWithBQTestFactory() {
+    public void withBQTestFactory() {
         JettyTester tester = JettyTester.create();
         BQRuntime runtime = testFactory.app("--server").autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
         runtime.run();
@@ -48,7 +47,7 @@ public class JettyTester_ModuleReplacingConnectorsIT {
 
     @Test
     @DisplayName("Port/URL is not known before the runtime is started")
-    public void testRuntimeNotStarted() {
+    public void runtimeNotStarted() {
         JettyTester tester = JettyTester.create();
         testFactory.app("--server").autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
         assertThrows(AssertionFailedError.class, () -> tester.getPort());
@@ -56,7 +55,7 @@ public class JettyTester_ModuleReplacingConnectorsIT {
 
     @Test
     @DisplayName("Reusing tester for multiple runtimes must be disallowed")
-    public void testDisallowMultipleRuntimes() {
+    public void disallowMultipleRuntimes() {
         JettyTester tester = JettyTester.create();
         testFactory.app().autoLoadModules().module(tester.moduleReplacingConnectors()).createRuntime();
 

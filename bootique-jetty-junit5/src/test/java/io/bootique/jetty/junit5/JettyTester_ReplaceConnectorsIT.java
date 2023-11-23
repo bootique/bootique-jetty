@@ -80,7 +80,7 @@ public class JettyTester_ReplaceConnectorsIT {
 
     @Test
     @DisplayName("Connectors from YAML must be replaced by the test connector")
-    public void testModuleReplacingConnectors() {
+    public void moduleReplacingConnectors() {
 
         JettyTester jetty = JettyTester.create();
 
