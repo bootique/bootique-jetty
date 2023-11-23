@@ -49,7 +49,7 @@ public class FilterInitParametersIT {
             .createRuntime();
 
     @Test
-    public void testInitParametersPassed() {
+    public void initParametersPassed() {
 
         Map<String, String> params = new HashMap<>();
         params.put("a", "af1");

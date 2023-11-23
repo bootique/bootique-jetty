@@ -40,7 +40,7 @@ public class JettyInstrumentedModuleIT {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testMetrics() {
+    public void metrics() {
         BQRuntime runtime = testFactory
                 .app("--server")
                 .autoLoadModules()
@@ -62,7 +62,7 @@ public class JettyInstrumentedModuleIT {
     }
 
     @Test
-    public void testHealthChecks() {
+    public void healthChecks() {
         BQRuntime runtime = testFactory
                 .app("--server")
                 .autoLoadModules()

@@ -44,7 +44,7 @@ public class NotAnnotatedServletIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testServletContainerState() {
+    public void servletContainerState() {
         assertThrows(DIRuntimeException.class, () -> testFactory.app("-s").module(new ServletModule()).run());
     }
 

@@ -55,7 +55,7 @@ public class JettyTester_ContextIT {
             .createRuntime();
 
     @Test
-    public void testGetServerUrl() {
+    public void getServerUrl() {
         String url = jetty.getUrl();
         Assertions.assertNotNull(url);
 
@@ -63,7 +63,7 @@ public class JettyTester_ContextIT {
     }
 
     @Test
-    public void testGetTarget() {
+    public void getTarget() {
         WebTarget client = jetty.getTarget();
         Assertions.assertNotNull(client);
 
@@ -75,7 +75,7 @@ public class JettyTester_ContextIT {
     }
 
     @Test
-    public void testGetTarget_NoRedirects() {
+    public void getTarget_NoRedirects() {
         WebTarget client = jetty.getTarget(false);
 
         Response r = client

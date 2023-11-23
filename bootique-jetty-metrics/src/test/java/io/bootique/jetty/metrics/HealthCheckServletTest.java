@@ -52,7 +52,7 @@ public class HealthCheckServletTest {
     }
 
     @Test
-    public void testDoGet_NoHealthChecks() throws ServletException, IOException {
+    public void doGet_NoHealthChecks() throws ServletException, IOException {
 
         Mockito.when(mockRegistry.runHealthChecks()).thenReturn(new HashMap<>());
 
@@ -68,7 +68,7 @@ public class HealthCheckServletTest {
     }
 
     @Test
-    public void testDoGet_Success() throws ServletException, IOException {
+    public void doGet_Success() throws ServletException, IOException {
 
         Map<String, HealthCheckOutcome> testResults = new HashMap<>();
         testResults.put("h1", HealthCheckOutcome.ok());
@@ -89,7 +89,7 @@ public class HealthCheckServletTest {
     }
 
     @Test
-    public void testDoGet_Mixed() throws ServletException, IOException {
+    public void doGet_Mixed() throws ServletException, IOException {
 
         Map<String, HealthCheckOutcome> testResults = new HashMap<>();
         testResults.put("h1", HealthCheckOutcome.ok());
@@ -112,7 +112,7 @@ public class HealthCheckServletTest {
     }
 
     @Test
-    public void testDoGet_StackTrace() throws ServletException, IOException {
+    public void doGet_StackTrace() throws ServletException, IOException {
 
         Map<String, HealthCheckOutcome> testResults = new HashMap<>();
         try {

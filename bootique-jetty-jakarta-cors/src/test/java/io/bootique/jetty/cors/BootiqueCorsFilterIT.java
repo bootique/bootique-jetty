@@ -60,7 +60,7 @@ public class BootiqueCorsFilterIT {
     }
 
     @Test
-    public void testResponseHeaders_DefaultConfig() {
+    public void responseHeaders_DefaultConfig() {
         testFactory.app("-s")
                 .module(tester.moduleReplacingConnectors())
                 .run();
@@ -71,7 +71,7 @@ public class BootiqueCorsFilterIT {
     }
 
     @Test
-    public void testResponseHeaders_ByOrigin() {
+    public void responseHeaders_ByOrigin() {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
                 .module(tester.moduleReplacingConnectors())
                 .run();
@@ -89,7 +89,7 @@ public class BootiqueCorsFilterIT {
     }
 
     @Test
-    public void testResponseHeaders_ByPath() {
+    public void responseHeaders_ByPath() {
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/cors/CorsFilter.yml")
                 .module(tester.moduleReplacingConnectors())
                 .run();

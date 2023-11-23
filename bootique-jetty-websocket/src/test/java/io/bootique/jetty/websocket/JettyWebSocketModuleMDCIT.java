@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testContextPassed() throws IOException, DeploymentException, InterruptedException {
+    public void contextPassed() throws IOException, DeploymentException, InterruptedException {
 
         testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())

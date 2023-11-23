@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class WebSocketServletMixIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testServletCoexistence() throws IOException, DeploymentException, InterruptedException {
+    public void servletCoexistence() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())

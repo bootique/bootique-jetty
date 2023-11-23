@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JettyWebSocketModuleChatbotIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testTwoWayMessaging() throws IOException, DeploymentException, InterruptedException {
+    public void twoWayMessaging() throws IOException, DeploymentException, InterruptedException {
 
         CommandOutcome serverStatus = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())

@@ -53,7 +53,7 @@ public class AnnotatedFilterIT {
     }
 
     @Test
-    public void testServletContainerState() {
+    public void servletContainerState() {
         testFactory.app("-s")
                 .module(new FilterModule())
                 .run();
@@ -75,7 +75,7 @@ public class AnnotatedFilterIT {
     }
 
     @Test
-    public void testConfig_Override() {
+    public void config_Override() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedFilterIT1.yml")
                 .module(new FilterModule())

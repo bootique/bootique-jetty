@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class JettyWebSocketConfiguratorFactoryIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testCustomPolicy() {
+    public void customPolicy() {
 
         BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/websocket/WebSocketPolicyFactoryIT.yml")
                 .module(jetty.moduleReplacingConnectors())

@@ -61,7 +61,7 @@ public class JettyTester_LazyInitIT {
             .createRuntime();
 
     @Test
-    public void testInitWorks() {
+    public void initWorks() {
         Response r = jetty.getTarget().request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals(OUT_CONTENT, r.readEntity(String.class));

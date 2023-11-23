@@ -40,7 +40,7 @@ public class DefaultServletIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testDisabled() {
+    public void disabled() {
         testFactory.app("-s").run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -49,7 +49,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_NoResourceBase() {
+    public void defaultServlet_NoResourceBase() {
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).useDefaultServlet())
                 .run();
@@ -60,7 +60,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsFilePath() {
+    public void defaultServlet_ResourceBaseIsFilePath() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -80,7 +80,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsFilePath_SetViaServletParams() {
+    public void defaultServlet_ResourceBaseIsFilePath_SetViaServletParams() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -97,7 +97,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseInServletParamsOverridesDefault() {
+    public void defaultServlet_ResourceBaseInServletParamsOverridesDefault() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -119,7 +119,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsFilePathWithDotSlash() {
+    public void defaultServlet_ResourceBaseIsFilePathWithDotSlash() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -138,7 +138,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsFileUrl() throws MalformedURLException {
+    public void defaultServlet_ResourceBaseIsFileUrl() throws MalformedURLException {
 
         File baseDir = new File("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
         String baseUrl = baseDir.getAbsoluteFile().toURI().toURL().toString();
@@ -159,7 +159,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsClasspathUrl() {
+    public void defaultServlet_ResourceBaseIsClasspathUrl() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -177,7 +177,7 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void testDefaultServlet_ResourceBaseIsFilePath_ImplicitIndex() {
+    public void defaultServlet_ResourceBaseIsFilePath_ImplicitIndex() {
 
         testFactory.app("-s")
                 .module(b -> {

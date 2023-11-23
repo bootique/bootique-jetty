@@ -50,7 +50,7 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_Ordering1() {
+    public void addMappedListener_Ordering1() {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)
@@ -65,7 +65,7 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_Ordering2() {
+    public void addMappedListener_Ordering2() {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)
@@ -80,7 +80,7 @@ public class MappedListenerIT {
     }
 
     @Test
-    public void testAddMappedListener_OrderingVsUnmapped() {
+    public void addMappedListener_OrderingVsUnmapped() {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)

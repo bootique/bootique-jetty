@@ -45,7 +45,7 @@ public class ServerCommandIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testRun() {
+    public void run() {
 
         CommandOutcome outcome = testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "x", "/"))

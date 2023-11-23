@@ -50,7 +50,7 @@ public class JettyTester_MatcherIT {
             .createRuntime();
 
     @Test
-    public void testMatch200() {
+    public void match200() {
         Response r1 = jetty.getTarget().request().get();
         JettyTester.matcher(r1).assertOk().assertContent(OUT_CONTENT);
 
@@ -60,7 +60,7 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
-    public void testMatch200_ContentType() {
+    public void match200_ContentType() {
         Response r1 = jetty.getTarget().queryParam("wantedType", "application/json").request().get();
         JettyTester.matcher(r1).assertOk().assertContentType(MediaType.APPLICATION_JSON_TYPE);
 
@@ -74,7 +74,7 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
-    public void testMatch200_CustomAssertions() {
+    public void match200_CustomAssertions() {
         Response r = jetty.getTarget().request().get();
         JettyTester.matcher(r).assertOk().assertContent(c -> {
             assertNotNull(c);
@@ -83,7 +83,7 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
-    public void testMatch200_JsonContent() {
+    public void match200_JsonContent() {
         Response r = jetty.getTarget()
                 .queryParam("wantedContent", "[1,2,3]")
                 .queryParam("wantedType", "application/json")
@@ -95,7 +95,7 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
-    public void testMatch400() {
+    public void match400() {
         Response r1 = jetty.getTarget().queryParam("wantedStatus", "404").request().get();
         JettyTester.matcher(r1).assertNotFound();
 
@@ -105,7 +105,7 @@ public class JettyTester_MatcherIT {
     }
 
     @Test
-    public void testMatch500() {
+    public void match500() {
         Response r1 = jetty.getTarget().queryParam("wantedStatus", "500").request().get();
         JettyTester.matcher(r1).assertStatus(500);
 

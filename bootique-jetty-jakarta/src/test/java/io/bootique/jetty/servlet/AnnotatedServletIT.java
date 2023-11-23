@@ -55,7 +55,7 @@ public class AnnotatedServletIT {
     }
 
     @Test
-    public void testServletContainerState() {
+    public void servletContainerState() {
         testFactory.app("-s").module(new ServletModule()).run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -75,7 +75,7 @@ public class AnnotatedServletIT {
     }
 
     @Test
-    public void testConfig_Override() {
+    public void config_Override() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedServletIT1.yml")
                 .module(new ServletModule())

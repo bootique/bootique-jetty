@@ -50,7 +50,7 @@ public class RequestTimerIT {
     final JettyTester tester = JettyTester.create();
 
     @Test
-    public void testInitParametersPassed() {
+    public void initParametersPassed() {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))

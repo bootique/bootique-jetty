@@ -39,7 +39,7 @@ public class JettyHealthChecksIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testChecksLoaded() {
+    public void checksLoaded() {
         BQRuntime runtime = testFactory.app("-s").createRuntime();
         runtime.run();
 

@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JettyWebSocketModuleInjectionIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testInjectionInEndpoint() throws IOException, DeploymentException, InterruptedException {
+    public void injectionInEndpoint() throws IOException, DeploymentException, InterruptedException {
 
         EchoService service = new EchoService("echo");
 

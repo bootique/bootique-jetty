@@ -42,7 +42,7 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
     }
 
     @Test
-    public void testEndpointScopeNone() throws IOException, DeploymentException, InterruptedException {
+    public void endpointScopeNone() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())
@@ -66,7 +66,7 @@ public class JettyWebSocketModuleScopeIT extends JettyWebSocketTestBase {
     }
 
     @Test
-    public void testEndpointScopeSingleton() throws IOException, DeploymentException, InterruptedException {
+    public void endpointScopeSingleton() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())

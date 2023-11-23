@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 public class JettyWebSocketModuleProviderTest {
 
     @Test
-    public void testAutoLoadable() {
+    public void autoLoadable() {
         BQModuleProviderChecker.testAutoLoadable(JettyWebSocketModuleProvider.class);
     }
 }

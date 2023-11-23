@@ -49,33 +49,33 @@ public class DefaultServlet_ContentTypeIT {
     final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
     @Test
-    public void testTextPlain() {
+    public void textPlain() {
         checkContentType("a.txt", "text/plain");
     }
 
     @Test
-    public void testTextHtml() {
+    public void textHtml() {
         checkContentType("a.html", "text/html");
         checkContentType("/", "text/html");
     }
 
     @Test
-    public void testApplicationJson() {
+    public void applicationJson() {
         checkContentType("a.json", "application/json");
     }
 
     @Test
-    public void testTextCss() {
+    public void textCss() {
         checkContentType("a.css", "text/css");
     }
 
     @Test
-    public void testApplicationJS() {
+    public void applicationJS() {
         checkContentType("a.js", "text/javascript");
     }
 
     @Test
-    public void testImagePng() {
+    public void imagePng() {
         checkContentType("a.png", "image/png");
     }
 

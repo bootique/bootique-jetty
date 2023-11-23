@@ -53,7 +53,7 @@ public class MappedServletIT {
     }
 
     @Test
-    public void testMappedConfig() throws Exception {
+    public void mappedConfig() throws Exception {
 
         MappedServlet mappedServlet = new MappedServlet(mockServlet, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
 
@@ -74,7 +74,7 @@ public class MappedServletIT {
     }
 
     @Test
-    public void testMappedConfig_Override() throws Exception {
+    public void mappedConfig_Override() throws Exception {
 
         MappedServlet mappedServlet = new MappedServlet(
                 mockServlet,

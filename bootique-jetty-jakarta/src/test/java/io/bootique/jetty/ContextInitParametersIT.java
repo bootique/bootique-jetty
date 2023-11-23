@@ -48,7 +48,7 @@ public class ContextInitParametersIT {
             .createRuntime();
 
     @Test
-    public void testInitParametersPassed() {
+    public void initParametersPassed() {
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 

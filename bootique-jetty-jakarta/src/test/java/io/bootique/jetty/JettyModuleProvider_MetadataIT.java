@@ -42,7 +42,7 @@ public class JettyModuleProvider_MetadataIT {
     public static BQRuntime app = Bootique.app().autoLoadModules().createRuntime();
 
     @Test
-    public void testMetadata() {
+    public void metadata() {
 
         ModulesMetadata modulesMetadata = app.getInstance(ModulesMetadata.class);
         Optional<ModuleMetadata> jettyOpt = modulesMetadata.getModules()

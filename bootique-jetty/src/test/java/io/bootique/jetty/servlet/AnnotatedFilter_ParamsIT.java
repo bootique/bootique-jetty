@@ -46,7 +46,7 @@ public class AnnotatedFilter_ParamsIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testAnnotationParams() {
+    public void annotationParams() {
 
         testFactory.app("-s").module(new FilterModule()).run();
 
@@ -57,7 +57,7 @@ public class AnnotatedFilter_ParamsIT {
     }
 
     @Test
-    public void testConfig_Override() {
+    public void config_Override() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/servlet/AnnotatedFilterIT2.yml")
                 .module(new FilterModule())

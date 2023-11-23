@@ -38,7 +38,7 @@ public class StaticServletIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testCommonResourceBase() {
+    public void commonResourceBase() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -68,7 +68,7 @@ public class StaticServletIT {
     }
 
     @Test
-    public void testResourcePathResolving() {
+    public void resourcePathResolving() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -124,7 +124,7 @@ public class StaticServletIT {
     }
 
     @Test
-    public void testResourceBaseClasspath_Missing() {
+    public void resourceBaseClasspath_Missing() {
 
         CommandOutcome run = testFactory.app("-s")
                 .module(b -> {
@@ -140,7 +140,7 @@ public class StaticServletIT {
     }
 
     @Test
-    public void testResourceBaseClasspath() {
+    public void resourceBaseClasspath() {
 
         testFactory.app("-s")
                 .module(b -> {

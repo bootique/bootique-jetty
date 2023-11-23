@@ -38,7 +38,7 @@ public class ThreadsIT {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testAcceptorSelectorThreads() {
+    public void acceptorSelectorThreads() {
 
         BQRuntime runtime = testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/threads.yml")
                 .autoLoadModules()

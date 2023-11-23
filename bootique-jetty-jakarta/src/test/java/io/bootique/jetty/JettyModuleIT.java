@@ -81,7 +81,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeMappedServlets() throws Exception {
+    public void contributeMappedServlets() throws Exception {
 
         MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
         MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
@@ -115,7 +115,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeFilters_InitDestroy() {
+    public void contributeFilters_InitDestroy() {
 
         MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
         MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
@@ -139,7 +139,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeFilters_Ordering() throws Exception {
+    public void contributeFilters_Ordering() throws Exception {
 
         Filter[] mockFilters = new Filter[]{mockFilter1, mockFilter2, mockFilter3};
 
@@ -180,7 +180,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeListeners_ServletContextListener() {
+    public void contributeListeners_ServletContextListener() {
 
         ServletContextListener scListener = mock(ServletContextListener.class);
 
@@ -195,7 +195,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeListeners_ServletRequestListener() throws Exception {
+    public void contributeListeners_ServletRequestListener() throws Exception {
 
         ServletRequestListener srListener = mock(ServletRequestListener.class);
 
@@ -224,7 +224,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeListeners_SessionListener() throws Exception {
+    public void contributeListeners_SessionListener() throws Exception {
 
         // TODO: test session destroy event...
 
@@ -263,7 +263,7 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void testContributeListeners_SessionListener_SessionsDisabled() throws Exception {
+    public void contributeListeners_SessionListener_SessionsDisabled() throws Exception {
 
         doAnswer(i -> {
             HttpServletRequest request = (HttpServletRequest) i.getArgument(0);

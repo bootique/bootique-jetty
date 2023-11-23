@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class ConnectorFactoryIT {
 
     @Test
-    public void testPolymorphicConfiguration() {
+    public void polymorphicConfiguration() {
         PolymorphicConfigurationChecker.test(ConnectorFactory.class, HttpConnectorFactory.class, HttpsConnectorFactory.class);
     }
 }

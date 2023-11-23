@@ -39,7 +39,7 @@ public class ThreadPoolChecksIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void testUtilization_2() throws InterruptedException {
+    public void utilization_2() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
                 .sendRequests(2)
@@ -50,7 +50,7 @@ public class ThreadPoolChecksIT {
     }
 
     @Test
-    public void testUtilization_3() throws InterruptedException {
+    public void utilization_3() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
                 .sendRequests(3)
@@ -61,7 +61,7 @@ public class ThreadPoolChecksIT {
     }
 
     @Test
-    public void testQueuedRequests_5() throws InterruptedException {
+    public void queuedRequests_5() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
                 .sendRequests(5)
@@ -72,7 +72,7 @@ public class ThreadPoolChecksIT {
     }
 
     @Test
-    public void testQueuedRequests_6() throws InterruptedException {
+    public void queuedRequests_6() throws InterruptedException {
 
         new ThreadPoolTester(testFactory)
                 .sendRequests(6)

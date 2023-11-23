@@ -60,7 +60,7 @@ public class JettyModule_MappedContributionsIT {
     private static WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
 
     @Test
-    public void testAnnotatedMapping() {
+    public void annotatedMapping() {
 
         Response r1 = target.path("/s1").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
@@ -68,7 +68,7 @@ public class JettyModule_MappedContributionsIT {
     }
 
     @Test
-    public void testByTypeMapping1() {
+    public void byTypeMapping1() {
 
         Response r1 = target.path("/s2").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
@@ -76,7 +76,7 @@ public class JettyModule_MappedContributionsIT {
     }
 
     @Test
-    public void testByTypeMapping2() {
+    public void byTypeMapping2() {
 
         Response r1 = target.path("/s3").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());

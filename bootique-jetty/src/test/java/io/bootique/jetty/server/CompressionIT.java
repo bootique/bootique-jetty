@@ -93,7 +93,7 @@ public class CompressionIT {
             .target("http://localhost:8080/");
 
     @Test
-    public void testCompression_Flat() {
+    public void compression_Flat() {
 
         testFactory.app("-s")
                 .module(new ServletModule())
@@ -107,7 +107,7 @@ public class CompressionIT {
     }
 
     @Test
-    public void testCompression_GzipDeflate() {
+    public void compression_GzipDeflate() {
         testFactory.app("-s")
                 .module(new ServletModule())
                 .run();
@@ -120,7 +120,7 @@ public class CompressionIT {
     }
 
     @Test
-    public void testCompression_Gzip() {
+    public void compression_Gzip() {
         testFactory.app("-s")
                 .module(new ServletModule())
                 .run();
@@ -133,7 +133,7 @@ public class CompressionIT {
     }
 
     @Test
-    public void testUncompressed() {
+    public void uncompressed() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/NoCompressionIT.yml")
                 .module(new ServletModule())
@@ -151,7 +151,7 @@ public class CompressionIT {
     }
 
     @Test
-    public void testCompression_Gzip_DefaultServlet() {
+    public void compression_Gzip_DefaultServlet() {
         testFactory.app("-s")
                 .module(new ServletModule())
                 .run();

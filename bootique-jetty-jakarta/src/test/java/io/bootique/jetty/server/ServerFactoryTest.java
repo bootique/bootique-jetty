@@ -26,34 +26,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ServerFactoryTest {
 
     @Test
-    public void testResolveContext_Default() {
+    public void resolveContext_Default() {
         ServerFactory factory = new ServerFactory();
         assertEquals("/", factory.resolveContext());
     }
 
     @Test
-    public void testResolveContext_Root() {
+    public void resolveContext_Root() {
         ServerFactory factory = new ServerFactory();
         factory.setContext("/");
         assertEquals("/", factory.resolveContext());
     }
 
     @Test
-    public void testResolveContext_NonRoot() {
+    public void resolveContext_NonRoot() {
         ServerFactory factory = new ServerFactory();
         factory.setContext("/myapp");
         assertEquals("/myapp", factory.resolveContext());
     }
 
     @Test
-    public void testResolveContext_MissingLeadingSlash() {
+    public void resolveContext_MissingLeadingSlash() {
         ServerFactory factory = new ServerFactory();
         factory.setContext("myapp");
         assertEquals("/myapp", factory.resolveContext());
     }
 
     @Test
-    public void testResolveContext_ExtraTrailinglash() {
+    public void resolveContext_ExtraTrailinglash() {
         ServerFactory factory = new ServerFactory();
         factory.setContext("/myapp/");
         assertEquals("/myapp", factory.resolveContext());

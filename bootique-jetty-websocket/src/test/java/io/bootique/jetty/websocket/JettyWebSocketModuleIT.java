@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JettyWebSocketModuleIT extends JettyWebSocketTestBase {
 
     @Test
-    public void testClientToServerMessage() throws IOException, DeploymentException, InterruptedException {
+    public void clientToServerMessage() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())
@@ -68,7 +68,7 @@ public class JettyWebSocketModuleIT extends JettyWebSocketTestBase {
     }
 
     @Test
-    public void testDecoderInAnnotation() throws IOException, DeploymentException, InterruptedException {
+    public void decoderInAnnotation() throws IOException, DeploymentException, InterruptedException {
 
         BQRuntime runtime = testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())

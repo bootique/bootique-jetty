@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JettyInstrumentedModuleTest {
 
     @Test
-    public void testDefaultConstructor() throws Exception {
+    public void defaultConstructor() throws Exception {
         JettyInstrumentedModule m = new JettyInstrumentedModule();
         assertEquals("jetty", getConfigPrefix(m));
     }

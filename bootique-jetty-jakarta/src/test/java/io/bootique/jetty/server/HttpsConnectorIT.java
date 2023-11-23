@@ -50,7 +50,7 @@ public class HttpsConnectorIT {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testTlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    public void tlsConnector() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         startJetty("classpath:io/bootique/jetty/server/HttpsConnector.yml");
 
@@ -60,7 +60,7 @@ public class HttpsConnectorIT {
     }
 
     @Test
-    public void testTlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    public void tlsConnector_MultiCert() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 
         startJetty("classpath:io/bootique/jetty/server/HttpsConnectorIT_MultiCert.yml");
 

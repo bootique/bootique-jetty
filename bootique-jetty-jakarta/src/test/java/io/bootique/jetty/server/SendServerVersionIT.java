@@ -29,7 +29,7 @@ public class SendServerVersionIT {
     private Client client = ClientBuilder.newClient();
 
     @Test
-    public void testSendServerHeaderOn() {
+    public void sendServerHeaderOn() {
         startJetty("classpath:io/bootique/jetty/server/sendServerVersion.yml");
 
         Response r = client.target("http://localhost:14001/").request().get();
@@ -42,7 +42,7 @@ public class SendServerVersionIT {
     }
 
     @Test
-    public void testSendServerHeaderOff() {
+    public void sendServerHeaderOff() {
         startJetty("classpath:io/bootique/jetty/server/sendServerVersion.yml");
 
         Response r = client.target("http://localhost:14002/").request().get();

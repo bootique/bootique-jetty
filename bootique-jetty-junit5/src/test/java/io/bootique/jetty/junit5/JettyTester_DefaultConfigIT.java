@@ -54,14 +54,14 @@ public class JettyTester_DefaultConfigIT {
             .createRuntime();
 
     @Test
-    public void testGetServerUrl() {
+    public void getServerUrl() {
         String url = jetty.getUrl();
         Assertions.assertNotNull(url);
         assertEquals("http://127.0.0.1:" + jetty.getPort(), url);
     }
 
     @Test
-    public void testGetClient() {
+    public void getClient() {
         WebTarget client = jetty.getTarget();
         Assertions.assertNotNull(client);
 

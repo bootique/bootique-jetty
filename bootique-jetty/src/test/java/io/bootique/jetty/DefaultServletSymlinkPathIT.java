@@ -65,7 +65,7 @@ public class DefaultServletSymlinkPathIT {
     }
 
     @Test
-    public void testSymlinkPath_BootiqueDefaultServlet() {
+    public void symlinkPath_BootiqueDefaultServlet() {
 
         testFactory.app("-s")
                 // DefaultServlet behaves differently from MultiBaseStaticServlet, where the resource base symlinks are resolved before servlet creation
@@ -82,7 +82,7 @@ public class DefaultServletSymlinkPathIT {
     }
 
     @Test
-    public void testSymlinkPath_RawDefaultServlet() {
+    public void symlinkPath_RawDefaultServlet() {
 
         testFactory.app("-s")
                 // DefaultServlet behaves differently from MultiBaseStaticServlet, where the resource base symlinks are resolved before servlet creation

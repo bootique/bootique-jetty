@@ -50,7 +50,7 @@ public class MaxFormSettingsIT {
             .target("http://localhost:8080/");
 
     @Test
-    public void testMaxFormContentSize() {
+    public void maxFormContentSize() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/server/MaxFormSettingsIT_10b_request.yml")
                 .autoLoadModules()

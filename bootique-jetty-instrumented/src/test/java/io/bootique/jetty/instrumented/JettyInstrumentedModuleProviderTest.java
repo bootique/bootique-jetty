@@ -33,12 +33,12 @@ public class JettyInstrumentedModuleProviderTest {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testAutoLoadable() {
+    public void autoLoadable() {
         BQModuleProviderChecker.testAutoLoadable(JettyInstrumentedModuleProvider.class);
     }
 
     @Test
-    public void testModuleDeclaresDependencies() {
+    public void moduleDeclaresDependencies() {
         final BQRuntime bqRuntime = testFactory.app().moduleProvider(new JettyInstrumentedModuleProvider()).createRuntime();
         BQRuntimeChecker.testModulesLoaded(bqRuntime,
                 JettyModule.class,

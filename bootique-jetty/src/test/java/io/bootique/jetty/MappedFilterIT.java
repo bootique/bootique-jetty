@@ -49,7 +49,7 @@ public class MappedFilterIT {
     }
 
     @Test
-    public void testMappedConfig() throws Exception {
+    public void mappedConfig() throws Exception {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"))
@@ -70,7 +70,7 @@ public class MappedFilterIT {
     }
 
     @Test
-    public void testMappedConfig_Override() throws Exception {
+    public void mappedConfig_Override() throws Exception {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/MappedFilterIT1.yml")
                 .module(b -> JettyModule.extend(b).addFilter(mockFilter, "f1", 0, "/a/*", "/b/*"))

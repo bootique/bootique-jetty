@@ -48,7 +48,7 @@ public class SessionsIT {
     final BQTestFactory testFactory = new BQTestFactory();
 
     @Test
-    public void testSessions() {
+    public void sessions() {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
@@ -68,7 +68,7 @@ public class SessionsIT {
     }
 
     @Test
-    public void testNoSessions() {
+    public void noSessions() {
 
         testFactory.app("-s", "-c", "classpath:io/bootique/jetty/nosessions.yml")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "s1", "/*"))
