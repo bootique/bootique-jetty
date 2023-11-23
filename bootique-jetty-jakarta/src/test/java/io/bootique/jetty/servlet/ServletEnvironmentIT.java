@@ -61,7 +61,7 @@ public class ServletEnvironmentIT {
 	}
 
 	@Test
-	public void testServletContainerState() {
+    public void servletContainerState() {
 		testFactory.app("-s").module(new ServletCheckingModule()).run();
 
 		WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

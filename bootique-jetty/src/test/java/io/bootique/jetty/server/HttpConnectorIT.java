@@ -48,7 +48,7 @@ public class HttpConnectorIT {
 
     @Test
     @DisplayName("multiple connectors")
-    public void testMultipleConnectors() {
+    public void multipleConnectors() {
 
         BQRuntime app = startJetty("classpath:io/bootique/jetty/server/HttpConnectorIT_multipleConnectors.yml");
 
@@ -66,7 +66,7 @@ public class HttpConnectorIT {
 
     @Test
     @DisplayName("port: any")
-    public void testDynamicPort() {
+    public void dynamicPort() {
 
         BQRuntime app = startJetty("classpath:io/bootique/jetty/server/HttpConnectorIT_dynamicPort.yml");
 

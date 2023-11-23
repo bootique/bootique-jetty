@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class DefaultServletEnvironmentTest {
 
 	@Test
-	public void testContext() {
+    public void context() {
 		DefaultServletEnvironment o = new DefaultServletEnvironment();
 
 		assertFalse(o.context().isPresent());
@@ -49,7 +49,7 @@ public class DefaultServletEnvironmentTest {
 	}
 
 	@Test
-	public void testRequest() {
+    public void request() {
 		DefaultServletEnvironment o = new DefaultServletEnvironment();
 
 		assertFalse(o.request().isPresent());

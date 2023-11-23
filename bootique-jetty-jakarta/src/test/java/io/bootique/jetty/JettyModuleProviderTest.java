@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Test;
 public class JettyModuleProviderTest {
 
 	@Test
-	public void testAutoLoadable() {
+    public void autoLoadable() {
 		BQModuleProviderChecker.testAutoLoadable(JettyModuleProvider.class);
 	}
 
 	@Test
-	public void testMetadata() {
+    public void metadata() {
 	    BQModuleProviderChecker.testMetadata(JettyModuleProvider.class);
     }
 }

@@ -30,12 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JettyModuleStaticsTest {
 
 	@Test
-	public void testMaxOrder_Empty() {
+    public void maxOrder_Empty() {
 		assertEquals(0, JettyModule.maxOrder(Collections.emptySet()));
 	}
 	
 	@Test
-	public void testMaxOrder() {
+    public void maxOrder() {
 		Set<MappedFilter> filters = new LinkedHashSet<>();
 		filters.add(new MappedFilter(null, null, -1));
 		filters.add(new MappedFilter(null, null, 35));

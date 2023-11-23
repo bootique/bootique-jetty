@@ -48,7 +48,7 @@ public class ServletInitParametersIT {
 
 	@Test
 	@DisplayName("Params passed from YAML")
-	public void testInitParametersPassed() {
+	public void initParametersPassed() {
 
 		testFactory.app("-s", "-c", "classpath:io/bootique/jetty/ServletInitParametersIT.yml")
 				.autoLoadModules()
@@ -63,7 +63,7 @@ public class ServletInitParametersIT {
 
 	@Test
 	@DisplayName("Params passed via module extender")
-	public void testInitParametersPassed_Extender() {
+	public void initParametersPassed_Extender() {
 
 		testFactory.app("-s")
 				.autoLoadModules()
