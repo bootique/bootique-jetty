@@ -20,27 +20,25 @@
 package io.bootique.jetty.instrumented;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.di.BQModule;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.metrics.MetricsModuleProvider;
 import io.bootique.metrics.health.HealthCheckModuleProvider;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static java.util.Arrays.asList;
 
 public class JettyInstrumentedModuleProvider implements BQModuleProvider {
 
     @Override
-    public BQModule module() {
-        return new JettyInstrumentedModule();
-    }
-
-    @Override
-    public Collection<Class<? extends BQModule>> overrides() {
-        return Collections.singleton(JettyModule.class);
+    public BuiltModule buildModule() {
+        return BuiltModule.of(new JettyInstrumentedModule())
+                .provider(this)
+                .description("Integrates metrics and extra logging in Jetty")
+                .overrides(JettyModule.class)
+                .build();
     }
 
     @Override

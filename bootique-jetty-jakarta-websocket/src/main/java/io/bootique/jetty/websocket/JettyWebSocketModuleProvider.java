@@ -19,21 +19,16 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.di.BQModule;
-
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Map;
+import io.bootique.bootstrap.BuiltModule;
 
 public class JettyWebSocketModuleProvider implements BQModuleProvider {
 
     @Override
-    public BQModule module() {
-        return new JettyWebSocketModule();
-    }
-
-    @Override
-    public Map<String, Type> configs() {
-        return Collections.singletonMap("jettywebsocket", JettyWebSocketConfiguratorFactory.class);
+    public BuiltModule buildModule() {
+        return BuiltModule.of(new JettyWebSocketModule())
+                .provider(this)
+                .description("Integrates WebSocket capabilities in Jetty")
+                .config("jettywebsocket", JettyWebSocketConfiguratorFactory.class)
+                .build();
     }
 }

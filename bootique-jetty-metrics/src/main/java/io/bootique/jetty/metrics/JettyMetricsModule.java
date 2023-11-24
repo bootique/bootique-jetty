@@ -42,6 +42,6 @@ public class JettyMetricsModule implements BQModule {
     @Provides
     MappedServlet<HealthCheckServlet> provideHealthCheckServlet(HealthCheckRegistry registry) {
         HealthCheckServlet servlet = new HealthCheckServlet(registry);
-        return new MappedServlet<HealthCheckServlet>(servlet, Collections.singleton("/health"), "health");
+        return new MappedServlet<>(servlet, Collections.singleton("/health"), "health");
     }
 }

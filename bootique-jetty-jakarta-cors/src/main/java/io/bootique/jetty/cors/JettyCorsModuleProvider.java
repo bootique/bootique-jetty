@@ -19,31 +19,17 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.BQModuleMetadata;
 import io.bootique.BQModuleProvider;
-import io.bootique.di.BQModule;
-
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Map;
-
+import io.bootique.bootstrap.BuiltModule;
 
 public class JettyCorsModuleProvider implements BQModuleProvider {
 
     @Override
-    public BQModule module() {
-        return new JettyCorsModule();
-    }
-
-    @Override
-    public Map<String, Type> configs() {
-        return Collections.singletonMap("jettycors", CrossOriginFilterFactory.class);
-    }
-
-    @Override
-    public BQModuleMetadata.Builder moduleBuilder() {
-        return BQModuleProvider.super
-                .moduleBuilder()
-                .description("Integrates CORS filter in Bootique/Jetty applications.");
+    public BuiltModule buildModule() {
+        return BuiltModule.of(new JettyCorsModule())
+                .provider(this)
+                .description("Integrates CORS filter in Jetty")
+                .config("jettycors", CrossOriginFilterFactory.class)
+                .build();
     }
 }
