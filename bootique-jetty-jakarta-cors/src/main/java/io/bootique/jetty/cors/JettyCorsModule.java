@@ -38,8 +38,7 @@ public class JettyCorsModule implements BQModule, BQModuleProvider {
 
     @Override
     public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyCorsModule())
-                .provider(this)
+        return BuiltModule.of(this)
                 .description("Integrates CORS filter in Jetty")
                 .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
                 .build();
