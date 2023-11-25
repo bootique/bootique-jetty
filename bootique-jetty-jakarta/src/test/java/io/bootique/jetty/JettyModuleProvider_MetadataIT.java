@@ -53,7 +53,7 @@ public class JettyModuleProvider_MetadataIT {
         assertTrue(jettyOpt.isPresent());
         ModuleMetadata jetty = jettyOpt.get();
 
-        assertTrue(jetty.getDescription().startsWith("Integrates Jetty web server"));
+        assertEquals("Integrates Jetty web server", jetty.getDescription());
 
         assertEquals(1, jetty.getConfigs().size());
         ConfigMetadataNode rootConfig = jetty.getConfigs().stream().findFirst().get();
