@@ -33,7 +33,7 @@ public class JettyModuleProvider implements BQModuleProvider {
 	public BuiltModule buildModule() {
 		return BuiltModule.of(new JettyModule())
 				.provider(this)
-				.description("Deprecated and should be replaced with 'bootique-jetty-jakarta'.")
+				.description("Deprecated and can be replaced with 'bootique-jetty-jakarta'.")
 				.config("jetty", ServerFactory.class)
 				.build();
 	}

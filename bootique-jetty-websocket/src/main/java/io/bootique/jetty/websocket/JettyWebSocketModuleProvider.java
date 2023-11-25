@@ -31,7 +31,7 @@ public class JettyWebSocketModuleProvider implements BQModuleProvider {
     public BuiltModule buildModule() {
         return BuiltModule.of(new JettyWebSocketModule())
                 .provider(this)
-                .description("Deprecated and should be replaced with 'bootique-jetty-jakarta-websocket'.")
+                .description("Deprecated and can be replaced with 'bootique-jetty-jakarta-websocket'.")
                 .config("jettywebsocket", JettyWebSocketConfiguratorFactory.class)
                 .build();
     }
