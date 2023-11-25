@@ -38,7 +38,7 @@ public class JettyMetricsModuleProvider implements BQModuleProvider {
     public BuiltModule buildModule() {
         return BuiltModule.of(new JettyMetricsModule())
                 .provider(this)
-                .description("Integrates visual metrics reports in Jetty")
+                .description("Integrates visual metrics reports in Jetty. Deprecated with no replacement")
                 .build();
     }
 

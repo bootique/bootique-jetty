@@ -40,7 +40,7 @@ public class JettyInstrumentedModuleProvider implements BQModuleProvider {
     public BuiltModule buildModule() {
         return BuiltModule.of(new JettyInstrumentedModule())
                 .provider(this)
-                .description("Integrates metrics and extra logging in Jetty")
+                .description("Deprecated and should be replaced with 'bootique-jetty-jakarta-instrumented'.")
                 .overrides(JettyModule.class)
                 .build();
     }

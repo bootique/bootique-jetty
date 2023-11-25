@@ -32,7 +32,7 @@ public class JettyCorsModuleProvider implements BQModuleProvider {
     public BuiltModule buildModule() {
         return BuiltModule.of(new JettyCorsModule())
                 .provider(this)
-                .description("Integrates CORS filter in Jetty")
+                .description("Deprecated and should be replaced with 'bootique-jetty-jakarta-cors'.")
                 .config("jettycors", CrossOriginFilterFactory.class)
                 .build();
     }
