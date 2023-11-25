@@ -29,7 +29,10 @@ import io.bootique.jetty.request.RequestMDCManager;
 import javax.inject.Singleton;
 import java.util.Set;
 
-
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyWebSocketModule extends ConfigModule {
 
     public static JettyWebSocketModuleExtender extend(Binder binder) {

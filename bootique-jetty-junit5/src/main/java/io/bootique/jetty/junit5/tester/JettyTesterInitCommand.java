@@ -27,11 +27,11 @@ import io.bootique.meta.application.CommandMetadata;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /**
  * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyTesterInitCommand extends CommandWithMetadata {
 
     private final Provider<ServerHolder> serverHolder;

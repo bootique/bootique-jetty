@@ -45,6 +45,10 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
         "thread pool parameters, etc.")
 public class ServerFactory {

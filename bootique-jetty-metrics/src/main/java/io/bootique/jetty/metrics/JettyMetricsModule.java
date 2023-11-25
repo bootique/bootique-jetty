@@ -30,6 +30,10 @@ import io.bootique.metrics.health.HealthCheckRegistry;
 import javax.inject.Singleton;
 import java.util.Collections;
 
+/**
+ * @deprecated Will be removed. No interest to port to Jakarta
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyMetricsModule implements BQModule {
 
     @Override

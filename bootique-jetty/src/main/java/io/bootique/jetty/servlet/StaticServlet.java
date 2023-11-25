@@ -27,7 +27,9 @@ import java.io.IOException;
 
 /**
  * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class StaticServlet extends DefaultServlet {
 
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";

@@ -31,6 +31,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 @BQConfig
 public class ServletFactory extends WebArtifactFactory {
 

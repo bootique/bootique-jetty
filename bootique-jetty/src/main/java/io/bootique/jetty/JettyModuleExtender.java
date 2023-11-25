@@ -36,7 +36,10 @@ import java.util.Set;
 /**
  * Provides API to contribute custom extensions to {@link JettyModule}. This class is a syntactic sugar for Bootique
  * MapBuilder and SetBuilder.
+ *
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     private SetBuilder<Filter> filters;

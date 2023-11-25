@@ -44,7 +44,10 @@ import static java.util.Arrays.asList;
 /**
  * Creates and configures JSR-356 {@link javax.websocket.server.ServerContainer}, linking Bootique and Jetty environments,
  * providing the ability to look up Endpoints via DI.
+ *
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyWebSocketConfigurator implements ServletContextHandlerExtender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketConfigurator.class);

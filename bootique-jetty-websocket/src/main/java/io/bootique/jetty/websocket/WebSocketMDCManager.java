@@ -27,8 +27,10 @@ import java.util.Map;
  * Creates an MDC context for websocket operations, with the context values originating from the HTTP request that
  * opened the websocket.
  *
- * @since 2.0.B1
+ * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class WebSocketMDCManager {
 
     public static final String MDC_MAP_KEY = "io.bootique.jetty.websocket.mdc";

@@ -23,7 +23,10 @@ import io.bootique.di.Key;
 
 /**
  * A wrapper for a Bootique DI {@link Key} to make the Key itself injectable.
+ *
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class EndpointKeyHolder {
 
     private Key<?> key;

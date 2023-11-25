@@ -36,7 +36,9 @@ import java.util.List;
 
 /**
  * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class MultiBaseStaticServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiBaseStaticServlet.class);
@@ -104,7 +106,7 @@ public class MultiBaseStaticServlet extends HttpServlet {
             delegates.add(new StaticServlet(baseUrl.toExternalForm()));
         }
 
-        if(delegates.size() > 1) {
+        if (delegates.size() > 1) {
             LOGGER.info("Found multiple base URLs for resource base '{}': {}", resourceBase, resourceBaseUrls);
         }
 

@@ -27,6 +27,10 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
 
     // for now assuming a single thread pool, so we can hardcode its name

@@ -32,7 +32,10 @@ import java.util.Objects;
 
 /**
  * Provides timing metrics for request execution, optionally logging of request start and finish marks.
+ *
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class RequestTimer implements ServletRequestListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestTimer.class);

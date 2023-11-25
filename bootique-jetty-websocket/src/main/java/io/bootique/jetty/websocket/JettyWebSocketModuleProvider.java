@@ -21,6 +21,10 @@ package io.bootique.jetty.websocket;
 import io.bootique.BQModuleProvider;
 import io.bootique.bootstrap.BuiltModule;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyWebSocketModuleProvider implements BQModuleProvider {
 
     @Override

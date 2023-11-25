@@ -1,3 +1,7 @@
+## 3.0-M3
+
+* #123 (Jakarta migration) Deprecate "javax" modules
+
 ## 3.0.M2
 
 * #113 Upgrade to Jetty 10.0.13 / 11.0.13

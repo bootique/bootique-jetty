@@ -23,6 +23,10 @@ import io.bootique.BQModuleProvider;
 import io.bootique.bootstrap.BuiltModule;
 import io.bootique.jetty.server.ServerFactory;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyModuleProvider implements BQModuleProvider {
 
 	@Override

@@ -28,8 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @since 2.0.B1
+ * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyTesterConfigLoader implements JsonConfigurationLoader {
 
     public static final int ORDER = PropertiesConfigurationLoader.ORDER - 5;

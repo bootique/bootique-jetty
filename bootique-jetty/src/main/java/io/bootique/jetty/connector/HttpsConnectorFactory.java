@@ -35,6 +35,10 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import java.net.URL;
 import java.util.Objects;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 @BQConfig
 @JsonTypeName("https")
 public class HttpsConnectorFactory extends ConnectorFactory {

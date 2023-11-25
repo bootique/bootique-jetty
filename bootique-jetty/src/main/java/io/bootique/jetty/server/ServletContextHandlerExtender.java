@@ -23,7 +23,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 /**
  * An extension point for low-level customization of the Jetty {@link ServletContextHandler} which is a central piece
  * of the Jetty stack. The extender is called <i>after</i> ServletContextHandler is created and added to the Jetty server.
+ *
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public interface ServletContextHandlerExtender {
 
     void onHandlerInstalled(ServletContextHandler handler);

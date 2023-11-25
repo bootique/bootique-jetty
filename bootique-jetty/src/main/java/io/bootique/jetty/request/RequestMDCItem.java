@@ -24,8 +24,10 @@ import javax.servlet.ServletRequest;
 /**
  * Handles creating and resetting a single MDC context value.
  *
- * @since 2.0.B1
+ * @since 2.0
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
+@Deprecated(since = "3.0", forRemoval = true)
 public interface RequestMDCItem {
 
     void initMDC(ServletContext sc, ServletRequest request);

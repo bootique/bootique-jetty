@@ -28,6 +28,10 @@ import java.util.Collection;
 
 import static java.util.Arrays.asList;
 
+/**
+ * @deprecated Will be removed. No interest to port to Jakarta
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class JettyMetricsModuleProvider implements BQModuleProvider {
 
     @Override

@@ -27,6 +27,10 @@ import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class DefaultServletEnvironment
 		implements ServletContextListener, ServletRequestListener, ServletEnvironment {
 

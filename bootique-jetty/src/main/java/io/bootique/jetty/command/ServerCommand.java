@@ -19,15 +19,19 @@
 
 package io.bootique.jetty.command;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;
 import io.bootique.command.CommandWithMetadata;
 import io.bootique.meta.application.CommandMetadata;
 import org.eclipse.jetty.server.Server;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+/**
+ * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ */
+@Deprecated(since = "3.0", forRemoval = true)
 public class ServerCommand extends CommandWithMetadata {
 
     private Provider<Server> serverProvider;
