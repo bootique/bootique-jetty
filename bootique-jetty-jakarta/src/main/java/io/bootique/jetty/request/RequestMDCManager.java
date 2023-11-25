@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Initializes and clears a preconfigured set of MDC logging keys at the beginning and the end of each request.
  *
- * @since 2.0.B1
+ * @since 2.0
  */
 // Not using the standard ServletListener, and going for the internal Jetty API to intercept maximally wide scope
 // to provide context to

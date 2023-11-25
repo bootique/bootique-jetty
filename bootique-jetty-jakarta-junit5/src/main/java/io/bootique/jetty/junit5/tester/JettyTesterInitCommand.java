@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
- * @since 3.0.M1
+ * @since 3.0
  */
 public class JettyTesterInitCommand extends CommandWithMetadata {
 

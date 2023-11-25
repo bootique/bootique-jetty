@@ -25,7 +25,7 @@ import jakarta.servlet.ServletRequest;
 /**
  * Handles creating and resetting a single MDC context value.
  *
- * @since 2.0.B1
+ * @since 2.0
  */
 public interface RequestMDCItem {
 

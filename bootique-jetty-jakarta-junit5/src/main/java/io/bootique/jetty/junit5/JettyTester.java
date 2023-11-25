@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to the HTTP client. It disables all the app connectors, and binds its own connector on a dynamically-determined
  * port, so that there are no port conflicts.
  *
- * @since 3.0.M1
+ * @since 3.0
  */
 public class JettyTester {
 

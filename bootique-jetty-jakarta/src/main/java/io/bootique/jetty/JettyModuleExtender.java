@@ -78,7 +78,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @since 2.0.B1
+     * @since 2.0
      */
     public JettyModuleExtender addRequestMDCItem(String mdcKey, RequestMDCItem item) {
         contributeMdcItems().putInstance(mdcKey, item);
@@ -86,7 +86,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @since 2.0.B1
+     * @since 2.0
      */
     public JettyModuleExtender addRequestMDCItem(String mdcKey, Class<? extends RequestMDCItem> itemType) {
         contributeMdcItems().put(mdcKey, itemType);

@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @since 3.0.M1
+ * @since 3.0
  */
 public class ResponseMatcher {
 

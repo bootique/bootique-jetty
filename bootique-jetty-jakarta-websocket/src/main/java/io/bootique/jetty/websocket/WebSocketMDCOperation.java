@@ -19,7 +19,7 @@
 package io.bootique.jetty.websocket;
 
 /**
- * @since 2.0.B1
+ * @since 2.0
  */
 public interface WebSocketMDCOperation {
 

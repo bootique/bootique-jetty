@@ -27,7 +27,7 @@ import java.util.Map;
  * Creates an MDC context for websocket operations, with the context values originating from the HTTP request that
  * opened the websocket.
  *
- * @since 2.0.B1
+ * @since 2.0
  */
 public class WebSocketMDCManager {
 
