@@ -21,35 +21,57 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
+import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecks;
 import io.bootique.jetty.instrumented.request.RequestTimer;
 import io.bootique.jetty.instrumented.request.TransactionMDCItem;
 import io.bootique.jetty.instrumented.server.InstrumentedServerFactory;
-import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.server.ServerFactory;
 import io.bootique.metrics.MetricNaming;
+import io.bootique.metrics.MetricsModule;
 import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 
 import javax.inject.Singleton;
+import java.util.Collection;
 
-public class JettyInstrumentedModule extends ConfigModule {
+import static java.util.Arrays.asList;
+
+public class JettyInstrumentedModule implements BQModule, BQModuleProvider {
+
+    // reusing overridden module prefix
+    private static final String CONFIG_PREFIX = "jetty";
 
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
 
     public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
 
     @Override
-    protected String defaultConfigPrefix() {
-        // reusing overridden module prefix
-        return "jetty";
+    public BuiltModule buildModule() {
+        return BuiltModule.of(this)
+                .provider(this)
+                .description("Integrates metrics and extra logging in Jetty")
+                .overrides(JettyModule.class)
+                .build();
+    }
+
+    @Override
+    @Deprecated(since = "3.0", forRemoval = true)
+    public Collection<BQModuleProvider> dependencies() {
+        return asList(
+                new MetricsModule(),
+                new HealthCheckModule(),
+                new JettyModule()
+        );
     }
 
     @Override
@@ -69,7 +91,7 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Provides
     InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory) {
-        return config(InstrumentedServerFactory.class, configFactory);
+        return configFactory.config(InstrumentedServerFactory.class, CONFIG_PREFIX);
     }
 
     @Provides

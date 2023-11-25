@@ -19,8 +19,10 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
@@ -30,7 +32,18 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import javax.inject.Singleton;
 
-public class JettyCorsModule extends ConfigModule {
+public class JettyCorsModule implements BQModule, BQModuleProvider {
+
+    private static final String CONFIG_PREFIX = "jettycors";
+
+    @Override
+    public BuiltModule buildModule() {
+        return BuiltModule.of(new JettyCorsModule())
+                .provider(this)
+                .description("Integrates CORS filter in Jetty")
+                .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
+                .build();
+    }
 
     @Override
     public void configure(Binder binder) {
@@ -41,6 +54,6 @@ public class JettyCorsModule extends ConfigModule {
     @Provides
     @Singleton
     MappedFilter<CrossOriginFilter> providesCrossOriginFilter(ConfigurationFactory configFactory) {
-        return config(CrossOriginFilterFactory.class, configFactory).createCorsFilter();
+        return configFactory.config(CrossOriginFilterFactory.class, CONFIG_PREFIX).createCorsFilter();
     }
 }

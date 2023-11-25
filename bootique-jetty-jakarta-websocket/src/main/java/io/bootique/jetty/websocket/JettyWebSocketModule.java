@@ -18,8 +18,10 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
 import io.bootique.di.Provides;
@@ -29,10 +31,21 @@ import io.bootique.jetty.request.RequestMDCManager;
 import javax.inject.Singleton;
 import java.util.Set;
 
-public class JettyWebSocketModule extends ConfigModule {
+public class JettyWebSocketModule implements BQModule, BQModuleProvider {
+
+    private static final String CONFIG_PREFIX = "jettywebsocket";
 
     public static JettyWebSocketModuleExtender extend(Binder binder) {
         return new JettyWebSocketModuleExtender(binder);
+    }
+
+    @Override
+    public BuiltModule buildModule() {
+        return BuiltModule.of(this)
+                .provider(this)
+                .description("Integrates WebSocket capabilities in Jetty")
+                .config(CONFIG_PREFIX, JettyWebSocketConfiguratorFactory.class)
+                .build();
     }
 
     @Override
@@ -49,7 +62,8 @@ public class JettyWebSocketModule extends ConfigModule {
             Set<EndpointKeyHolder> endpointKeys,
             RequestMDCManager mdcManager) {
 
-        return config(JettyWebSocketConfiguratorFactory.class, configFactory)
+        return configFactory
+                .config(JettyWebSocketConfiguratorFactory.class, CONFIG_PREFIX)
                 .createConfigurator(injector, endpointKeys, mdcManager);
     }
 

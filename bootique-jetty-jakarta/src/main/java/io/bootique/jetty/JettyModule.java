@@ -20,8 +20,10 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
-import io.bootique.ConfigModule;
+import io.bootique.BQModuleProvider;
+import io.bootique.bootstrap.BuiltModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
 import io.bootique.di.Provides;
@@ -45,7 +47,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-public class JettyModule extends ConfigModule {
+public class JettyModule implements BQModule, BQModuleProvider {
+
+    private static final String CONFIG_PREFIX = "jetty";
 
     /**
      * Returns an instance of {@link JettyModuleExtender} used by downstream modules to load custom extensions of
@@ -60,6 +64,15 @@ public class JettyModule extends ConfigModule {
 
     static int maxOrder(Set<MappedFilter> mappedFilters) {
         return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
+    }
+
+    @Override
+    public BuiltModule buildModule() {
+        return BuiltModule.of(this)
+                .provider(this)
+                .description("Integrates Jetty web server")
+                .config(CONFIG_PREFIX, ServerFactory.class)
+                .build();
     }
 
     @Override
@@ -178,6 +191,6 @@ public class JettyModule extends ConfigModule {
     @Singleton
     @Provides
     ServerFactory providerServerFactory(ConfigurationFactory configFactory) {
-        return config(ServerFactory.class, configFactory);
+        return configFactory.config(ServerFactory.class, CONFIG_PREFIX);
     }
 }

@@ -16,20 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package io.bootique.jetty.websocket;
 
-package io.bootique.jetty.cors;
+import io.bootique.junit5.BQModuleProviderChecker;
+import org.junit.jupiter.api.Test;
 
-import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+public class JettyWebSocketModuleTest {
 
-public class JettyCorsModuleProvider implements BQModuleProvider {
-
-    @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyCorsModule())
-                .provider(this)
-                .description("Integrates CORS filter in Jetty")
-                .config("jettycors", CrossOriginFilterFactory.class)
-                .build();
+    @Test
+    public void autoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(JettyWebSocketModule.class);
     }
 }

@@ -19,29 +19,18 @@
 
 package io.bootique.jetty;
 
-import io.bootique.ConfigModule;
+import io.bootique.junit5.BQModuleProviderChecker;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyModuleTest {
 
 	@Test
-    public void defaultConstructor() {
-		JettyModule m = new JettyModule();
-		assertEquals("jetty", getConfigPrefix(m));
+	public void autoLoadable() {
+		BQModuleProviderChecker.testAutoLoadable(JettyModule.class);
 	}
 
-	private static String getConfigPrefix(JettyModule module) {
-
-		try {
-			Field f = ConfigModule.class.getDeclaredField("configPrefix");
-			f.setAccessible(true);
-			return (String) f.get(module);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	@Test
+	public void metadata() {
+		BQModuleProviderChecker.testMetadata(JettyModule.class);
 	}
 }

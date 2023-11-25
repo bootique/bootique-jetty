@@ -22,7 +22,7 @@ package io.bootique.jetty.metrics;
 import io.bootique.BQModuleProvider;
 import io.bootique.bootstrap.BuiltModule;
 import io.bootique.jetty.JettyModuleProvider;
-import io.bootique.metrics.health.HealthCheckModuleProvider;
+import io.bootique.metrics.health.HealthCheckModule;
 
 import java.util.Collection;
 
@@ -46,7 +46,7 @@ public class JettyMetricsModuleProvider implements BQModuleProvider {
     @Deprecated(since = "3.0", forRemoval = true)
     public Collection<BQModuleProvider> dependencies() {
         return asList(
-                new HealthCheckModuleProvider(),
+                new HealthCheckModule(),
                 new JettyModuleProvider()
         );
     }

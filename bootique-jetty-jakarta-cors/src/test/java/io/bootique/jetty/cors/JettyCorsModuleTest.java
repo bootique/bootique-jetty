@@ -16,19 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.websocket;
+package io.bootique.jetty.cors;
 
-import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.junit5.BQModuleProviderChecker;
+import org.junit.jupiter.api.Test;
 
-public class JettyWebSocketModuleProvider implements BQModuleProvider {
+public class JettyCorsModuleTest {
 
-    @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyWebSocketModule())
-                .provider(this)
-                .description("Integrates WebSocket capabilities in Jetty")
-                .config("jettywebsocket", JettyWebSocketConfiguratorFactory.class)
-                .build();
+    @Test
+    public void autoLoadable() {
+        BQModuleProviderChecker.testAutoLoadable(JettyCorsModule.class);
     }
 }
