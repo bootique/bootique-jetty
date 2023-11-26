@@ -22,7 +22,7 @@ package io.bootique.jetty.instrumented;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
@@ -56,8 +56,8 @@ public class JettyInstrumentedModule implements BQModule, BQModuleProvider {
     public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(this)
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(this)
                 .provider(this)
                 .description("Integrates metrics and extra logging in Jetty")
                 .overrides(JettyModule.class)

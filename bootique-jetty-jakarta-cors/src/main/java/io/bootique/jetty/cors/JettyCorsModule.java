@@ -20,7 +20,7 @@
 package io.bootique.jetty.cors;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
@@ -37,8 +37,8 @@ public class JettyCorsModule implements BQModule, BQModuleProvider {
     private static final String CONFIG_PREFIX = "jettycors";
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(this)
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(this)
                 .description("Integrates CORS filter in Jetty")
                 .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
                 .build();

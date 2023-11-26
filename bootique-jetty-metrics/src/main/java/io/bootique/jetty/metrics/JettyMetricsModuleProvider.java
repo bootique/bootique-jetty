@@ -20,7 +20,7 @@
 package io.bootique.jetty.metrics;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.metrics.health.HealthCheckModule;
 
@@ -35,8 +35,8 @@ import static java.util.Arrays.asList;
 public class JettyMetricsModuleProvider implements BQModuleProvider {
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyMetricsModule())
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(new JettyMetricsModule())
                 .provider(this)
                 .description("Integrates visual metrics reports in Jetty. Deprecated with no replacement")
                 .build();

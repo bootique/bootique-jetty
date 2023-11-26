@@ -20,7 +20,7 @@
 package io.bootique.jetty.instrumented;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.JettyModuleProvider;
 import io.bootique.metrics.MetricsModule;
@@ -37,8 +37,8 @@ import static java.util.Arrays.asList;
 public class JettyInstrumentedModuleProvider implements BQModuleProvider {
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyInstrumentedModule())
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(new JettyInstrumentedModule())
                 .provider(this)
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-instrumented'.")
                 .overrides(JettyModule.class)

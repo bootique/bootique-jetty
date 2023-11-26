@@ -20,7 +20,7 @@
 package io.bootique.jetty.cors;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 
 /**
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
@@ -29,8 +29,8 @@ import io.bootique.bootstrap.BuiltModule;
 public class JettyCorsModuleProvider implements BQModuleProvider {
 
     @Override
-    public BuiltModule buildModule() {
-        return BuiltModule.of(new JettyCorsModule())
+    public ModuleCrate moduleCrate() {
+        return ModuleCrate.of(new JettyCorsModule())
                 .provider(this)
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-cors'.")
                 .config("jettycors", CrossOriginFilterFactory.class)

@@ -20,7 +20,7 @@
 package io.bootique.jetty;
 
 import io.bootique.BQModuleProvider;
-import io.bootique.bootstrap.BuiltModule;
+import io.bootique.ModuleCrate;
 import io.bootique.jetty.server.ServerFactory;
 
 /**
@@ -30,8 +30,8 @@ import io.bootique.jetty.server.ServerFactory;
 public class JettyModuleProvider implements BQModuleProvider {
 
 	@Override
-	public BuiltModule buildModule() {
-		return BuiltModule.of(new JettyModule())
+	public ModuleCrate moduleCrate() {
+		return ModuleCrate.of(new JettyModule())
 				.provider(this)
 				.description("Deprecated, can be replaced with 'bootique-jetty-jakarta'.")
 				.config("jetty", ServerFactory.class)
