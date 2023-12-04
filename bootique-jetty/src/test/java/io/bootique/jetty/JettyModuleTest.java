@@ -20,6 +20,7 @@
 package io.bootique.jetty;
 
 import io.bootique.ConfigModule;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -27,6 +28,11 @@ import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyModuleTest {
+
+	@Test
+	public void checkModule() {
+		BQModuleTester.of(JettyModule.class).testAutoLoadable().testConfig();
+	}
 
 	@Test
     public void defaultConstructor() {

@@ -19,6 +19,7 @@
 
 package io.bootique.jetty.metrics;
 
+import io.bootique.ModuleCrate;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
@@ -35,6 +36,13 @@ import java.util.Collections;
  */
 @Deprecated(since = "3.0", forRemoval = true)
 public class JettyMetricsModule implements BQModule {
+
+    @Override
+    public ModuleCrate crate() {
+        return ModuleCrate.of(this)
+                .description("Integrates visual metrics reports in Jetty. Deprecated with no replacement")
+                .build();
+    }
 
     @Override
     public void configure(Binder binder) {

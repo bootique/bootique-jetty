@@ -18,13 +18,13 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.junit5.BQModuleProviderChecker;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class JettyWebSocketModuleTest {
 
     @Test
     public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(JettyWebSocketModule.class);
+        BQModuleTester.of(JettyWebSocketModule.class).testAutoLoadable().testConfig();
     }
 }

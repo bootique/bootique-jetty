@@ -22,6 +22,7 @@ package io.bootique.jetty.instrumented;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import io.bootique.ConfigModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
@@ -49,6 +50,14 @@ public class JettyInstrumentedModule extends ConfigModule {
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
 
     public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
+
+    @Override
+    public ModuleCrate crate() {
+        return ModuleCrate.of(this)
+                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-instrumented'.")
+                .overrides(JettyModule.class)
+                .build();
+    }
 
     @Override
     protected String defaultConfigPrefix() {

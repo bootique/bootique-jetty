@@ -16,24 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package io.bootique.jetty.websocket;
 
-package io.bootique.jetty.cors;
+import io.bootique.junit5.BQModuleTester;
+import org.junit.jupiter.api.Test;
 
-import io.bootique.BQModuleProvider;
-import io.bootique.ModuleCrate;
+public class JettyWebSocketModuleTest {
 
-/**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
- */
-@Deprecated(since = "3.0", forRemoval = true)
-public class JettyCorsModuleProvider implements BQModuleProvider {
-
-    @Override
-    public ModuleCrate moduleCrate() {
-        return ModuleCrate.of(new JettyCorsModule())
-                .provider(this)
-                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-cors'.")
-                .config("jettycors", CrossOriginFilterFactory.class)
-                .build();
+    @Test
+    public void check() {
+        BQModuleTester.of(JettyWebSocketModule.class).testAutoLoadable().testConfig();
     }
 }

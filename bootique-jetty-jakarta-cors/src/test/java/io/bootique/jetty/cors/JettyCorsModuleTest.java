@@ -18,13 +18,13 @@
  */
 package io.bootique.jetty.cors;
 
-import io.bootique.junit5.BQModuleProviderChecker;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class JettyCorsModuleTest {
 
     @Test
-    public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(JettyCorsModule.class);
+    public void check() {
+        BQModuleTester.of(JettyCorsModule.class).testAutoLoadable().testConfig();
     }
 }

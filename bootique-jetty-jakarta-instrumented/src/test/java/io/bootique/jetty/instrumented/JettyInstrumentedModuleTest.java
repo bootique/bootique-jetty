@@ -19,13 +19,14 @@
 
 package io.bootique.jetty.instrumented;
 
-import io.bootique.junit5.BQModuleProviderChecker;
+import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class JettyInstrumentedModuleTest {
 
+
     @Test
     public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(JettyInstrumentedModule.class);
+        BQModuleTester.of(JettyInstrumentedModule.class).testAutoLoadable().testConfig();
     }
 }

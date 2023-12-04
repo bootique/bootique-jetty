@@ -19,7 +19,6 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.BQModuleProvider;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
@@ -32,12 +31,12 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import javax.inject.Singleton;
 
-public class JettyCorsModule implements BQModule, BQModuleProvider {
+public class JettyCorsModule implements BQModule {
 
     private static final String CONFIG_PREFIX = "jettycors";
 
     @Override
-    public ModuleCrate moduleCrate() {
+    public ModuleCrate crate() {
         return ModuleCrate.of(this)
                 .description("Integrates CORS filter in Jetty")
                 .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)

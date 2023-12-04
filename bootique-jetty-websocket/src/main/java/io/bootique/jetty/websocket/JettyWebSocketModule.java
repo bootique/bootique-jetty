@@ -19,6 +19,7 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.ConfigModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
@@ -37,6 +38,14 @@ public class JettyWebSocketModule extends ConfigModule {
 
     public static JettyWebSocketModuleExtender extend(Binder binder) {
         return new JettyWebSocketModuleExtender(binder);
+    }
+
+    @Override
+    public ModuleCrate crate() {
+        return ModuleCrate.of(this)
+                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-websocket'.")
+                .config("jettywebsocket", JettyWebSocketConfiguratorFactory.class)
+                .build();
     }
 
     @Override

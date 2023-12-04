@@ -21,6 +21,7 @@ package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
@@ -64,6 +65,14 @@ public class JettyModule extends ConfigModule {
 
     static int maxOrder(Set<MappedFilter> mappedFilters) {
         return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
+    }
+
+    @Override
+    public ModuleCrate crate() {
+        return ModuleCrate.of(this)
+                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta'.")
+                .config("jetty", ServerFactory.class)
+                .build();
     }
 
     @Override

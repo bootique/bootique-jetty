@@ -20,6 +20,7 @@
 package io.bootique.jetty.cors;
 
 import io.bootique.ConfigModule;
+import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
@@ -35,6 +36,14 @@ import javax.inject.Singleton;
  */
 @Deprecated(since = "3.0", forRemoval = true)
 public class JettyCorsModule extends ConfigModule {
+
+    @Override
+    public ModuleCrate crate() {
+        return ModuleCrate.of(this)
+                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-cors'.")
+                .config("jettycors", CrossOriginFilterFactory.class)
+                .build();
+    }
 
     @Override
     public void configure(Binder binder) {

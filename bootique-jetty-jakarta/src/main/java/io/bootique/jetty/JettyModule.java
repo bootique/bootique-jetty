@@ -20,7 +20,6 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
-import io.bootique.BQModuleProvider;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
@@ -47,7 +46,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-public class JettyModule implements BQModule, BQModuleProvider {
+public class JettyModule implements BQModule {
 
     private static final String CONFIG_PREFIX = "jetty";
 
@@ -67,9 +66,8 @@ public class JettyModule implements BQModule, BQModuleProvider {
     }
 
     @Override
-    public ModuleCrate moduleCrate() {
+    public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .provider(this)
                 .description("Integrates Jetty web server")
                 .config(CONFIG_PREFIX, ServerFactory.class)
                 .build();

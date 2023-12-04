@@ -19,29 +19,16 @@
 
 package io.bootique.jetty.metrics;
 
-import io.bootique.BQRuntime;
-import io.bootique.jetty.JettyModule;
-import io.bootique.junit5.*;
-import io.bootique.metrics.health.HealthCheckModule;
+import io.bootique.junit5.BQModuleTester;
+import io.bootique.junit5.BQTest;
 import org.junit.jupiter.api.Test;
 
 @BQTest
-public class JettyMetricsModuleProviderTest {
-
-    @BQTestTool
-    final BQTestFactory testFactory = new BQTestFactory();
+public class JettyMetricsModuleTest {
 
     @Test
-    public void autoLoadable() {
-        BQModuleProviderChecker.testAutoLoadable(JettyMetricsModuleProvider.class);
+    public void checkModule() {
+        BQModuleTester.of(JettyMetricsModule.class).testAutoLoadable().testConfig();
     }
 
-    @Test
-    public void moduleDeclaresDependencies() {
-        final BQRuntime bqRuntime = testFactory.app().moduleProvider(new JettyMetricsModuleProvider()).createRuntime();
-        BQRuntimeChecker.testModulesLoaded(bqRuntime,
-                JettyModule.class,
-                HealthCheckModule.class
-        );
-    }
 }

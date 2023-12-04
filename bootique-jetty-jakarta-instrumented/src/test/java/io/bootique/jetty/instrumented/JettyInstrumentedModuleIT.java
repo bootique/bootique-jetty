@@ -21,20 +21,14 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import io.bootique.BQRuntime;
-import io.bootique.jetty.JettyModule;
-import io.bootique.junit5.BQRuntimeChecker;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
-import io.bootique.metrics.MetricsModule;
-import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.health.HealthCheckRegistry;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @BQTest
@@ -42,17 +36,6 @@ public class JettyInstrumentedModuleIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory();
-
-    @Deprecated
-    @Test
-    public void moduleDeclaresDependencies() {
-        final BQRuntime bqRuntime = testFactory.app().moduleProvider(new JettyInstrumentedModule()).createRuntime();
-        BQRuntimeChecker.testModulesLoaded(bqRuntime,
-                JettyModule.class,
-                HealthCheckModule.class,
-                MetricsModule.class
-        );
-    }
 
     @Test
     public void metrics() {
@@ -65,13 +48,13 @@ public class JettyInstrumentedModuleIT {
 
         MetricRegistry metricRegistry = runtime.getInstance(MetricRegistry.class);
 
-        Set<String> expectedTimers = new HashSet<>(asList("bq.Jetty.Request.Time"));
+        Set<String> expectedTimers = Set.of("bq.Jetty.Request.Time");
         assertEquals(expectedTimers, metricRegistry.getTimers().keySet());
 
-        Set<String> expectedGauges = new HashSet<>(asList(
+        Set<String> expectedGauges = Set.of(
                 "bq.Jetty.ThreadPool.Size",
                 "bq.Jetty.ThreadPool.QueuedRequests",
-                "bq.Jetty.ThreadPool.Utilization"));
+                "bq.Jetty.ThreadPool.Utilization");
 
         assertEquals(expectedGauges, metricRegistry.getGauges().keySet());
     }
@@ -85,9 +68,9 @@ public class JettyInstrumentedModuleIT {
 
         HealthCheckRegistry registry = runtime.getInstance(HealthCheckRegistry.class);
 
-        Set<String> expectedGauges = new HashSet<>(asList(
+        Set<String> expectedGauges = Set.of(
                 "bq.Jetty.ThreadPool.QueuedRequests",
-                "bq.Jetty.ThreadPool.Utilization"));
+                "bq.Jetty.ThreadPool.Utilization");
 
         assertEquals(expectedGauges, registry.healthCheckNames());
     }

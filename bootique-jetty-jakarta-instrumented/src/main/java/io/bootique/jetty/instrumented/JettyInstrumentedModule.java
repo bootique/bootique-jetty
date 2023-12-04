@@ -21,7 +21,6 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import io.bootique.BQModuleProvider;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
@@ -36,17 +35,13 @@ import io.bootique.jetty.instrumented.request.TransactionMDCItem;
 import io.bootique.jetty.instrumented.server.InstrumentedServerFactory;
 import io.bootique.jetty.server.ServerFactory;
 import io.bootique.metrics.MetricNaming;
-import io.bootique.metrics.MetricsModule;
 import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 
 import javax.inject.Singleton;
-import java.util.Collection;
 
-import static java.util.Arrays.asList;
-
-public class JettyInstrumentedModule implements BQModule, BQModuleProvider {
+public class JettyInstrumentedModule implements BQModule {
 
     // reusing overridden module prefix
     private static final String CONFIG_PREFIX = "jetty";
@@ -56,22 +51,11 @@ public class JettyInstrumentedModule implements BQModule, BQModuleProvider {
     public static final int REQUEST_TIMER_LISTENER_ORDER = Integer.MIN_VALUE + 1000;
 
     @Override
-    public ModuleCrate moduleCrate() {
+    public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .provider(this)
                 .description("Integrates metrics and extra logging in Jetty")
                 .overrides(JettyModule.class)
                 .build();
-    }
-
-    @Override
-    @Deprecated(since = "3.0", forRemoval = true)
-    public Collection<BQModuleProvider> dependencies() {
-        return asList(
-                new MetricsModule(),
-                new HealthCheckModule(),
-                new JettyModule()
-        );
     }
 
     @Override

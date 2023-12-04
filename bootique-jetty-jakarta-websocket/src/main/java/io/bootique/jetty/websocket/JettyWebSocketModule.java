@@ -18,7 +18,6 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.BQModuleProvider;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.BQModule;
@@ -31,7 +30,7 @@ import io.bootique.jetty.request.RequestMDCManager;
 import javax.inject.Singleton;
 import java.util.Set;
 
-public class JettyWebSocketModule implements BQModule, BQModuleProvider {
+public class JettyWebSocketModule implements BQModule {
 
     private static final String CONFIG_PREFIX = "jettywebsocket";
 
@@ -40,9 +39,8 @@ public class JettyWebSocketModule implements BQModule, BQModuleProvider {
     }
 
     @Override
-    public ModuleCrate moduleCrate() {
+    public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .provider(this)
                 .description("Integrates WebSocket capabilities in Jetty")
                 .config(CONFIG_PREFIX, JettyWebSocketConfiguratorFactory.class)
                 .build();
