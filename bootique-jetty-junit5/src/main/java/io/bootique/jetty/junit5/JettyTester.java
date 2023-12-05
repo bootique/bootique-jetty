@@ -21,7 +21,7 @@ package io.bootique.jetty.junit5;
 import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.command.CommandDecorator;
-import io.bootique.di.BQModule;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
