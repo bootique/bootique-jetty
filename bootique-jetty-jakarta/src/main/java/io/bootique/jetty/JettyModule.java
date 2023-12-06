@@ -129,12 +129,7 @@ public class JettyModule implements BQModule {
                 mdcManager,
                 injector);
 
-        shutdownManager.addShutdownHook(() -> {
-            bootLogger.trace(() -> "stopping Jetty...");
-            holder.stop();
-        });
-
-        return holder;
+        return shutdownManager.onShutdown(holder, ServerHolder::stop);
     }
 
     @Provides
