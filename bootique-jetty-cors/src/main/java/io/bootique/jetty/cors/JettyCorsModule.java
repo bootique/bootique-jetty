@@ -37,7 +37,7 @@ import javax.inject.Singleton;
 @Deprecated(since = "3.0", forRemoval = true)
 public class JettyCorsModule implements BQModule {
 
-    private static final String CONFIG_PREFIX = "jerseycors";
+    private static final String CONFIG_PREFIX = "jettycors";
 
     @Override
     public ModuleCrate crate() {
