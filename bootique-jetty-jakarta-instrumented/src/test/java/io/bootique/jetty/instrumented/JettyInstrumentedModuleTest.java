@@ -24,9 +24,8 @@ import org.junit.jupiter.api.Test;
 
 public class JettyInstrumentedModuleTest {
 
-
     @Test
-    public void autoLoadable() {
+    public void checkModule() {
         BQModuleTester.of(JettyInstrumentedModule.class).testAutoLoadable().testConfig();
     }
 }

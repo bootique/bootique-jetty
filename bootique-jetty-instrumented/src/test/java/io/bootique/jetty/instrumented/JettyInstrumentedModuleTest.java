@@ -19,30 +19,13 @@
 
 package io.bootique.jetty.instrumented;
 
-import io.bootique.ConfigModule;
 import io.bootique.junit5.BQModuleTester;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JettyInstrumentedModuleTest {
 
     @Test
     public void checkModule() {
         BQModuleTester.of(JettyInstrumentedModule.class).testAutoLoadable().testConfig();
-    }
-
-    @Test
-    public void defaultConstructor() throws Exception {
-        JettyInstrumentedModule m = new JettyInstrumentedModule();
-        assertEquals("jetty", getConfigPrefix(m));
-    }
-
-    private static String getConfigPrefix(JettyInstrumentedModule module) throws NoSuchFieldException, IllegalAccessException {
-        Field f = ConfigModule.class.getDeclaredField("configPrefix");
-        f.setAccessible(true);
-        return (String) f.get(module);
     }
 }
