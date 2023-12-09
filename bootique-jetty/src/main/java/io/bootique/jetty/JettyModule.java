@@ -20,7 +20,7 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
-import io.bootique.ConfigModule;
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
@@ -50,7 +50,9 @@ import java.util.logging.Level;
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
 @Deprecated(since = "3.0", forRemoval = true)
-public class JettyModule extends ConfigModule {
+public class JettyModule implements BQModule {
+
+    private static final String CONFIG_PREFIX = "jetty";
 
     /**
      * Returns an instance of {@link JettyModuleExtender} used by downstream modules to load custom extensions of
@@ -71,7 +73,7 @@ public class JettyModule extends ConfigModule {
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta'.")
-                .config("jetty", ServerFactory.class)
+                .config(CONFIG_PREFIX, ServerFactory.class)
                 .build();
     }
 
@@ -186,6 +188,6 @@ public class JettyModule extends ConfigModule {
     @Singleton
     @Provides
     ServerFactory providerServerFactory(ConfigurationFactory configFactory) {
-        return config(ServerFactory.class, configFactory);
+        return configFactory.config(ServerFactory.class, CONFIG_PREFIX);
     }
 }

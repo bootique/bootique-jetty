@@ -21,7 +21,7 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import io.bootique.ConfigModule;
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
@@ -45,7 +45,9 @@ import javax.inject.Singleton;
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
 @Deprecated(since = "3.0", forRemoval = true)
-public class JettyInstrumentedModule extends ConfigModule {
+public class JettyInstrumentedModule implements BQModule {
+
+    private static final String CONFIG_PREFIX = "jetty";
 
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
 
@@ -57,12 +59,6 @@ public class JettyInstrumentedModule extends ConfigModule {
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-instrumented'.")
                 .overrides(JettyModule.class)
                 .build();
-    }
-
-    @Override
-    protected String defaultConfigPrefix() {
-        // reusing overridden module prefix
-        return "jetty";
     }
 
     @Override
@@ -82,7 +78,7 @@ public class JettyInstrumentedModule extends ConfigModule {
 
     @Provides
     InstrumentedServerFactory providerInstrumentedServerFactory(ConfigurationFactory configFactory) {
-        return config(InstrumentedServerFactory.class, configFactory);
+        return configFactory.config(InstrumentedServerFactory.class, CONFIG_PREFIX);
     }
 
     @Provides

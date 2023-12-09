@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.ConfigModule;
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
@@ -34,7 +34,9 @@ import java.util.Set;
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
 @Deprecated(since = "3.0", forRemoval = true)
-public class JettyWebSocketModule extends ConfigModule {
+public class JettyWebSocketModule implements BQModule {
+
+    private static final String CONFIG_PREFIX = "jettywebsocket";
 
     public static JettyWebSocketModuleExtender extend(Binder binder) {
         return new JettyWebSocketModuleExtender(binder);
@@ -44,7 +46,7 @@ public class JettyWebSocketModule extends ConfigModule {
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-websocket'.")
-                .config("jettywebsocket", JettyWebSocketConfiguratorFactory.class)
+                .config(CONFIG_PREFIX, JettyWebSocketConfiguratorFactory.class)
                 .build();
     }
 
@@ -62,7 +64,7 @@ public class JettyWebSocketModule extends ConfigModule {
             Set<EndpointKeyHolder> endpointKeys,
             RequestMDCManager mdcManager) {
 
-        return config(JettyWebSocketConfiguratorFactory.class, configFactory)
+        return configFactory.config(JettyWebSocketConfiguratorFactory.class, CONFIG_PREFIX)
                 .createConfigurator(injector, endpointKeys, mdcManager);
     }
 

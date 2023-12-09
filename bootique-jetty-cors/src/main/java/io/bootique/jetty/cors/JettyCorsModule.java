@@ -19,7 +19,7 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.ConfigModule;
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
@@ -35,13 +35,15 @@ import javax.inject.Singleton;
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
 @Deprecated(since = "3.0", forRemoval = true)
-public class JettyCorsModule extends ConfigModule {
+public class JettyCorsModule implements BQModule {
+
+    private static final String CONFIG_PREFIX = "jerseycors";
 
     @Override
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
                 .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-cors'.")
-                .config("jettycors", CrossOriginFilterFactory.class)
+                .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
                 .build();
     }
 
@@ -54,6 +56,6 @@ public class JettyCorsModule extends ConfigModule {
     @Provides
     @Singleton
     MappedFilter<CrossOriginFilter> providesCrossOriginFilter(ConfigurationFactory configFactory) {
-        return config(CrossOriginFilterFactory.class, configFactory).createCorsFilter();
+        return configFactory.config(CrossOriginFilterFactory.class, CONFIG_PREFIX).createCorsFilter();
     }
 }
