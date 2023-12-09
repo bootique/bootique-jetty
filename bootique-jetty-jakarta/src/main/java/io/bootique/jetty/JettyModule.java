@@ -20,30 +20,22 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
-import io.bootique.BQModule;
 import io.bootique.di.Binder;
-import io.bootique.di.Injector;
 import io.bootique.di.Provides;
 import io.bootique.jetty.command.ServerCommand;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.request.RequestMDCManager;
-import io.bootique.jetty.server.*;
+import io.bootique.jetty.server.ServerFactory;
+import io.bootique.jetty.server.ServerHolder;
 import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import io.bootique.jetty.servlet.ServletEnvironment;
-import io.bootique.log.BootLogger;
-import io.bootique.shutdown.ShutdownManager;
-import jakarta.servlet.Filter;
-import jakarta.servlet.Servlet;
 import org.eclipse.jetty.server.Server;
 
 import javax.inject.Singleton;
-import java.util.EventListener;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 public class JettyModule implements BQModule {
@@ -59,10 +51,6 @@ public class JettyModule implements BQModule {
      */
     public static JettyModuleExtender extend(Binder binder) {
         return new JettyModuleExtender(binder);
-    }
-
-    static int maxOrder(Set<MappedFilter> mappedFilters) {
-        return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
     }
 
     @Override
@@ -107,78 +95,14 @@ public class JettyModule implements BQModule {
 
     @Singleton
     @Provides
-    ServerHolder provideServerHolder(
-            ServerFactory factory,
-            Set<Servlet> servlets,
-            Set<MappedServlet> mappedServlets,
-            Set<Filter> filters,
-            Set<MappedFilter> mappedFilters,
-            Set<EventListener> listeners,
-            Set<MappedListener> mappedListeners,
-            Set<ServletContextHandlerExtender> contextHandlerExtenders,
-            RequestMDCManager mdcManager,
-            BootLogger bootLogger,
-            ShutdownManager shutdownManager,
-            Injector injector) {
-
-        ServerHolder holder = factory.createServerHolder(
-                allServlets(servlets, mappedServlets),
-                allFilters(filters, mappedFilters),
-                allListeners(listeners, mappedListeners),
-                contextHandlerExtenders,
-                mdcManager,
-                injector);
-
-        return shutdownManager.onShutdown(holder, ServerHolder::stop);
+    ServerHolder provideServerHolder(ServerFactory factory) {
+        return factory.createServerHolder();
     }
 
     @Provides
     @Singleton
     RequestMDCManager provideRequestMDCManager(Map<String, RequestMDCItem> items) {
         return new RequestMDCManager(items);
-    }
-
-    private Set<MappedServlet> allServlets(Set<Servlet> servlets, Set<MappedServlet> mappedServlets) {
-        if (servlets.isEmpty()) {
-            return mappedServlets;
-        }
-
-        Set<MappedServlet> mappedServletsClone = new HashSet<>(mappedServlets);
-        MappedServletFactory mappedServletFactory = new MappedServletFactory();
-        servlets.forEach(servlet -> mappedServletsClone.add(mappedServletFactory.toMappedServlet(servlet)));
-        return mappedServletsClone;
-    }
-
-    private Set<MappedFilter> allFilters(Set<Filter> filters, Set<MappedFilter> mappedFilters) {
-        if (filters.isEmpty()) {
-            return mappedFilters;
-        }
-
-        // place annotated filters after the last explicit filter.. In any event
-        // the actual ordering is unpredictable (depends on the set iteration
-        // order).
-        AtomicInteger order = new AtomicInteger(maxOrder(mappedFilters) + 1);
-
-        Set<MappedFilter> mappeFiltersClone = new HashSet<>(mappedFilters);
-        MappedFilterFactory mappedFilterFactory = new MappedFilterFactory();
-        filters.forEach(
-                filter -> mappeFiltersClone.add(mappedFilterFactory.toMappedFilter(filter, order.getAndIncrement())));
-
-        return mappeFiltersClone;
-    }
-
-    private Set<MappedListener> allListeners(Set<EventListener> listeners, Set<MappedListener> mappedListeners) {
-        if (listeners.isEmpty()) {
-            return mappedListeners;
-        }
-
-        Set<MappedListener> mappedListenersClone = new HashSet<>(mappedListeners);
-
-        //  Integer.MAX_VALUE means placing bare unordered listeners after (== inside) mapped listeners
-        listeners.forEach(
-                listener -> mappedListenersClone.add(new MappedListener<>(listener, Integer.MAX_VALUE)));
-
-        return mappedListenersClone;
     }
 
     @Singleton

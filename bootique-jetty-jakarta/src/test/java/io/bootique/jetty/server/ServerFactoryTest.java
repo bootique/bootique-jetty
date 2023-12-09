@@ -18,43 +18,55 @@
  */
 package io.bootique.jetty.server;
 
-import io.bootique.jetty.server.ServerFactory;
+import io.bootique.jetty.request.RequestMDCManager;
+import io.bootique.shutdown.ShutdownManager;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class ServerFactoryTest {
 
+    private ServerFactory createWithDefaults() {
+        return new ServerFactory(
+                Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(),
+                mock(RequestMDCManager.class),
+                mock(ShutdownManager.class)
+        );
+    }
+
     @Test
     public void resolveContext_Default() {
-        ServerFactory factory = new ServerFactory();
+        ServerFactory factory = createWithDefaults();
         assertEquals("/", factory.resolveContext());
     }
 
     @Test
     public void resolveContext_Root() {
-        ServerFactory factory = new ServerFactory();
+        ServerFactory factory = createWithDefaults();
         factory.setContext("/");
         assertEquals("/", factory.resolveContext());
     }
 
     @Test
     public void resolveContext_NonRoot() {
-        ServerFactory factory = new ServerFactory();
+        ServerFactory factory = createWithDefaults();
         factory.setContext("/myapp");
         assertEquals("/myapp", factory.resolveContext());
     }
 
     @Test
     public void resolveContext_MissingLeadingSlash() {
-        ServerFactory factory = new ServerFactory();
+        ServerFactory factory = createWithDefaults();
         factory.setContext("myapp");
         assertEquals("/myapp", factory.resolveContext());
     }
 
     @Test
     public void resolveContext_ExtraTrailinglash() {
-        ServerFactory factory = new ServerFactory();
+        ServerFactory factory = createWithDefaults();
         factory.setContext("/myapp/");
         assertEquals("/myapp", factory.resolveContext());
     }

@@ -17,9 +17,8 @@
  *  under the License.
  */
 
-package io.bootique.jetty;
+package io.bootique.jetty.server;
 
-import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import org.junit.jupiter.api.Test;
 
@@ -29,11 +28,11 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JettyModuleStaticsTest {
+public class ServerFactoryStaticsTest {
 
 	@Test
     public void maxOrder_Empty() {
-		assertEquals(0, JettyModule.maxOrder(Collections.emptySet()));
+		assertEquals(0, ServerFactory.maxOrder(Collections.emptySet()));
 	}
 	
 	@Test
@@ -44,7 +43,7 @@ public class JettyModuleStaticsTest {
 		filters.add(new MappedFilter(null, null, 0));
 		filters.add(new MappedFilter(null, null, 12));
 		
-		assertEquals(35, JettyModule.maxOrder(filters));
+		assertEquals(35, ServerFactory.maxOrder(filters));
 	}
 
 }

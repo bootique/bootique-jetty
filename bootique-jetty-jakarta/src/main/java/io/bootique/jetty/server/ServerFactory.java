@@ -21,7 +21,6 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.di.Injector;
 import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedListener;
@@ -30,6 +29,9 @@ import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.resource.FolderResourceFactory;
+import io.bootique.shutdown.ShutdownManager;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AllowSymLinkAliasChecker;
@@ -42,14 +44,26 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
         "thread pool parameters, etc.")
 public class ServerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerFactory.class);
+
+    private final Set<Servlet> diServlets;
+    private final Set<MappedServlet> mappedServlets;
+    private final Set<Filter> diFilters;
+    private final Set<MappedFilter> mappedFilters;
+    private final Set<EventListener> listeners;
+    private final Set<MappedListener> mappedListeners;
+    private final Set<ServletContextHandlerExtender> contextHandlerExtenders;
+    private final RequestMDCManager mdcManager;
+    private final ShutdownManager shutdownManager;
 
     protected List<ConnectorFactory> connectors;
     protected String context;
@@ -73,7 +87,28 @@ public class ServerFactory {
      */
     private Map<Integer, String> errorPages;
 
-    public ServerFactory() {
+    @Inject
+    public ServerFactory(
+            Set<Servlet> diServlets,
+            Set<MappedServlet> mappedServlets,
+            Set<Filter> diFilters,
+            Set<MappedFilter> mappedFilters,
+            Set<EventListener> listeners,
+            Set<MappedListener> mappedListeners,
+            Set<ServletContextHandlerExtender> contextHandlerExtenders,
+            RequestMDCManager mdcManager,
+            ShutdownManager shutdownManager) {
+
+        this.diServlets = diServlets;
+        this.mappedServlets = mappedServlets;
+        this.diFilters = diFilters;
+        this.mappedFilters = mappedFilters;
+        this.listeners = listeners;
+        this.mappedListeners = mappedListeners;
+        this.contextHandlerExtenders = contextHandlerExtenders;
+        this.mdcManager = mdcManager;
+        this.shutdownManager = shutdownManager;
+
         this.minThreads = 4;
         this.maxThreads = 200;
         this.maxQueuedRequests = 1024;
@@ -85,18 +120,16 @@ public class ServerFactory {
     /**
      * @since 3.0
      */
-    public ServerHolder createServerHolder(
-            Set<MappedServlet> servlets,
-            Set<MappedFilter> filters,
-            Set<MappedListener> listeners,
-            Set<ServletContextHandlerExtender> contextHandlerExtenders,
-            RequestMDCManager mdcManager,
-            Injector injector) {
+    public ServerHolder createServerHolder() {
 
         String context = resolveContext();
 
-        ThreadPool threadPool = createThreadPool(injector);
-        ServletContextHandler contextHandler = createHandler(context, servlets, filters, listeners);
+        ThreadPool threadPool = createThreadPool();
+        ServletContextHandler contextHandler = createHandler(
+                context,
+                resolveServlets(),
+                resolveFilters(),
+                resolveListeners());
 
         // TODO: Using deprecated noop symlink alias checker until we decide how to implement
         //  https://github.com/bootique/bootique-jetty/issues/114
@@ -145,7 +178,7 @@ public class ServerFactory {
 
         ServerHolder serverHolder = new ServerHolder(server, context, connectorHolders);
         server.addEventListener(new ServerLifecycleLogger(serverHolder));
-        return serverHolder;
+        return shutdownManager.onShutdown(serverHolder, ServerHolder::stop);
     }
 
     protected void postConfigHandler(ServletContextHandler handler, Set<ServletContextHandlerExtender> contextHandlerExtenders) {
@@ -267,15 +300,15 @@ public class ServerFactory {
         return connectorFactories;
     }
 
-    protected QueuedThreadPool createThreadPool(Injector injector) {
+    protected QueuedThreadPool createThreadPool() {
         BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-        QueuedThreadPool threadPool = createThreadPool(queue, injector);
+        QueuedThreadPool threadPool = createThreadPool(queue);
         threadPool.setName("bootique-http");
 
         return threadPool;
     }
 
-    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue, Injector injector) {
+    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
         return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
     }
 
@@ -336,6 +369,53 @@ public class ServerFactory {
         String c1 = context.startsWith("/") ? context : "/" + context;
         String c2 = (c1.length() > 1 && c1.endsWith("/")) ? c1.substring(0, c1.length() - 1) : c1;
         return c2;
+    }
+
+    static int maxOrder(Set<MappedFilter> mappedFilters) {
+        return mappedFilters.stream().map(MappedFilter::getOrder).max(Integer::compare).orElse(0);
+    }
+
+    private Set<MappedServlet> resolveServlets() {
+        if (diServlets.isEmpty()) {
+            return mappedServlets;
+        }
+
+        Set<MappedServlet> mappedServletsClone = new HashSet<>(mappedServlets);
+        MappedServletFactory mappedServletFactory = new MappedServletFactory();
+        diServlets.forEach(servlet -> mappedServletsClone.add(mappedServletFactory.toMappedServlet(servlet)));
+        return mappedServletsClone;
+    }
+
+    private Set<MappedFilter> resolveFilters() {
+        if (diFilters.isEmpty()) {
+            return mappedFilters;
+        }
+
+        // place annotated filters after the last explicit filter.. In any event
+        // the actual ordering is unpredictable (depends on the set iteration
+        // order).
+        AtomicInteger order = new AtomicInteger(maxOrder(mappedFilters) + 1);
+
+        Set<MappedFilter> mappedFiltersClone = new HashSet<>(mappedFilters);
+        MappedFilterFactory mappedFilterFactory = new MappedFilterFactory();
+        diFilters.forEach(
+                filter -> mappedFiltersClone.add(mappedFilterFactory.toMappedFilter(filter, order.getAndIncrement())));
+
+        return mappedFiltersClone;
+    }
+
+    private Set<MappedListener> resolveListeners() {
+        if (listeners.isEmpty()) {
+            return mappedListeners;
+        }
+
+        Set<MappedListener> mappedListenersClone = new HashSet<>(mappedListeners);
+
+        //  Integer.MAX_VALUE means placing bare unordered listeners after (== inside) mapped listeners
+        listeners.forEach(
+                listener -> mappedListenersClone.add(new MappedListener<>(listener, Integer.MAX_VALUE)));
+
+        return mappedListenersClone;
     }
 
     /**
