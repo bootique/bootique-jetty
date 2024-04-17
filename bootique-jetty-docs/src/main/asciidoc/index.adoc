@@ -16,7 +16,7 @@
 // under the License.
 
 // use custom header
-:bq-header: _chapters/header.html
+:hugo-header: _chapters/header.html
 
 include::_chapters/_01_jetty_integration.adoc[]
 include::_chapters/_02_programming_jetty_apps.adoc[]
