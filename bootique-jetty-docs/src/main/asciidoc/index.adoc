@@ -16,7 +16,7 @@
 // under the License.
 
 // use custom header
-:bq-header: _index/header.html
+:hugo-header: _index/header.html
 
 == Bootique Integration with Jetty
 
