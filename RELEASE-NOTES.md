@@ -1,3 +1,7 @@
+## 3.0-M4
+
+* #124 Upgrade to Jetty 11.0.20 and 10.0.20
+
 ## 3.0-M3
 
 * #123 (Jakarta migration) Deprecate "javax" modules
