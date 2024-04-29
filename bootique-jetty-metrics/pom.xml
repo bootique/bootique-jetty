@@ -39,13 +39,11 @@
         <dependency>
             <groupId>io.bootique.metrics</groupId>
             <artifactId>bootique-metrics-healthchecks</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.bootique.jetty</groupId>
             <artifactId>bootique-jetty</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Unit test dependencies -->
