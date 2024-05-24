@@ -22,7 +22,7 @@
 
 
 # bootique-jetty
-Provides Jetty integration with [Bootique](https://github.com/bootique/bootique). Documentation and configuration reference 
-is [available here](http://bootique.io/docs/0/bootique-jetty-docs/).
+Provides Jetty integration with [Bootique](https://bootique.io). Documentation and configuration reference 
+is [available here](https://bootique.io/docs/3.x/bootique-jetty-docs/).
 
-See usage example [bootique-jetty-demo](https://github.com/bootique-examples/bootique-jetty-demo).
+See usage example [here](https://github.com/bootique-examples/bootique-jetty-examples).
