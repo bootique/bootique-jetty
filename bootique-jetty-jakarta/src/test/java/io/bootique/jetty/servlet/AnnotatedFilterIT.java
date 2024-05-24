@@ -33,7 +33,6 @@ import jakarta.ws.rs.client.WebTarget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -119,8 +118,7 @@ public class AnnotatedFilterIT {
             }
 
             @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                    throws IOException, ServletException {
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
                 assertion = () -> {
                 };
             }

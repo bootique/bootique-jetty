@@ -38,7 +38,8 @@ public class StaticServletIT {
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void commonResourceBase() {
+    @Deprecated
+    public void commonResourceBase_addStaticServlet() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -68,7 +69,39 @@ public class StaticServletIT {
     }
 
     @Test
-    public void resourcePathResolving() {
+    public void commonResourceBase() {
+
+        testFactory.app("-s")
+                .module(b -> {
+                    MappedServlet<?> s = MappedServlet.ofStatic("sub").urlPatterns("/sub1/*", "/sub2/*").build();
+                    JettyModule.extend(b).addMappedServlet(s);
+                    BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
+                            "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
+                })
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/").request().get().getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/other.txt").request().get().getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/sub3/other.txt").request().get().getStatus());
+
+        Response r1 = base.path("/sub1/other.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("other1", r1.readEntity(String.class));
+
+        Response r2 = base.path("/sub2/other.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("other2", r2.readEntity(String.class));
+
+        Response r3 = base.path("/sub2/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r3.getStatus());
+        assertEquals("<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
+    }
+
+    @Test
+    @Deprecated
+    public void resourcePathResolving_addStaticServlet() {
 
         testFactory.app("-s")
                 .module(b -> {
@@ -88,6 +121,113 @@ public class StaticServletIT {
                             // static folder path)
                             .setProperty("bq.jetty.servlets.s1.params.resourceBase",
                                     "src/test/resources/io/bootique/jetty/ResourcePathResolving/root1/")
+
+                            // s2: own resource base and "pathInfoOnly == true" (so servlet path is excluded from the
+                            // static folder path)
+                            .setProperty("bq.jetty.servlets.s2.params.resourceBase",
+                                    "src/test/resources/io/bootique/jetty/ResourcePathResolving/root2/")
+                            .setProperty("bq.jetty.servlets.s2.params.pathInfoOnly", "true")
+
+                            // s3: shared resource base and  "pathInfoOnly == false"
+                            // ...
+
+                            // s4: shared resource base and  "pathInfoOnly == true"
+                            .setProperty("bq.jetty.servlets.s4.params.pathInfoOnly", "true");
+
+                })
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        Response r1 = base.path("/sub1/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("[/root1/sub1/f.txt]", r1.readEntity(String.class));
+
+        Response r2 = base.path("/sub2/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("[/root2/f.txt]", r2.readEntity(String.class));
+
+        Response r3 = base.path("/sub3/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r3.getStatus());
+        assertEquals("[/sub3/f.txt]", r3.readEntity(String.class));
+
+        Response r4 = base.path("/sub4/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r4.getStatus());
+        assertEquals("[/f.txt]", r4.readEntity(String.class));
+    }
+
+    @Test
+    public void builderParams() {
+
+        testFactory.app("-s")
+                .module(b -> {
+
+                    BQCoreModule.extend(b)
+                            // shared resource base; some servlets use it implicitly, others override it
+                            .setProperty("bq.jetty.staticResourceBase",
+                                    "src/test/resources/io/bootique/jetty/ResourcePathResolving/");
+
+                    JettyModule.extend(b)
+                            // s1: own resource base and "pathInfoOnly == false" (so servlet path is a part of the
+                            // static folder path)
+                            .addMappedServlet(MappedServlet.ofStatic("s1").urlPatterns("/sub1/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
+
+                            // s2: own resource base and "pathInfoOnly == true" (so servlet path is excluded from the
+                            // static folder path)
+                            .addMappedServlet(MappedServlet.ofStatic("s2").urlPatterns("/sub2/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root2/").pathInfoOnly().build())
+
+                            // s3: shared resource base and  "pathInfoOnly == false"
+                            .addMappedServlet(MappedServlet.ofStatic("s3").urlPatterns("/sub3/*").build())
+
+                            // s4: shared resource base and  "pathInfoOnly == true"
+                            .addMappedServlet(MappedServlet.ofStatic("s4").urlPatterns("/sub4/*").pathInfoOnly().build());
+                })
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        Response r1 = base.path("/sub1/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("[/root1/sub1/f.txt]", r1.readEntity(String.class));
+
+        Response r2 = base.path("/sub2/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("[/root2/f.txt]", r2.readEntity(String.class));
+
+        Response r3 = base.path("/sub3/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r3.getStatus());
+        assertEquals("[/sub3/f.txt]", r3.readEntity(String.class));
+
+        Response r4 = base.path("/sub4/f.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r4.getStatus());
+        assertEquals("[/f.txt]", r4.readEntity(String.class));
+    }
+
+    @Test
+    public void overrideFromParams() {
+
+        testFactory.app("-s")
+                .module(b -> {
+                    JettyModule.extend(b)
+                            // this "pathInfo" should be overridden by params "pathInfo" of "false"
+                            .addMappedServlet(MappedServlet.ofStatic("s1").urlPatterns("/sub1/*").pathInfoOnly().build())
+
+                            // this resource base should be overridden by params resource base
+                            .addMappedServlet(MappedServlet.ofStatic("s2").urlPatterns("/sub2/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
+                            .addMappedServlet(MappedServlet.ofStatic("s3").urlPatterns("/sub3/*").build())
+                            .addMappedServlet(MappedServlet.ofStatic("s4").urlPatterns("/sub4/*").build());
+
+                    BQCoreModule.extend(b)
+
+                            // shared resource base; some servlets use it implicitly, others override it
+                            .setProperty("bq.jetty.staticResourceBase",
+                                    "src/test/resources/io/bootique/jetty/ResourcePathResolving/")
+
+                            // s1: own resource base and "pathInfoOnly == false" (so servlet path is a part of the
+                            // static folder path)
+                            .setProperty("bq.jetty.servlets.s1.params.resourceBase",
+                                    "src/test/resources/io/bootique/jetty/ResourcePathResolving/root1/")
+                            .setProperty("bq.jetty.servlets.s1.params.pathInfoOnly", "false")
 
                             // s2: own resource base and "pathInfoOnly == true" (so servlet path is excluded from the
                             // static folder path)

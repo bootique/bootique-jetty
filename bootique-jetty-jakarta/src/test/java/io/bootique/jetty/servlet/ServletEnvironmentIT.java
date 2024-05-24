@@ -84,7 +84,7 @@ public class ServletEnvironmentIT {
 
 		@Override
 		public void configure(Binder binder) {
-			TypeLiteral<MappedServlet<ServletCheckingState>> st = new TypeLiteral<MappedServlet<ServletCheckingState>>() {};
+			TypeLiteral<MappedServlet<ServletCheckingState>> st = new TypeLiteral<>() {};
 			JettyModule.extend(binder).addMappedServlet(st);
 		}
 

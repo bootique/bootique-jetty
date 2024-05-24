@@ -30,18 +30,41 @@ import java.io.IOException;
  */
 public class StaticServlet extends DefaultServlet {
 
+    static final String PATH_INFO_ONLY_PARAMETER = "pathInfoOnly";
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
     private final String resourceBase;
+    // capturing this as a String instead of boolean to allow Jetty apply its own string to boolean parsing
+    private final String pathInfoOnly;
 
+    /**
+     * @deprecated in favor of {@link #StaticServlet(String, String)}
+     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public StaticServlet(String resourceBase) {
+        this(resourceBase, "false");
+    }
+
+    /**
+     * @since 3.0
+     */
+    public StaticServlet(String resourceBase, String pathInfoOnly) {
         this.resourceBase = resourceBase;
+        this.pathInfoOnly = pathInfoOnly;
     }
 
     @Override
     public String getInitParameter(String name) {
-        // ignore super value if the parameter is "resourceBase"
-        return RESOURCE_BASE_PARAMETER.equals(name) ? this.resourceBase : super.getInitParameter(name);
+
+        // special rules for Bootique-defined parameters
+        switch (name) {
+            case PATH_INFO_ONLY_PARAMETER:
+                return this.pathInfoOnly;
+            case RESOURCE_BASE_PARAMETER:
+                return this.resourceBase;
+            default:
+                return super.getInitParameter(name);
+        }
     }
 
     // making public, so we can call it from MultiBaseDefaultServlet

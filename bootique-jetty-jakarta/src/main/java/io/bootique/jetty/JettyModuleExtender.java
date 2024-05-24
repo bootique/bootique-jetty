@@ -24,7 +24,6 @@ import io.bootique.ModuleExtender;
 import io.bootique.di.*;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
-import io.bootique.jetty.servlet.MultiBaseStaticServlet;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 
@@ -104,9 +103,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListener
-     * @param <T>
-     * @return
+     * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
         contributeMappedListeners().addInstance(mappedListener);
@@ -114,9 +111,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListenerKey
-     * @param <T>
-     * @return
+     * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(Key<MappedListener<T>> mappedListenerKey) {
         contributeMappedListeners().add(mappedListenerKey);
@@ -124,20 +119,26 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListenerType
-     * @param <T>
      * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(TypeLiteral<MappedListener<T>> mappedListenerType) {
         return addMappedListener(Key.get(mappedListenerType));
     }
 
+    /**
+     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String)}
+     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
-        return addServlet(new MultiBaseStaticServlet(), name, urlPatterns);
+        return addMappedServlet(MappedServlet.ofStatic(name).urlPatterns(urlPatterns).build());
     }
 
+    /**
+     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String)}
+     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public JettyModuleExtender useDefaultServlet() {
-        return addStaticServlet("default", "/");
+        return addMappedServlet(MappedServlet.ofStatic("default").urlPatterns("/").build());
     }
 
     /**
