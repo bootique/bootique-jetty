@@ -33,15 +33,14 @@ import java.net.MalformedURLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Deprecated
 @BQTest
-public class DefaultServletIT {
+public class MappedServlet_Static_RootIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
     @Test
-    public void disabled() {
+    public void disabledByDefault() {
         testFactory.app("-s").run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -50,9 +49,9 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_NoResourceBase() {
+    public void noResourceBase() {
         testFactory.app("-s")
-                .module(b -> JettyModule.extend(b).useDefaultServlet())
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/").build()))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -61,11 +60,11 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsFilePath() {
+    public void staticResourceBase_FilePath() {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/").build());
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
                 })
@@ -81,12 +80,12 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsFilePath_SetViaServletParams() {
+    public void resourceBase_FilePath_AsServletParams() {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
-                    BQCoreModule.extend(b).setProperty("bq.jetty.servlets.default.params.resourceBase",
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/").name("x").build());
+                    BQCoreModule.extend(b).setProperty("bq.jetty.servlets.x.params.resourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
                 })
                 .run();
@@ -98,18 +97,16 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseInServletParamsOverridesDefault() {
+    public void resourceBase_ServletParamsOverridesDefault() {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
-                    BQCoreModule.extend(b)
-                            // default resource base
-                            .setProperty("bq.jetty.staticResourceBase",
-                                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/")
-                            // per-servlet resource base
-                            .setProperty("bq.jetty.servlets.default.params.resourceBase",
-                                    "src/test/resources/io/bootique/jetty/StaticResourcesIT_altdocroot/");
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/")
+                            .name("x")
+                            .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot/").build());
+                    BQCoreModule.extend(b).setProperty(
+                            "bq.jetty.servlets.x.params.resourceBase",
+                            "src/test/resources/io/bootique/jetty/StaticResourcesIT_altdocroot/");
                 })
                 .run();
 
@@ -120,11 +117,11 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsFilePathWithDotSlash() {
+    public void resourceBase_FilePathWithDotSlash() {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/").build());
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "./src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
                 })
@@ -139,16 +136,16 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsFileUrl() throws MalformedURLException {
+    public void resourceBaseIsFileUrl() throws MalformedURLException {
 
         File baseDir = new File("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
         String baseUrl = baseDir.getAbsoluteFile().toURI().toURL().toString();
 
         testFactory.app("-s")
-                .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
-                    BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase", baseUrl);
-                })
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic("/")
+                        .resourceBase(baseUrl)
+                        .build()))
                 .createRuntime()
                 .run();
 
@@ -160,14 +157,13 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsClasspathUrl() {
+    public void resourceBase_Classpath() {
 
         testFactory.app("-s")
-                .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
-                    BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
-                            "classpath:io/bootique/jetty/StaticResourcesIT_docroot");
-                })
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic("/")
+                        .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot")
+                        .build()))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -178,14 +174,30 @@ public class DefaultServletIT {
     }
 
     @Test
-    public void defaultServlet_ResourceBaseIsFilePath_ImplicitIndex() {
+    public void resourceBase_filePath_ImplicitIndex() {
 
         testFactory.app("-s")
-                .module(b -> {
-                    JettyModule.extend(b).useDefaultServlet();
-                    BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
-                            "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/");
-                })
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic("/")
+                        .resourceBase("src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot/")
+                        .build()))
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        Response r = base.path("/").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+        assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
+    }
+
+    @Test
+    public void resourceBase_classpath_ImplicitIndex() {
+
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic("/")
+                        .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot/")
+                        .build()))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
