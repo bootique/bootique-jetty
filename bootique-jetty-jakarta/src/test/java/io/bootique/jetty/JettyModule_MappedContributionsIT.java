@@ -22,9 +22,6 @@ package io.bootique.jetty;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.di.*;
-import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedFilter;
-import io.bootique.jetty.MappedServlet;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
 import jakarta.servlet.*;
@@ -159,51 +156,27 @@ public class JettyModule_MappedContributionsIT {
     public static class Filter1 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f1_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 
     public static class Filter2 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f2_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 
     public static class Filter3 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f3_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 }

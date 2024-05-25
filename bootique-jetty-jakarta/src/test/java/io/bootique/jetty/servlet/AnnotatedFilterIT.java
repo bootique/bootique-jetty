@@ -108,16 +108,6 @@ public class AnnotatedFilterIT {
         class AnnotatedFilter implements Filter {
 
             @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
-                // do nothing
-            }
-
-            @Override
-            public void destroy() {
-                // do nothing
-            }
-
-            @Override
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
                 assertion = () -> {
                 };

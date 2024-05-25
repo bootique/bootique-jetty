@@ -93,11 +93,6 @@ public class AnnotatedFilter_ParamsIT {
             }
 
             @Override
-            public void destroy() {
-                // do nothing
-            }
-
-            @Override
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                     throws IOException, ServletException {
                 ((HttpServletResponse) response).getWriter()
