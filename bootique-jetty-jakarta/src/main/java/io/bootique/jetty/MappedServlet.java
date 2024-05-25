@@ -33,8 +33,8 @@ import java.util.Set;
 public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
     /**
-     * Creates a builder of a configuration of a "static" MappedServlet that will act as a web server for static
-     * files located on classpath or in an external folder.
+     * Starts a builder of a "static" MappedServlet that will act as a web server for a given folder located on
+     * classpath or the filesystem.
      *
      * @since 3.0
      */
