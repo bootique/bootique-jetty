@@ -32,7 +32,10 @@ public class ServiceWithServletEnvironment {
 
     public void doSomething() {
         // tag::envRead[]
-        String url = servletEnv.request().map(HttpServletRequest::getRequestURI).orElse("unknown");
+        String url = servletEnv
+                .request()
+                .map(HttpServletRequest::getRequestURI)
+                .orElse("unknown");
         // end::envRead[]
     }
 }
