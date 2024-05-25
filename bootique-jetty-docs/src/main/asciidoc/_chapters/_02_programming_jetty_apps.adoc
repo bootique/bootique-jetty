@@ -96,6 +96,10 @@ on the application classpath. To "publish" files in a given folder on Jetty, use
 include::../../../test/java/io/bootique/jetty/docs/StaticServlet.java[tags=staticServlet]
 ----
 
+<1> Maps a URL to a "static" servlet
+<2> The location of the files served via this servlet
+<3> An optional name that would allow to set servlet parameters as shown below
+
 You can publish as many locations as needed. If a location is not known at compile time, it can alternatively
 be defined in the app configuration with `resourceBase` servlet parameter:
 

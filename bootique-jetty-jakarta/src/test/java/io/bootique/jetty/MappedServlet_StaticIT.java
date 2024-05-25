@@ -73,7 +73,7 @@ public class MappedServlet_StaticIT {
 
         testFactory.app("-s")
                 .module(b -> {
-                    MappedServlet<?> s = MappedServlet.ofStatic("sub").urlPatterns("/sub1/*", "/sub2/*").build();
+                    MappedServlet<?> s = MappedServlet.ofStatic("/sub1/*", "/sub2/*").build();
                     JettyModule.extend(b).addMappedServlet(s);
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
@@ -104,10 +104,13 @@ public class MappedServlet_StaticIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
-                        .ofStatic()
-                        .urlPatterns("/sub1/*")
-                        .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot_subfolders/")
-                        .build()))
+                                .ofStatic("/sub1/*")
+                                .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot_subfolders/")
+                                .build())
+                        .addMappedServlet(MappedServlet
+                                .ofStatic("/sub2/*")
+                                .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot_subfolders/")
+                                .build()))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -119,6 +122,10 @@ public class MappedServlet_StaticIT {
         Response r1 = base.path("/sub1/other.txt").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
         assertEquals("other1", r1.readEntity(String.class));
+
+        Response r2 = base.path("/sub2/other.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r2.getStatus());
+        assertEquals("other2", r2.readEntity(String.class));
     }
 
     @Test
@@ -192,17 +199,17 @@ public class MappedServlet_StaticIT {
                     JettyModule.extend(b)
                             // s1: own resource base and "pathInfoOnly == false" (so servlet path is a part of the
                             // static folder path)
-                            .addMappedServlet(MappedServlet.ofStatic("s1").urlPatterns("/sub1/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub1/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
 
                             // s2: own resource base and "pathInfoOnly == true" (so servlet path is excluded from the
                             // static folder path)
-                            .addMappedServlet(MappedServlet.ofStatic("s2").urlPatterns("/sub2/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root2/").pathInfoOnly().build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub2/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root2/").pathInfoOnly().build())
 
                             // s3: shared resource base and  "pathInfoOnly == false"
-                            .addMappedServlet(MappedServlet.ofStatic("s3").urlPatterns("/sub3/*").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub3/*").build())
 
                             // s4: shared resource base and  "pathInfoOnly == true"
-                            .addMappedServlet(MappedServlet.ofStatic("s4").urlPatterns("/sub4/*").pathInfoOnly().build());
+                            .addMappedServlet(MappedServlet.ofStatic("/sub4/*").pathInfoOnly().build());
                 })
                 .run();
 
@@ -232,12 +239,12 @@ public class MappedServlet_StaticIT {
                 .module(b -> {
                     JettyModule.extend(b)
                             // this "pathInfo" should be overridden by params "pathInfo" of "false"
-                            .addMappedServlet(MappedServlet.ofStatic("s1").urlPatterns("/sub1/*").pathInfoOnly().build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub1/*").name("s1").pathInfoOnly().build())
 
                             // this resource base should be overridden by params resource base
-                            .addMappedServlet(MappedServlet.ofStatic("s2").urlPatterns("/sub2/*").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
-                            .addMappedServlet(MappedServlet.ofStatic("s3").urlPatterns("/sub3/*").build())
-                            .addMappedServlet(MappedServlet.ofStatic("s4").urlPatterns("/sub4/*").build());
+                            .addMappedServlet(MappedServlet.ofStatic("/sub2/*").name("s2").resourceBase("classpath:io/bootique/jetty/ResourcePathResolving/root1/").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub3/*").name("s3").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub4/*").name("s4").build());
 
                     BQCoreModule.extend(b)
 

@@ -126,19 +126,19 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String)}
+     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String...)}
      */
     @Deprecated(since = "3.0", forRemoval = true)
     public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
-        return addMappedServlet(MappedServlet.ofStatic(name).urlPatterns(urlPatterns).build());
+        return addMappedServlet(MappedServlet.ofStatic(urlPatterns).name(name).build());
     }
 
     /**
-     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String)}
+     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String...)}
      */
     @Deprecated(since = "3.0", forRemoval = true)
     public JettyModuleExtender useDefaultServlet() {
-        return addMappedServlet(MappedServlet.ofStatic("default").urlPatterns("/").build());
+        return addMappedServlet(MappedServlet.ofStatic("/").name("default").build());
     }
 
     /**

@@ -25,6 +25,7 @@ import jakarta.servlet.Servlet;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -33,23 +34,14 @@ import java.util.Set;
 public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
     /**
-     * Starts a builder of a "static" MappedServlet that will act as a web server for a given folder located on
-     * classpath or the filesystem.
-     *
-     * @since 3.0
-     */
-    public static StaticMappedServletBuilder ofStatic() {
-        return ofStatic(null);
-    }
-
-    /**
      * Starts a builder of a named "static" MappedServlet that will act as a web server for a given folder located on
-     * classpath or the filesystem.
+     * classpath or the filesystem. If "urlPatterns" parameter is null or empty, the root pattern will be used ("/").
      *
      * @since 3.0
      */
-    public static StaticMappedServletBuilder ofStatic(String name) {
-        return new StaticMappedServletBuilder(name);
+    public static StaticMappedServletBuilder ofStatic(String... urlPatterns) {
+        Set<String> normalized = urlPatterns != null && urlPatterns.length > 0 ? Set.of(urlPatterns) : Set.of("/");
+        return new StaticMappedServletBuilder(normalized);
     }
 
     public MappedServlet(T servlet, Set<String> urlPatterns) {
@@ -84,23 +76,19 @@ public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
      */
     public static class StaticMappedServletBuilder {
 
-        private final String name;
-        private String[] urlPatterns;
+        private final Set<String> urlPatterns;
         private FolderResourceFactory resourceBase;
         // capturing this as a String instead of boolean to allow Jetty apply its own string to boolean parsing
         // later when our value is mixed with the servlet init params
         private String pathInfoOnly;
+        private String name;
 
-        protected StaticMappedServletBuilder(String name) {
-            this.name = name;
+        protected StaticMappedServletBuilder(Set<String> urlPatterns) {
+            this.urlPatterns = Objects.requireNonNull(urlPatterns);
         }
 
-        /**
-         * Defines URL patterns for the static servlet. If the call to this method is omitted or the value us null,
-         * the root pattern will be used ("/").
-         */
-        public StaticMappedServletBuilder urlPatterns(String... urlPatterns) {
-            this.urlPatterns = urlPatterns;
+        public StaticMappedServletBuilder name(String name) {
+            this.name = name;
             return this;
         }
 
@@ -129,13 +117,7 @@ public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
         }
 
         public MappedServlet<?> build() {
-
-            MultiBaseStaticServlet servlet = new MultiBaseStaticServlet(resourceBase, pathInfoOnly);
-            Set<String> patterns = this.urlPatterns != null && this.urlPatterns.length > 0
-                    ? Set.of(this.urlPatterns)
-                    : Set.of("/");
-
-            return new MappedServlet<>(servlet, patterns, name);
+            return new MappedServlet<>(new MultiBaseStaticServlet(resourceBase, pathInfoOnly), urlPatterns, name);
         }
     }
 }

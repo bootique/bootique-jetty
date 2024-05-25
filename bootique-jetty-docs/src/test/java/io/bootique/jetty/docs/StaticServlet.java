@@ -30,9 +30,9 @@ public class StaticServlet implements BQModule {
     @Override
     public void configure(Binder binder) {
         MappedServlet<?> s = MappedServlet
-                .ofStatic("docroot")
-                .urlPatterns("/")
-                .resourceBase("classpath:docroot")
+                .ofStatic("/") // <1>
+                .resourceBase("classpath:docroot") // <2>
+                .name("docroot") // <3>
                 .build();
 
         JettyModule.extend(binder).addMappedServlet(s);

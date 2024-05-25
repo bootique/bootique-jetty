@@ -31,8 +31,7 @@ public class StaticServletPathInfo implements BQModule {
 
         // tag::pathInfo[]
         MappedServlet<?> s = MappedServlet
-                .ofStatic("docroot")
-                .urlPatterns("/abc/*")
+                .ofStatic("/abc/*")
                 .pathInfoOnly()
                 .build();
 // end::pathInfo[]
