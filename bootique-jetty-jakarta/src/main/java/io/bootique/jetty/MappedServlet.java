@@ -34,8 +34,8 @@ import java.util.Set;
 public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
     /**
-     * Starts a builder of a named "static" MappedServlet that will act as a web server for a given folder located on
-     * classpath or the filesystem. If "urlPatterns" parameter is null or empty, the root pattern will be used ("/").
+     * Starts a builder of a MappedServlet that will act as a web server serving static files from some folder. If
+     * the "urlPatterns" parameter is null or empty, the root pattern ("/") is assumed.
      *
      * @since 3.0
      */
