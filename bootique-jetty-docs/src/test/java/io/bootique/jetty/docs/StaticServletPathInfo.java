@@ -21,16 +21,22 @@ package io.bootique.jetty.docs;
 import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedServlet;
 
-public class ModuleWithStaticServlets implements BQModule {
 
-    // tag::bindStaticServlets[]
+public class StaticServletPathInfo implements BQModule {
+
     @Override
     public void configure(Binder binder) {
-        JettyModule.extend(binder)
-                .addStaticServlet("abc", "/abc/*")
-                .addStaticServlet("xyz", "/xyz/*");
-    }
-    // end::bindStaticServlets[]
-}
 
+        // tag::pathInfo[]
+        MappedServlet<?> s = MappedServlet
+                .ofStatic("docroot")
+                .urlPatterns("/abc/*")
+                .pathInfoOnly()
+                .build();
+// end::pathInfo[]
+
+        JettyModule.extend(binder).addMappedServlet(s);
+    }
+}

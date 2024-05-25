@@ -89,52 +89,36 @@ Listeners can rely on injection to obtain dependencies, just like servlets and f
 === Serving Static Files
 
 Jetty is not limited to just servlets. It can also act as a webserver for static files stored on the filesystem or even
-on the application classpath. By default this behavior is disabled to prevent unintended security risks. To enable the
-"webserver" feature use extender's `useDefaultServlet()` method:
+on the application classpath. To "publish" files in a given folder on Jetty, use the following API:
 
 [source,java,indent=0]
 ----
-include::../../../test/java/io/bootique/jetty/docs/ModuleWithDefaultServlet.java[tags=bindDefaultServlet]
+include::../../../test/java/io/bootique/jetty/docs/StaticServlet.java[tags=staticServlet]
 ----
 
-This enables a special internal servlet at "/" path, that will act as a static webserver. It requires an additional
-configuration parameter though - the base directory where the files are stored. This is configured in YAML, and the path
-can be either a directory on the filesystem or a classpath:
-[source,yaml]
-----
-jetty:
-  context: "/myapp"
-  staticResourceBase: "classpath:com/example/docroot"
-----
-
-"Default" servlet always has a base URL of "/" (relative to the application context). If you want a different path (or
-need to serve more then one file directory under different base URLs), you can define more of those "webserver" servlets,
-each with its own parameters:
-
-[source,java,indent=0]
-----
-include::../../../test/java/io/bootique/jetty/docs/ModuleWithStaticServlets.java[tags=bindStaticServlets]
-----
-By default each "static servlet" shares the common `staticResourceBase`, but it can also define its own base and
-URL-to-file mapping approach using a
-few https://www.eclipse.org/jetty/javadoc/9.4.19.v20190610/org/eclipse/jetty/servlet/DefaultServlet.html[servlet parameters],
-namely `resourceBase` and `pathInfoOnly`:
+You can publish as many locations as needed. If a location is not known at compile time, it can alternatively
+be defined in the app configuration with `resourceBase` servlet parameter:
 
 [source,yaml]
 ----
 jetty:
-  context: "/myapp"
   servlets:
-    abc:
+    docroot:
       params:
-        # Note that "resourceBase" follows Bootique resource URL format
-        # and hence can be a  "classpath:" URL or a filesystem path
-        resourceBase: "classpath:com/example/abcdocroot"
-        pathInfoOnly: true
+        # This follows Bootique resource URL format
+        # and can be a "classpath:" URL or a filesystem path
+        resourceBase: "classpath:com/example/docroot"
 ----
 
-`resourceBase` simply overrides `staticResourceBase` for a given servlet, while `pathInfoOnly` controls static resource
-URL resolution as follows:
+Another potentially relevant (and rather confusing) setting is `pathInfoOnly`. It controls URL-to-file resolving
+behavior and is available as a part of the location publishing API, or as a servlet parameter. E.g.:
+
+[source,java,indent=0]
+----
+include::../../../test/java/io/bootique/jetty/docs/StaticServletPathInfo.java[tags=pathInfo]
+----
+
+It behaves as follows:
 |===
 |URL|pathInfoOnly|File Path
 
@@ -146,6 +130,18 @@ URL resolution as follows:
 |true
 |<resource_base>/dir1/f1.html
 |===
+
+Jetty `DefaultServlet` (the one serving the static files under the hood) supports a number of other
+parameters https://eclipse.dev/jetty/javadoc/jetty-11/org/eclipse/jetty/servlet/DefaultServlet.html[described here].
+Some of them, such as `relativeResourceBase`, require the app-wide resource base to be set:
+
+[source,yaml]
+----
+jetty:
+  staticResourceBase: "classpath:com/example/docroot"
+----
+
+NOTE: `staticResourceBase` is really redundant in most (all?) situations, so hopefully you will never need to use it.
 
 === ServletEnvironment
 
