@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @BQTest
-public class StaticServletIT {
+public class MappedServlet_StaticIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
@@ -97,6 +97,28 @@ public class StaticServletIT {
         Response r3 = base.path("/sub2/").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r3.getStatus());
         assertEquals("<html><body><h2>2</h2></body></html>", r3.readEntity(String.class));
+    }
+
+    @Test
+    public void unnamed() {
+
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic()
+                        .urlPatterns("/sub1/*")
+                        .resourceBase("classpath:io/bootique/jetty/StaticResourcesIT_docroot_subfolders/")
+                        .build()))
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/").request().get().getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/other.txt").request().get().getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), base.path("/sub3/other.txt").request().get().getStatus());
+
+        Response r1 = base.path("/sub1/other.txt").request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r1.getStatus());
+        assertEquals("other1", r1.readEntity(String.class));
     }
 
     @Test

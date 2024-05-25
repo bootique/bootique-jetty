@@ -38,6 +38,16 @@ public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
      *
      * @since 3.0
      */
+    public static StaticMappedServletBuilder ofStatic() {
+        return ofStatic(null);
+    }
+
+    /**
+     * Starts a builder of a named "static" MappedServlet that will act as a web server for a given folder located on
+     * classpath or the filesystem.
+     *
+     * @since 3.0
+     */
     public static StaticMappedServletBuilder ofStatic(String name) {
         return new StaticMappedServletBuilder(name);
     }
