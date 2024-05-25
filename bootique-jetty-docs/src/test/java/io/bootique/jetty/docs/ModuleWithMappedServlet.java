@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.docs;
 
-import io.bootique.di.BQModule;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
@@ -31,7 +31,7 @@ public class ModuleWithMappedServlet implements BQModule {
     // tag::bindMappedServlet[]
     @Override
     public void configure(Binder binder) {
-        MappedServlet mappedServlet = new MappedServlet(
+        MappedServlet<MyServlet> mappedServlet = new MappedServlet<>(
                 new MyServlet(),
                 Collections.singleton("/c"),
                 "myservlet");
@@ -40,6 +40,6 @@ public class ModuleWithMappedServlet implements BQModule {
     }
     // end::bindMappedServlet[]
 
-    public class MyServlet extends HttpServlet {
+    static class MyServlet extends HttpServlet {
     }
 }

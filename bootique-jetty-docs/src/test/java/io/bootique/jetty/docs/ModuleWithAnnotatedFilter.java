@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.docs;
 
-import io.bootique.di.BQModule;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.jetty.JettyModule;
 

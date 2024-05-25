@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.docs;
 
-import io.bootique.di.BQModule;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
@@ -36,7 +36,7 @@ public class ModuleWithMappedServletAndDI implements BQModule {
     public void configure(Binder binder) {
 
         // must use TypeLiteral to identify which kind of MappedServlet<..> to add
-        TypeLiteral<MappedServlet<MyServlet>> tl = new TypeLiteral<MappedServlet<MyServlet>>() {
+        TypeLiteral<MappedServlet<MyServlet>> tl = new TypeLiteral<>() {
         };
         JettyModule.extend(binder).addMappedServlet(tl);
     }
