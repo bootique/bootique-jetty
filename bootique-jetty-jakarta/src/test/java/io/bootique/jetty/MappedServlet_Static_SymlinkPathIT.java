@@ -40,10 +40,9 @@ import java.nio.file.Files;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Deprecated
 @BQTest
 @EnabledOnOs({OS.LINUX, OS.MAC})
-public class DefaultServletSymlinkPathIT {
+public class MappedServlet_Static_SymlinkPathIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
@@ -70,8 +69,10 @@ public class DefaultServletSymlinkPathIT {
 
         testFactory.app("-s")
                 // DefaultServlet behaves differently from MultiBaseStaticServlet, where the resource base symlinks are resolved before servlet creation
-                .module(b -> JettyModule.extend(b).useDefaultServlet())
-                .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.servlets.default.params.resourceBase", symlinkPath))
+                .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                        .ofStatic("/")
+                        .resourceBase(symlinkPath)
+                        .build()))
                 .createRuntime()
                 .run();
 

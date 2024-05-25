@@ -18,7 +18,6 @@
  */
 package io.bootique.jetty;
 
-import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.junit5.BQApp;
@@ -35,16 +34,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * This test is second-guessing Jetty (there's no Bootique functionality added). Just checking that common static
  * resources include the proper Content-Type header.
  */
-@Deprecated
 @BQTest
-public class DefaultServlet_ContentTypeIT {
+public class MappedServlet_Static_ContentTypeIT {
 
     @BQApp
     final static BQRuntime app = Bootique.app("--server")
             .autoLoadModules()
-            .module(b -> JettyModule.extend(b).useDefaultServlet())
-            .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
-                    "src/test/resources/io/bootique/jetty/DefaultServlet_ContentTypeIT_docroot/"))
+            .module(b -> JettyModule.extend(b).addMappedServlet(MappedServlet
+                    .ofStatic("/")
+                    .resourceBase("classpath:io/bootique/jetty/DefaultServlet_ContentTypeIT_docroot/")
+                    .build()))
             .createRuntime();
 
     final WebTarget target = ClientBuilder.newClient().target("http://localhost:8080");
