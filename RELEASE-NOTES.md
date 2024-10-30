@@ -1,6 +1,7 @@
 ## 3.0-M5
 
 * #125 Unified API for mapping static servlets
+* #126 Upgrade to Jetty 11.0.24 and 10.0.24
 
 ## 3.0-M4
 
