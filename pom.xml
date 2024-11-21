@@ -53,8 +53,6 @@
     </modules>
 
     <properties>
-        <bootique.version>${project.version}</bootique.version>
-
         <!-- TODO: move activation and websocket versions to bootique-modules-parent -->
         <websocket.version>1.1</websocket.version>
         <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
@@ -73,27 +71,27 @@
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique</artifactId>
-                <version>${bootique.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique-junit5</artifactId>
-                <version>${bootique.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.bootique.metrics</groupId>
                 <artifactId>bootique-metrics</artifactId>
-                <version>${bootique.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.bootique.metrics</groupId>
                 <artifactId>bootique-metrics-healthchecks</artifactId>
-                <version>${bootique.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.bootique.logback</groupId>
                 <artifactId>bootique-logback</artifactId>
-                <version>${bootique.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <!-- Transitive dependency of jersey-client -->
             <dependency>

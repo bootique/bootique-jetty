@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>io.bootique.jetty</groupId>
 			<artifactId>bootique-jetty-jakarta-junit5</artifactId>
-			<version>${bootique.version}</version>
+			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
