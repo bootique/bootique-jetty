@@ -36,7 +36,7 @@ import io.bootique.log.BootLogger;
 import io.bootique.shutdown.ShutdownManager;
 import org.eclipse.jetty.server.Server;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import java.util.EventListener;

@@ -19,8 +19,8 @@
 
 package io.bootique.jetty.command;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;

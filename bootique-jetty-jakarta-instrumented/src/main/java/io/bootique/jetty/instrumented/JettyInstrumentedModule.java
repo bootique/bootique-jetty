@@ -39,7 +39,7 @@ import io.bootique.metrics.health.HealthCheckModule;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 public class JettyInstrumentedModule implements BQModule {
 

@@ -26,7 +26,7 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
 import jakarta.servlet.http.HttpServlet;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collections;
 
 public class ModuleWithMappedServletAndDI implements BQModule {

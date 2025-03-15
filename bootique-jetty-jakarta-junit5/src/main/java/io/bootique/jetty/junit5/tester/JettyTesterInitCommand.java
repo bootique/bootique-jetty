@@ -24,8 +24,8 @@ import io.bootique.command.CommandWithMetadata;
 import io.bootique.jetty.server.ServerHolder;
 import io.bootique.meta.application.CommandMetadata;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 
 /**
  * @since 3.0

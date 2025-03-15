@@ -31,7 +31,7 @@ import io.bootique.junit5.scope.BQBeforeScopeCallback;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

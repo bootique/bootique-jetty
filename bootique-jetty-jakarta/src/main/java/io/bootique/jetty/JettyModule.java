@@ -34,7 +34,7 @@ import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import io.bootique.jetty.servlet.ServletEnvironment;
 import org.eclipse.jetty.server.Server;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Map;
 import java.util.logging.Level;
 

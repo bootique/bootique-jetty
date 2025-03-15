@@ -35,7 +35,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.EventListener;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;

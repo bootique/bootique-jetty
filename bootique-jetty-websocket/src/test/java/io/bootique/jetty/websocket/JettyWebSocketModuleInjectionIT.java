@@ -21,7 +21,7 @@ package io.bootique.jetty.websocket;
 import io.bootique.BQRuntime;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.websocket.DeploymentException;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;

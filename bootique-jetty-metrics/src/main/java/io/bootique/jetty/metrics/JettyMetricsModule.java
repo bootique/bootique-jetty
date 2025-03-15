@@ -28,7 +28,7 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.metrics.health.HealthCheckRegistry;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collections;
 
 /**

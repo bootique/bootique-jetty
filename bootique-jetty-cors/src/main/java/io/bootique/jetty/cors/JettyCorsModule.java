@@ -29,7 +29,7 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 /**
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor

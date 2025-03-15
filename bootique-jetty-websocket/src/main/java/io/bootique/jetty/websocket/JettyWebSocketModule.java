@@ -27,7 +27,7 @@ import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.request.RequestMDCManager;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Set;
 
 /**

@@ -25,8 +25,8 @@ import io.bootique.command.CommandWithMetadata;
 import io.bootique.meta.application.CommandMetadata;
 import org.eclipse.jetty.server.Server;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 
 /**
  * @deprecated The users are encouraged to switch to the Jakarta-based flavor
