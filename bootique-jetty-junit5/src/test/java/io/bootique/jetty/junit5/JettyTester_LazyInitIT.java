@@ -18,9 +18,9 @@
  */
 package io.bootique.jetty.junit5;
 
+import io.bootique.BQModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.di.BQModule;
 import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
@@ -100,7 +100,7 @@ public class JettyTester_LazyInitIT {
         public BQModule module() {
             // This is the situation describe in #109 - attempt to resolve a service from another tool's module
             // before the tool got started casues an exception
-            return b -> b.bind(TestObject.class).toProviderInstance(() -> {
+            return b -> b.bind(TestObject.class).toJakartaProviderInstance(() -> {
                 checkInScope();
                 return new TestObject();
             });
