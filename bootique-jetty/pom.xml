@@ -67,11 +67,6 @@
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey3.version}</version>
             </dependency>
-            <dependency>
-                <groupId>jakarta.activation</groupId>
-                <artifactId>jakarta.activation-api</artifactId>
-                <version>${activation2.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -118,13 +113,6 @@
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Jersey client on Java 9+ needs these -->
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
