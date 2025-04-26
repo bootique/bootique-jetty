@@ -1,8 +1,8 @@
-name: 'build test deploy 3.x'
+name: 'build test deploy'
 
 on:
   push:
-    branches: [ 3.x ]
+    branches: [ master ]
 
 jobs:
   build:
