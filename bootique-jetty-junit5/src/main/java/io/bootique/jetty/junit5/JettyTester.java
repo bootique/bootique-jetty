@@ -28,12 +28,12 @@ import io.bootique.jetty.junit5.tester.JettyConnectorAccessor;
 import io.bootique.jetty.junit5.tester.JettyTesterBootiqueHook;
 import io.bootique.jetty.junit5.tester.JettyTesterInitCommand;
 import io.bootique.jetty.server.ServerHolder;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -41,10 +41,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to the HTTP client. It disables all the app connectors, and binds its own connector on a dynamically-determined
  * port, so that there are no port conflicts.
  *
- * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ * @since 3.0
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyTester {
 
     private final JettyTesterBootiqueHook bootiqueHook;
@@ -106,7 +104,7 @@ public class JettyTester {
      * @return a WebTarget to access the test Jetty server.
      */
     public WebTarget getTarget() {
-        return JettyTester.getTarget(getUrl(), true);
+        return getTarget(true);
     }
 
     /**

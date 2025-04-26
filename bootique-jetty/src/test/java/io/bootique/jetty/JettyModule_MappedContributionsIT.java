@@ -21,28 +21,19 @@ package io.bootique.jetty;
 
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.di.BQModule;
-import io.bootique.di.Binder;
-import io.bootique.di.Key;
-import io.bootique.di.Provides;
-import io.bootique.di.TypeLiteral;
+import io.bootique.di.*;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import jakarta.inject.Singleton;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -165,51 +156,27 @@ public class JettyModule_MappedContributionsIT {
     public static class Filter1 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f1_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 
     public static class Filter2 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f2_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 
     public static class Filter3 implements Filter {
 
         @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
-
-        @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
             response.getWriter().print("f3_");
             chain.doFilter(request, response);
-        }
-
-        @Override
-        public void destroy() {
         }
     }
 }

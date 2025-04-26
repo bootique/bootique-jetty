@@ -25,19 +25,20 @@ import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedServlet;
+import io.bootique.jetty.servlet.ServletEnvironment;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -83,7 +84,7 @@ public class ServletEnvironmentIT {
 
 		@Override
 		public void configure(Binder binder) {
-			TypeLiteral<MappedServlet<ServletCheckingState>> st = new TypeLiteral<MappedServlet<ServletCheckingState>>() {};
+			TypeLiteral<MappedServlet<ServletCheckingState>> st = new TypeLiteral<>() {};
 			JettyModule.extend(binder).addMappedServlet(st);
 		}
 

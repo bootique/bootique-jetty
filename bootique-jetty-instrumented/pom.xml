@@ -32,7 +32,7 @@
 
 	<name>bootique-jetty-instrumented: a module to run Jetty on Bootique with metrics</name>
 	<description>
-		Provides Jetty integration with Bootique, including metrics.
+		Provides Jetty integration with Bootique, including metrics
 	</description>
 
 	<dependencies>
@@ -99,13 +99,6 @@
 					<plugin>
 						<groupId>org.apache.rat</groupId>
 						<artifactId>apache-rat-plugin</artifactId>
-						<configuration>
-							<excludes>
-								<exclude>src/test/resources/health8.yml</exclude>
-								<exclude>src/test/resources/threads20.yml</exclude>
-								<exclude>src/test/resources/threads8.yml</exclude>
-							</excludes>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>

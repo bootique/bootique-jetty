@@ -23,18 +23,19 @@ import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * This test is second-guessing Jetty (there's no Bootique functionality added). Just checking that common static
  * resources include the proper Content-Type header.
  */
+@Deprecated
 @BQTest
 public class DefaultServlet_ContentTypeIT {
 

@@ -28,10 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ * @since 3.0
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyTesterConfigLoader implements JsonConfigurationLoader {
 
     public static final int ORDER = PropertiesConfigurationLoader.ORDER - 5;
@@ -46,7 +44,7 @@ public class JettyTesterConfigLoader implements JsonConfigurationLoader {
 
         // remove all connector configs
         JsonNode jetty = mutableInput.get("jetty");
-        if (jetty instanceof ObjectNode) {
+        if (jetty != null && jetty instanceof ObjectNode) {
             ((ObjectNode) jetty).remove("connectors");
         }
 

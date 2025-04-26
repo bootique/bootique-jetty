@@ -24,10 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ * @since 3.0
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyConnectorAccessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyConnectorAccessor.class);

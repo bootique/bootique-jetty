@@ -43,7 +43,7 @@ public class MappedServlet_StaticIT {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).addStaticServlet("sub", "/sub1/*", "/sub2/*");
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/sub1/*", "/sub2/*").name("sub").build());
                     BQCoreModule.extend(b).setProperty("bq.jetty.staticResourceBase",
                             "src/test/resources/io/bootique/jetty/StaticResourcesIT_docroot_subfolders/");
                 })
@@ -135,10 +135,10 @@ public class MappedServlet_StaticIT {
         testFactory.app("-s")
                 .module(b -> {
                     JettyModule.extend(b)
-                            .addStaticServlet("s1", "/sub1/*")
-                            .addStaticServlet("s2", "/sub2/*")
-                            .addStaticServlet("s3", "/sub3/*")
-                            .addStaticServlet("s4", "/sub4/*");
+                            .addMappedServlet(MappedServlet.ofStatic("/sub1/*").name("s1").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub2/*").name("s2").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub3/*").name("s3").build())
+                            .addMappedServlet(MappedServlet.ofStatic("/sub4/*").name("s4").build());
 
                     BQCoreModule.extend(b)
 
@@ -297,7 +297,8 @@ public class MappedServlet_StaticIT {
 
         CommandOutcome run = testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).addStaticServlet("s1", "/sub1/*");
+                    JettyModule.extend(b)
+                            .addMappedServlet(MappedServlet.ofStatic("/sub1/*").name("s1").build());
 
                     BQCoreModule.extend(b)
                             .setProperty("bq.jetty.servlets.s1.params.resourceBase",
@@ -313,7 +314,7 @@ public class MappedServlet_StaticIT {
 
         testFactory.app("-s")
                 .module(b -> {
-                    JettyModule.extend(b).addStaticServlet("s1", "/sub1/*");
+                    JettyModule.extend(b).addMappedServlet(MappedServlet.ofStatic("/sub1/*").name("s1").build());
 
                     BQCoreModule.extend(b)
                             // s1: own resource base specified as "classpath"

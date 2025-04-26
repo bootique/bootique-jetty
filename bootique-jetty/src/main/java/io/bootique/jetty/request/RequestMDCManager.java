@@ -30,9 +30,7 @@ import java.util.Set;
  * Initializes and clears a preconfigured set of MDC logging keys at the beginning and the end of each request.
  *
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 // Not using the standard ServletListener, and going for the internal Jetty API to intercept maximally wide scope
 // to provide context to
 public class RequestMDCManager implements HttpChannel.Listener {

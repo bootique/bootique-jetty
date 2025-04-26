@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class JettyCorsModuleTest {
 
     @Test
-    public void checkModule() {
+    public void check() {
         BQModuleTester.of(JettyCorsModule.class).testAutoLoadable().testConfig();
     }
 }

@@ -20,16 +20,16 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.request.RequestMDCItem;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import jakarta.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

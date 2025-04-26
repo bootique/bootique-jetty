@@ -23,17 +23,17 @@ import io.bootique.BQCoreModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.io.File;
 import java.net.MalformedURLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated
 @BQTest
 public class DefaultServletIT {
 
@@ -46,7 +46,7 @@ public class DefaultServletIT {
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), r.getStatus());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class DefaultServletIT {
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.NOT_FOUND.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), r.getStatus());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DefaultServletIT {
 
         // resources are mapped relative to "user.dir".
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("I am a text file", r.readEntity(String.class));
     }
 
@@ -93,7 +93,7 @@ public class DefaultServletIT {
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("I am a text file", r.readEntity(String.class));
     }
 
@@ -115,7 +115,7 @@ public class DefaultServletIT {
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("alt other", r.readEntity(String.class));
     }
 
@@ -134,7 +134,7 @@ public class DefaultServletIT {
 
         // resources are mapped relative to "user.dir".
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("I am a text file", r.readEntity(String.class));
     }
 
@@ -155,7 +155,7 @@ public class DefaultServletIT {
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("I am a text file", r.readEntity(String.class));
     }
 
@@ -173,7 +173,7 @@ public class DefaultServletIT {
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         Response r = base.path("/other.txt").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("I am a text file", r.readEntity(String.class));
     }
 
@@ -191,7 +191,7 @@ public class DefaultServletIT {
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         Response r = base.path("/").request().get();
-        assertEquals(Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
         assertEquals("<html><body><h2>Hi!</h2></body></html>", r.readEntity(String.class));
     }
 }

@@ -24,9 +24,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Encapsulates either an explicit or a dynamic network port.
  *
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class PortFactory {
 
     private static final String ANY_PORT_LABEL = "any";

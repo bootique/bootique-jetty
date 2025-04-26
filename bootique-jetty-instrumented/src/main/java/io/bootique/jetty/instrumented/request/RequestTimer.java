@@ -20,22 +20,19 @@
 package io.bootique.jetty.instrumented.request;
 
 import com.codahale.metrics.Timer;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.Objects;
 
 /**
  * Provides timing metrics for request execution, optionally logging of request start and finish marks.
- *
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class RequestTimer implements ServletRequestListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestTimer.class);

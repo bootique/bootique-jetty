@@ -26,14 +26,13 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import java.io.IOException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -109,18 +108,7 @@ public class AnnotatedFilterIT {
         class AnnotatedFilter implements Filter {
 
             @Override
-            public void init(FilterConfig filterConfig) throws ServletException {
-                // do nothing
-            }
-
-            @Override
-            public void destroy() {
-                // do nothing
-            }
-
-            @Override
-            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                    throws IOException, ServletException {
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) {
                 assertion = () -> {
                 };
             }

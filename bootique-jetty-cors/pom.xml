@@ -28,14 +28,14 @@
 
     <artifactId>bootique-jetty-cors</artifactId>
     <name>bootique-jetty-cors: CORS filter integration for Bootique</name>
-    <description>Provides CORS filter integration for Bootique.</description>
+    <description>Provides CORS filter integration for Bootique</description>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-servlets</artifactId>
-                <version>${jetty10.version}</version>
+                <version>${jetty11.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>

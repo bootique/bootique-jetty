@@ -18,9 +18,9 @@
  */
 package io.bootique.jetty.websocket;
 
+import jakarta.websocket.Session;
 import org.slf4j.MDC;
 
-import javax.websocket.Session;
 import java.util.Map;
 
 /**
@@ -28,9 +28,7 @@ import java.util.Map;
  * opened the websocket.
  *
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class WebSocketMDCManager {
 
     public static final String MDC_MAP_KEY = "io.bootique.jetty.websocket.mdc";

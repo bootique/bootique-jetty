@@ -20,6 +20,7 @@
 package io.bootique.jetty.instrumented.healthcheck;
 
 import io.bootique.BQRuntime;
+import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecksFactory;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;

@@ -1,3 +1,0 @@
-io.bootique.jetty.connector.ConnectorFactory
-io.bootique.jetty.connector.HttpConnectorFactory
-io.bootique.jetty.connector.HttpsConnectorFactory

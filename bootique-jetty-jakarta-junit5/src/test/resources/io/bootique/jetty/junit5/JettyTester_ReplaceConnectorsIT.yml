@@ -1,5 +1,0 @@
-jetty:
-  context: "myapp"
-  connectors:
-    - port: 42001
-    - port: 42002

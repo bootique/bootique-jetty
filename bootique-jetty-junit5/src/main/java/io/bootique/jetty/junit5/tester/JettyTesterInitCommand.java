@@ -28,10 +28,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 
 /**
- * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ * @since 3.0
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyTesterInitCommand extends CommandWithMetadata {
 
     private final Provider<ServerHolder> serverHolder;

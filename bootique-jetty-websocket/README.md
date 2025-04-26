@@ -1,4 +1,4 @@
-# bootique-jetty-websocket
+# bootique-jetty-jakarta-websocket
 
 This module provides server WebSocket functionality to your Bootique app.
 It is based on Jetty WebSocket implementation and support JSR-356 compliant

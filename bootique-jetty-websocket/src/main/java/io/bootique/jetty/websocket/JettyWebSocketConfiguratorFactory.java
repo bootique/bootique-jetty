@@ -28,9 +28,8 @@ import io.bootique.value.Duration;
 import java.util.Set;
 
 /**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
+ * @since 3.0
  */
-@Deprecated(since = "3.0", forRemoval = true)
 @BQConfig
 public class JettyWebSocketConfiguratorFactory {
 

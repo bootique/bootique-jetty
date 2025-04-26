@@ -24,10 +24,9 @@ import io.bootique.ModuleExtender;
 import io.bootique.di.*;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
-import io.bootique.jetty.servlet.MultiBaseStaticServlet;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
@@ -36,10 +35,7 @@ import java.util.Set;
 /**
  * Provides API to contribute custom extensions to {@link JettyModule}. This class is a syntactic sugar for Bootique
  * MapBuilder and SetBuilder.
- *
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     private SetBuilder<Filter> filters;
@@ -107,9 +103,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListener
-     * @param <T>
-     * @return
+     * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(MappedListener<T> mappedListener) {
         contributeMappedListeners().addInstance(mappedListener);
@@ -117,9 +111,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListenerKey
-     * @param <T>
-     * @return
+     * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(Key<MappedListener<T>> mappedListenerKey) {
         contributeMappedListeners().add(mappedListenerKey);
@@ -127,20 +119,18 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @param mappedListenerType
-     * @param <T>
      * @return this extender instance
      */
     public <T extends EventListener> JettyModuleExtender addMappedListener(TypeLiteral<MappedListener<T>> mappedListenerType) {
         return addMappedListener(Key.get(mappedListenerType));
     }
 
-    public JettyModuleExtender addStaticServlet(String name, String... urlPatterns) {
-        return addServlet(new MultiBaseStaticServlet(), name, urlPatterns);
-    }
-
+    /**
+     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String...)}
+     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public JettyModuleExtender useDefaultServlet() {
-        return addStaticServlet("default", "/");
+        return addMappedServlet(MappedServlet.ofStatic("/").name("default").build());
     }
 
     /**
@@ -156,7 +146,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     /**
      * Adds a servlet of the specified type to the set of Jetty servlets. "servletType" must be annotated with
-     * {@link javax.servlet.annotation.WebServlet}. Otherwise it should be mapped via other add(Mapped)Servlet methods,
+     * {@link jakarta.servlet.annotation.WebServlet}. Otherwise it should be mapped via other add(Mapped)Servlet methods,
      * where you can explicitly specify URL patterns.
      *
      * @param servletType a class of the servlet to map.
@@ -193,7 +183,7 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
 
     /**
      * Adds a filter of the specified type to the set of Jetty filters. "filterType" must be annotated with
-     * {@link javax.servlet.annotation.WebFilter}. Otherwise it should be mapped via other add(Mapped)Filter methods,
+     * {@link jakarta.servlet.annotation.WebFilter}. Otherwise it should be mapped via other add(Mapped)Filter methods,
      * where you can explicitly specify URL patterns, ordering, etc.
      *
      * @param filterType a class of the filter to map.

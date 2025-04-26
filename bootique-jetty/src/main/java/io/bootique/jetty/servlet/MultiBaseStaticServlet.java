@@ -19,14 +19,14 @@
 package io.bootique.jetty.servlet;
 
 import io.bootique.resource.FolderResourceFactory;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,15 +36,25 @@ import java.util.List;
 
 /**
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class MultiBaseStaticServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiBaseStaticServlet.class);
 
+    private final FolderResourceFactory resourceBase;
+    // capturing this as a String instead of boolean to allow Jetty apply its own string to boolean parsing
+    private final String pathInfoOnly;
+
     private DoGetProcessor doGetProcessor;
     private List<StaticServlet> delegates;
+
+    /**
+     * @since 3.0
+     */
+    public MultiBaseStaticServlet(FolderResourceFactory resourceBase, String pathInfoOnly) {
+        this.resourceBase = resourceBase;
+        this.pathInfoOnly = pathInfoOnly;
+    }
 
     // overriding methods overridden in the Jetty DefaultServlet to proxy them properly
 
@@ -90,37 +100,48 @@ public class MultiBaseStaticServlet extends HttpServlet {
     }
 
     protected List<StaticServlet> createDelegates() {
-        String resourceBase = getInitParameter(StaticServlet.RESOURCE_BASE_PARAMETER);
-        if (resourceBase == null) {
-            return Collections.singletonList(new StaticServlet(null));
-        }
 
-        Collection<URL> resourceBaseUrls = resolveFolderResourceFactory(resourceBase);
-        if (resourceBaseUrls.isEmpty()) {
-            return Collections.singletonList(new StaticServlet(null));
-        }
+        String pathInfoOnly = resolvePathInfoOnly();
+        Collection<URL> resourceBases = resolveResourceBases();
 
         // "classpath:" URLs can point to multiple locations. Map them to multiple delegated servlets
-        List<StaticServlet> delegates = new ArrayList<>(resourceBaseUrls.size());
-        for (URL baseUrl : resourceBaseUrls) {
-            delegates.add(new StaticServlet(baseUrl.toExternalForm()));
+        List<StaticServlet> delegates = new ArrayList<>(resourceBases.size());
+        for (URL baseUrl : resourceBases) {
+            delegates.add(new StaticServlet(baseUrl.toExternalForm(), pathInfoOnly));
         }
 
-        if (delegates.size() > 1) {
-            LOGGER.info("Found multiple base URLs for resource base '{}': {}", resourceBase, resourceBaseUrls);
+        if (delegates.isEmpty()) {
+            return Collections.singletonList(new StaticServlet(null, pathInfoOnly));
+        } else if (delegates.size() > 1) {
+            LOGGER.info("Found multiple base URLs for resource base '{}': {}", resourceBase, resourceBases);
         }
 
         return delegates;
     }
 
-    protected Collection<URL> resolveFolderResourceFactory(String path) {
+    protected Collection<URL> resolveResourceBases() {
+        FolderResourceFactory resourceBase = resolveResourceBase();
         try {
-            return new FolderResourceFactory(path).getUrls();
+            return resourceBase != null ? resourceBase.getUrls() : Collections.emptyList();
         } catch (IllegalArgumentException e) {
+
             // log, but allow to start
-            LOGGER.warn("Static servlet base directory '{}' does not exist", path);
+            // TODO: why are we so lenient here, should we throw?
+
+            LOGGER.warn("Static servlet resource base folder '{}' does not exist", resourceBase.getResourceId());
             return Collections.emptyList();
         }
+    }
+
+    protected FolderResourceFactory resolveResourceBase() {
+        // this.resourceBase is allowed to be null; also it can be overridden by the servlet parameter
+        String paramResourceBase = getInitParameter(StaticServlet.RESOURCE_BASE_PARAMETER);
+        return paramResourceBase != null ? new FolderResourceFactory(paramResourceBase) : this.resourceBase;
+    }
+
+    protected String resolvePathInfoOnly() {
+        String paramValue = getInitParameter(StaticServlet.PATH_INFO_ONLY_PARAMETER);
+        return paramValue != null ? paramValue : this.pathInfoOnly;
     }
 
     @FunctionalInterface
@@ -130,7 +151,7 @@ public class MultiBaseStaticServlet extends HttpServlet {
 
     static class DoGetOne implements DoGetProcessor {
 
-        private StaticServlet delegate;
+        private final StaticServlet delegate;
 
         DoGetOne(StaticServlet delegate) {
             this.delegate = delegate;
@@ -144,7 +165,7 @@ public class MultiBaseStaticServlet extends HttpServlet {
 
     static class DoGetMany implements DoGetProcessor {
 
-        private StaticServlet[] delegates;
+        private final StaticServlet[] delegates;
 
         public DoGetMany(StaticServlet[] delegates) {
             this.delegates = delegates;

@@ -51,19 +51,19 @@
     <dependencies>
         <dependency>
             <groupId>io.bootique.jetty</groupId>
-            <artifactId>bootique-jetty-jakarta</artifactId>
+            <artifactId>bootique-jetty</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.bootique.jetty</groupId>
-            <artifactId>bootique-jetty-jakarta-websocket</artifactId>
+            <artifactId>bootique-jetty-websocket</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.bootique.jetty</groupId>
-            <artifactId>bootique-jetty-jakarta-junit5</artifactId>
+            <artifactId>bootique-jetty-junit5</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

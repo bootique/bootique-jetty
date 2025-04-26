@@ -19,17 +19,10 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import org.junit.jupiter.api.Test;
 
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.concurrent.CountDownLatch;

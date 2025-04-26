@@ -23,15 +23,15 @@ import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -64,7 +64,7 @@ public class HttpsConnectorIT {
 
         startJetty("classpath:io/bootique/jetty/server/HttpsConnectorIT_MultiCert.yml");
 
-        // TODO: how do we verify that "jetty2" certificate was used, and noth "jetty1"?
+        // TODO: how do we verify that "jetty2" certificate was used, and not "jetty1"?
 
         Response r1HTTPS = createHttpsClient("testmulticertkeystore").request().get();
         assertEquals(Response.Status.OK.getStatusCode(), r1HTTPS.getStatus());

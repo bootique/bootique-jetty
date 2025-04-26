@@ -27,9 +27,7 @@ import java.util.Random;
  * Find a port on a host machine that is not taken.
  *
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 // high-level idea is inspired by Spring SocketUtils
 public class PortFinder {
 

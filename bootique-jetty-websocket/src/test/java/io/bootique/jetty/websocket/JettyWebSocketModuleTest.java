@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 public class JettyWebSocketModuleTest {
 
     @Test
-    public void check() {
+    public void autoLoadable() {
         BQModuleTester.of(JettyWebSocketModule.class).testAutoLoadable().testConfig();
     }
 }

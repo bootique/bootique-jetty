@@ -20,9 +20,7 @@ package io.bootique.jetty.websocket;
 
 /**
  * @since 2.0
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public interface WebSocketMDCOperation {
 
     void run() throws Throwable;

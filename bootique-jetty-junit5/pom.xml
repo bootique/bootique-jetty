@@ -30,12 +30,10 @@
     <artifactId>bootique-jetty-junit5</artifactId>
     <packaging>jar</packaging>
 
-    <name>bootique-jetty-junit5: JUnit 5 utilities to start Jetty on a dynamic port</name>
-    <description>JUnit 5 utilities to start Jetty on a dynamically determined port and provide a client that can be used
-        by the tests
-    </description>
+    <name>bootique-jetty-junit5: JUnit 5 utilities to start Jetty on a dynamic port </name>
+    <description>JUnit 5 utilities to start Jetty on a dynamically determined port and provide a client that can be used by the tests</description>
 
-    <dependencyManagement>
+	<dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>io.bootique.jetty</groupId>
@@ -44,25 +42,23 @@
             </dependency>
             <dependency>
                 <groupId>io.bootique</groupId>
-                <artifactId>bootique-junit5</artifactId>
+				<artifactId>bootique-junit5</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>${jersey2.version}</version>
-                <exclusions>
-                    <!-- Bootique includes this one -->
-                    <exclusion>
-                        <groupId>org.glassfish.hk2.external</groupId>
-                        <artifactId>jakarta.inject</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${jersey3.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>${jersey2.version}</version>
+                <version>${jersey3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${activation2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -85,6 +81,10 @@
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
         </dependency>
 
         <!-- Unit test dependencies -->

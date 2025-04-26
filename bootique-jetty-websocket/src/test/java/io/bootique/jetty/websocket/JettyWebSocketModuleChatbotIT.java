@@ -19,10 +19,10 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.command.CommandOutcome;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import org.junit.jupiter.api.Test;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

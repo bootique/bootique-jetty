@@ -19,9 +19,9 @@
 
 package io.bootique.jetty.cors;
 
-import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
@@ -31,10 +31,6 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import jakarta.inject.Singleton;
 
-/**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
- */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyCorsModule implements BQModule {
 
     private static final String CONFIG_PREFIX = "jettycors";
@@ -42,7 +38,7 @@ public class JettyCorsModule implements BQModule {
     @Override
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-cors'.")
+                .description("Integrates CORS filter in Jetty")
                 .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
                 .build();
     }

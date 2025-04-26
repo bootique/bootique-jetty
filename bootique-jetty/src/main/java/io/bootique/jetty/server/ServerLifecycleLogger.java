@@ -26,10 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
-/**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
- */
-@Deprecated(since = "3.0", forRemoval = true)
 public class ServerLifecycleLogger extends AbstractLifeCycle.AbstractLifeCycleListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerLifecycleLogger.class);

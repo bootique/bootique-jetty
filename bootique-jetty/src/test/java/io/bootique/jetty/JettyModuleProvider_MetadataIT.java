@@ -53,7 +53,7 @@ public class JettyModuleProvider_MetadataIT {
         assertTrue(jettyOpt.isPresent());
         ModuleMetadata jetty = jettyOpt.get();
 
-        assertEquals("Deprecated, can be replaced with 'bootique-jetty-jakarta'.", jetty.getDescription());
+        assertEquals("Integrates Jetty web server", jetty.getDescription());
 
         assertEquals(1, jetty.getConfigs().size());
         ConfigMetadataNode rootConfig = jetty.getConfigs().stream().findFirst().get();

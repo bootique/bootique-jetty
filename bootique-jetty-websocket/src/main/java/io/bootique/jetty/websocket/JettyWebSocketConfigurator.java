@@ -22,18 +22,18 @@ import io.bootique.di.Injector;
 import io.bootique.di.Key;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.server.HandshakeRequest;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpointConfig;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.javax.server.config.JavaxWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,12 +42,9 @@ import java.util.function.Supplier;
 import static java.util.Arrays.asList;
 
 /**
- * Creates and configures JSR-356 {@link javax.websocket.server.ServerContainer}, linking Bootique and Jetty environments,
+ * Creates and configures JSR-356 {@link jakarta.websocket.server.ServerContainer}, linking Bootique and Jetty environments,
  * providing the ability to look up Endpoints via DI.
- *
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
  */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyWebSocketConfigurator implements ServletContextHandlerExtender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketConfigurator.class);
@@ -73,7 +70,7 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
     public void onHandlerInstalled(ServletContextHandler handler) {
 
         // install Jetty WebSocket support...
-        JavaxWebSocketServletContainerInitializer.configure(
+        JakartaWebSocketServletContainerInitializer.configure(
                 handler,
                 (context, wsContainer) -> configWsContainer(wsContainer));
     }

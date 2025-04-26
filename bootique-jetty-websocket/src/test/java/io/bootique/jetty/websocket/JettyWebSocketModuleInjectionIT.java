@@ -19,14 +19,14 @@
 package io.bootique.jetty.websocket;
 
 import io.bootique.BQRuntime;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 import org.junit.jupiter.api.Test;
 
 import jakarta.inject.Inject;
-import javax.websocket.DeploymentException;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 

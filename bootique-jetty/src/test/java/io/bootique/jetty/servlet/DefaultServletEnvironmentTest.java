@@ -19,18 +19,17 @@
 
 package io.bootique.jetty.servlet;
 
+import io.bootique.jetty.servlet.DefaultServletEnvironment;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpServletRequest;
-
-import io.bootique.jetty.servlet.DefaultServletEnvironment;
-import org.junit.jupiter.api.Test;
 
 public class DefaultServletEnvironmentTest {
 

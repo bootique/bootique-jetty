@@ -1,3 +1,7 @@
+## 4.0-M1
+
+* #127 Remove deprecated modules (javax flavor), and deprecated APIs
+
 ## 3.0-M6
 
 * #125 Unified API for mapping static servlets

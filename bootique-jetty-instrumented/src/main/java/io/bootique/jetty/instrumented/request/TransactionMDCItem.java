@@ -22,14 +22,9 @@ package io.bootique.jetty.instrumented.request;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRequest;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-
-/**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
- */
-@Deprecated(since = "3.0", forRemoval = true)
 public class TransactionMDCItem implements RequestMDCItem {
 
     private final TransactionIdGenerator idGenerator;

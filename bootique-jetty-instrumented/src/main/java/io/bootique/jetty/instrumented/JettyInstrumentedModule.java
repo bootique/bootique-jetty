@@ -21,9 +21,9 @@ package io.bootique.jetty.instrumented;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
@@ -41,12 +41,9 @@ import io.bootique.metrics.mdc.TransactionIdMDC;
 
 import jakarta.inject.Singleton;
 
-/**
- * @deprecated The users are encouraged to switch to the Jakarta-based flavor
- */
-@Deprecated(since = "3.0", forRemoval = true)
 public class JettyInstrumentedModule implements BQModule {
 
+    // reusing overridden module prefix
     private static final String CONFIG_PREFIX = "jetty";
 
     public static final MetricNaming METRIC_NAMING = MetricNaming.forModule(JettyInstrumentedModule.class);
@@ -56,7 +53,7 @@ public class JettyInstrumentedModule implements BQModule {
     @Override
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .description("Deprecated, can be replaced with 'bootique-jetty-jakarta-instrumented'.")
+                .description("Integrates metrics and extra logging in Jetty")
                 .overrides(JettyModule.class)
                 .build();
     }
