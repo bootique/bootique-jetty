@@ -55,11 +55,6 @@
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey3.version}</version>
             </dependency>
-            <dependency>
-                <groupId>jakarta.activation</groupId>
-                <artifactId>jakarta.activation-api</artifactId>
-                <version>${activation2.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
