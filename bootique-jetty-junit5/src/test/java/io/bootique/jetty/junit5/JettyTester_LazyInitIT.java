@@ -100,7 +100,7 @@ public class JettyTester_LazyInitIT {
         public BQModule module() {
             // This is the situation describe in #109 - attempt to resolve a service from another tool's module
             // before the tool got started casues an exception
-            return b -> b.bind(TestObject.class).toJakartaProviderInstance(() -> {
+            return b -> b.bind(TestObject.class).toProviderInstance(() -> {
                 checkInScope();
                 return new TestObject();
             });
