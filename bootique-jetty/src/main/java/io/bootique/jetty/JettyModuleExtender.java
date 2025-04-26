@@ -126,14 +126,6 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * @deprecated in favor of {@link #addMappedServlet(MappedServlet)} with {@link MappedServlet#ofStatic(String...)}
-     */
-    @Deprecated(since = "3.0", forRemoval = true)
-    public JettyModuleExtender useDefaultServlet() {
-        return addMappedServlet(MappedServlet.ofStatic("/").name("default").build());
-    }
-
-    /**
      * Sets an init parameter of a named servlet. Same thing can be achieved via configuration.
      *
      * @return this extender instance

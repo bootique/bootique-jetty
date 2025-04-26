@@ -24,6 +24,7 @@ import io.bootique.di.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
+import io.bootique.jetty.MappedServlet;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -174,7 +175,7 @@ public class CompressionIT {
             JettyModule
                     .extend(binder)
                     .addServlet(ContentServlet.class)
-                    .useDefaultServlet();
+                    .addMappedServlet(MappedServlet.ofStatic("/").name("default").build());
         }
 
         @Provides

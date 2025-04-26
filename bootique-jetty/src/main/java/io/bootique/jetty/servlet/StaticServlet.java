@@ -38,14 +38,6 @@ public class StaticServlet extends DefaultServlet {
     private final String pathInfoOnly;
 
     /**
-     * @deprecated in favor of {@link #StaticServlet(String, String)}
-     */
-    @Deprecated(since = "3.0", forRemoval = true)
-    public StaticServlet(String resourceBase) {
-        this(resourceBase, "false");
-    }
-
-    /**
      * @since 3.0
      */
     public StaticServlet(String resourceBase, String pathInfoOnly) {
