@@ -19,7 +19,7 @@
 
 package io.bootique.jetty.servlet;
 
-import io.bootique.di.BQModule;
+import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.DIRuntimeException;
 import io.bootique.di.Provides;

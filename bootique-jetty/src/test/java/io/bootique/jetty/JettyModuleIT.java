@@ -20,15 +20,18 @@
 package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
+import io.bootique.BQModule;
 import io.bootique.BQRuntime;
-import io.bootique.di.BQModule;
-import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedFilter;
-import io.bootique.jetty.MappedServlet;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSessionListener;

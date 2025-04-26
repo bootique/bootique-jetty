@@ -19,12 +19,21 @@
 
 package io.bootique.jetty;
 
+import io.bootique.BQModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
-import io.bootique.di.*;
+import io.bootique.di.Binder;
+import io.bootique.di.Key;
+import io.bootique.di.Provides;
+import io.bootique.di.TypeLiteral;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
-import jakarta.servlet.*;
+import jakarta.inject.Singleton;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +42,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -79,7 +87,7 @@ public class JettyModule_MappedContributionsIT {
         @Override
         public void configure(Binder binder) {
 
-            TypeLiteral<MappedServlet<Servlet1>> s1 = new TypeLiteral<MappedServlet<Servlet1>>() {
+            TypeLiteral<MappedServlet<Servlet1>> s1 = new TypeLiteral<>() {
             };
 
             TypeLiteral<MappedServlet<Servlet2>> s2 = new TypeLiteral<MappedServlet<Servlet2>>() {
