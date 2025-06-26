@@ -75,28 +75,28 @@ public class ResponseMatcher {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public ResponseMatcher assertFound() {
         return assertStatus(302);
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public ResponseMatcher assertFound(String message) {
         return assertStatus(302, message);
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public ResponseMatcher assertTempRedirect() {
         return assertStatus(307);
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public ResponseMatcher assertTempRedirect(String message) {
         return assertStatus(307, message);
@@ -205,7 +205,7 @@ public class ResponseMatcher {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public ResponseMatcher assertNoHeader(String headerName) {
         assertNull(response.getHeaderString(headerName));
@@ -213,7 +213,7 @@ public class ResponseMatcher {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public <T> T getContent(Class<T> type) {
         checkCanReadContent();
@@ -221,7 +221,7 @@ public class ResponseMatcher {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public <T> T getContent(GenericType<T> type) {
         checkCanReadContent();
