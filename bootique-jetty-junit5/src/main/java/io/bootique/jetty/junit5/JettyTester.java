@@ -67,7 +67,7 @@ public class JettyTester {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public static WebTarget getTarget(BQRuntime jettyApp, boolean followRedirects) {
         return JettyTester.getTarget(getUrl(jettyApp), followRedirects);
@@ -108,7 +108,7 @@ public class JettyTester {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public WebTarget getTarget(boolean followRedirects) {
         return JettyTester.getTarget(getUrl(), followRedirects);
@@ -171,28 +171,28 @@ public class JettyTester {
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public static ResponseMatcher assertFound(Response response) {
         return matcher(response).assertFound();
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public static ResponseMatcher assertFound(Response response, String message) {
         return matcher(response).assertFound(message);
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public static ResponseMatcher assertTempRedirect(Response response) {
         return matcher(response).assertTempRedirect();
     }
 
     /**
-     * @since 3.0.M2
+     * @since 3.0
      */
     public static ResponseMatcher assertTempRedirect(Response response, String message) {
         return matcher(response).assertTempRedirect(message);
