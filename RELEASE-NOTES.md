@@ -2,6 +2,10 @@
 
 * #127 Remove deprecated modules (javax flavor), and deprecated APIs
 
+## 3.0-RC2
+
+* #128 Upgrade to Jetty 11.0.25, 10.0.25
+
 ## 3.0-M6
 
 * #125 Unified API for mapping static servlets
