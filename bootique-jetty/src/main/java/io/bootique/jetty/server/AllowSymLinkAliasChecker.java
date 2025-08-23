@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.server;
 
-import org.eclipse.jetty.server.handler.ContextHandler.AliasCheck;
+import org.eclipse.jetty.server.AliasCheck;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ class AllowSymLinkAliasChecker implements AliasCheck {
     private static final Logger LOGGER = LoggerFactory.getLogger(AllowSymLinkAliasChecker.class);
 
     @Override
-    public boolean check(String pathInContext, Resource resource) {
+    public boolean checkAlias(String s, Resource resource) {
         if (!(resource instanceof PathResource)) {
             return false;
         }
@@ -43,14 +43,14 @@ class AllowSymLinkAliasChecker implements AliasCheck {
 
         try {
             Path path = pathResource.getPath();
-            Path alias = pathResource.getAliasPath();
+            Path alias = pathResource.getRealPath();
 
             if (PathResource.isSameName(alias, path)) {
                 return false;
             }
 
             if (hasSymbolicLink(path) && Files.isSameFile(path, alias)) {
-                LOGGER.debug("Allow symlink {} --> {}", resource, pathResource.getAliasPath());
+                LOGGER.debug("Allow symlink {} --> {}", resource, pathResource.getRealPath());
                 return true;
             }
         } catch (Exception e) {

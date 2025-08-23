@@ -20,16 +20,20 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.request.RequestMDCItem;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRequest;
-import jakarta.websocket.*;
+import jakarta.inject.Inject;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import jakarta.inject.Inject;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +57,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         try (Session s = createClientSession("?x=aa")) {
 
             Thread.sleep(500);
-            assertEquals("x:aa", WsServer.onOpen);
+            assertEquals("x=aa", WsServer.onOpen);
 
             assertNull(WsServer.onMessage);
             assertNull(WsServer.onClose);
@@ -62,7 +66,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
             s.getBasicRemote().sendText("m");
 
             Thread.sleep(500);
-            assertEquals("x:aa", WsServer.onMessage);
+            assertEquals("x=aa", WsServer.onMessage);
             assertNull(WsServer.onClose);
         }
 
@@ -73,12 +77,13 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
     static class TestMDCItem implements RequestMDCItem {
 
         @Override
-        public void initMDC(ServletContext sc, ServletRequest request) {
-            MDC.put("x", "x:" + request.getParameter("x"));
+        public void initMDC(Request request) {
+            String query = request.getHttpURI().getQuery();
+            MDC.put("x", query);
         }
 
         @Override
-        public void cleanupMDC(ServletContext sc, ServletRequest request) {
+        public void cleanupMDC(Request request) {
             MDC.remove("x");
         }
     }

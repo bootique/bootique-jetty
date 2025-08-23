@@ -22,12 +22,16 @@ package io.bootique.jetty.server;
 import io.bootique.annotation.BQConfig;
 import io.bootique.jetty.MappedFilter;
 import jakarta.servlet.DispatcherType;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @BQConfig
 public class FilterFactory extends WebArtifactFactory {

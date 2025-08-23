@@ -26,16 +26,13 @@ import io.bootique.config.ConfigurationFactory;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.jetty.command.ServerCommand;
-import io.bootique.jetty.request.RequestMDCItem;
-import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServerFactory;
 import io.bootique.jetty.server.ServerHolder;
 import io.bootique.jetty.servlet.DefaultServletEnvironment;
 import io.bootique.jetty.servlet.ServletEnvironment;
+import jakarta.inject.Singleton;
 import org.eclipse.jetty.server.Server;
 
-import jakarta.inject.Singleton;
-import java.util.Map;
 import java.util.logging.Level;
 
 public class JettyModule implements BQModule {
@@ -97,12 +94,6 @@ public class JettyModule implements BQModule {
     @Provides
     ServerHolder provideServerHolder(ServerFactory factory) {
         return factory.createServerHolder();
-    }
-
-    @Provides
-    @Singleton
-    RequestMDCManager provideRequestMDCManager(Map<String, RequestMDCItem> items) {
-        return new RequestMDCManager(items);
     }
 
     @Singleton

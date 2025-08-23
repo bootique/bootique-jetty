@@ -27,7 +27,7 @@ import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecks;
 import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecksFactory;
-import io.bootique.jetty.request.RequestMDCManager;
+import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.server.ServerFactory;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.shutdown.ShutdownManager;
@@ -37,6 +37,7 @@ import jakarta.servlet.Servlet;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import java.util.EventListener;
+import java.util.Map;
 import java.util.Set;
 
 @BQConfig
@@ -55,7 +56,7 @@ public class InstrumentedServerFactory extends ServerFactory {
             Set<EventListener> listeners,
             Set<MappedListener> mappedListeners,
             Set<ServletContextHandlerExtender> contextHandlerExtenders,
-            RequestMDCManager mdcManager,
+            Map<String, RequestMDCItem> mdcItems,
             ShutdownManager shutdownManager,
             MetricRegistry metricRegistry) {
 
@@ -67,7 +68,7 @@ public class InstrumentedServerFactory extends ServerFactory {
                 listeners,
                 mappedListeners,
                 contextHandlerExtenders,
-                mdcManager,
+                mdcItems,
                 shutdownManager);
 
         this.metricRegistry = metricRegistry;

@@ -29,7 +29,7 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.util.resource.URLResource;
+import org.eclipse.jetty.util.resource.URLResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import java.net.URL;
@@ -75,8 +75,7 @@ public class HttpsConnectorFactory extends ConnectorFactory {
 
         SslContextFactory.Server contextFactory = new SslContextFactory.Server();
         URL keystoreUrl = keyStore.getUrl();
-        contextFactory.setKeyStoreResource(new URLResource(keystoreUrl, null) {
-        });
+        contextFactory.setKeyStoreResource(new URLResourceFactory().newResource(keystoreUrl));
         contextFactory.setKeyStorePassword(keyStorePassword);
         contextFactory.setCertAlias(certificateAlias);
 

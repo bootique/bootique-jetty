@@ -18,10 +18,10 @@
  */
 package io.bootique.jetty.server;
 
-import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.shutdown.ShutdownManager;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +32,7 @@ public class ServerFactoryTest {
     private ServerFactory createWithDefaults() {
         return new ServerFactory(
                 Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(),
-                mock(RequestMDCManager.class),
+                Map.of(),
                 mock(ShutdownManager.class)
         );
     }

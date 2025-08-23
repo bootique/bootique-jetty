@@ -18,7 +18,8 @@
  */
 package io.bootique.jetty.server;
 
-import org.eclipse.jetty.servlet.ServletContextHandler;
+
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 
 /**
  * An extension point for low-level customization of the Jetty {@link ServletContextHandler} which is a central piece

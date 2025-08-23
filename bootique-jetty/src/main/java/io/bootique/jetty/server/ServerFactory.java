@@ -26,6 +26,7 @@ import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
 import io.bootique.jetty.connector.ConnectorFactory;
 import io.bootique.jetty.connector.HttpConnectorFactory;
+import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.resource.FolderResourceFactory;
 import io.bootique.shutdown.ShutdownManager;
@@ -35,9 +36,11 @@ import jakarta.servlet.Servlet;
 import org.eclipse.jetty.rewrite.handler.CompactPathRule;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -70,7 +73,7 @@ public class ServerFactory {
     private final Set<EventListener> listeners;
     private final Set<MappedListener> mappedListeners;
     private final Set<ServletContextHandlerExtender> contextHandlerExtenders;
-    private final RequestMDCManager mdcManager;
+    private final Map<String, RequestMDCItem> mdcItems;
     private final ShutdownManager shutdownManager;
 
     protected List<ConnectorFactory> connectors;
@@ -106,7 +109,7 @@ public class ServerFactory {
             Set<EventListener> listeners,
             Set<MappedListener> mappedListeners,
             Set<ServletContextHandlerExtender> contextHandlerExtenders,
-            RequestMDCManager mdcManager,
+            Map<String, RequestMDCItem> mdcItems,
             ShutdownManager shutdownManager) {
 
         this.diServlets = diServlets;
@@ -116,7 +119,7 @@ public class ServerFactory {
         this.listeners = listeners;
         this.mappedListeners = mappedListeners;
         this.contextHandlerExtenders = contextHandlerExtenders;
-        this.mdcManager = mdcManager;
+        this.mdcItems = mdcItems;
         this.shutdownManager = shutdownManager;
 
         this.minThreads = 4;
@@ -135,7 +138,7 @@ public class ServerFactory {
         String context = resolveContext();
 
         ThreadPool threadPool = createThreadPool();
-        ServletContextHandler contextHandler = createHandler(
+        ServletContextHandler contextHandler = createContextHandler(
                 context,
                 resolveServlets(),
                 resolveFilters(),
@@ -170,7 +173,7 @@ public class ServerFactory {
 
         createRequestLog(server);
 
-        server.setHandler(addExtraRules(contextHandler));
+        server.setHandler(wrapContextHandler(contextHandler));
 
         Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
         Collection<ConnectorHolder> connectorHolders = new ArrayList<>(2);
@@ -180,7 +183,6 @@ public class ServerFactory {
         } else {
             connectorFactories.forEach(cf -> {
                 NetworkConnector connector = cf.createConnector(server);
-                connector.addBean(mdcManager);
                 server.addConnector(connector);
                 connectorHolders.add(new ConnectorHolder(connector));
             });
@@ -195,22 +197,7 @@ public class ServerFactory {
         contextHandlerExtenders.forEach(c -> c.onHandlerInstalled(handler));
     }
 
-    protected Handler addExtraRules(ContextHandler handler) {
-
-        if (!compactPath) {
-            return handler;
-        }
-
-        RewriteHandler rewriteHandler = new RewriteHandler();
-
-        // TODO: no tests that this actually does something
-        rewriteHandler.addRule(new CompactPathRule());
-
-        rewriteHandler.setHandler(handler);
-        return rewriteHandler;
-    }
-
-    protected ServletContextHandler createHandler(
+    protected ServletContextHandler createContextHandler(
             String context,
             Set<MappedServlet> servlets,
             Set<MappedFilter> filters,
@@ -230,7 +217,7 @@ public class ServerFactory {
         }
 
         if (staticResourceBase != null) {
-            handler.setResourceBase(staticResourceBase.getUrl().toExternalForm());
+            handler.setBaseResourceAsString(staticResourceBase.getUrl().toExternalForm());
         }
 
         if (compression) {
@@ -249,6 +236,22 @@ public class ServerFactory {
 
         return handler;
     }
+
+    protected Handler wrapContextHandler(ContextHandler handler) {
+        Handler h2 = compactPath ? createCompactPathHandler(handler) : handler;
+        return new RequestMDCManager(h2, mdcItems);
+    }
+
+    protected Handler createCompactPathHandler(Handler handler) {
+        RewriteHandler compactPathHandler = new RewriteHandler();
+
+        // TODO: no tests that this actually does something
+        compactPathHandler.addRule(new CompactPathRule());
+        compactPathHandler.setHandler(handler);
+
+        return compactPathHandler;
+    }
+
 
     protected GzipHandler createGzipHandler() {
         return new GzipHandler();

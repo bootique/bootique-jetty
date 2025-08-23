@@ -19,8 +19,7 @@
 package io.bootique.jetty.request;
 
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRequest;
+import org.eclipse.jetty.server.Request;
 
 /**
  * Handles creating and resetting a single MDC context value.
@@ -29,7 +28,13 @@ import jakarta.servlet.ServletRequest;
  */
 public interface RequestMDCItem {
 
-    void initMDC(ServletContext sc, ServletRequest request);
+    /**
+     * @since 4.0
+     */
+    void initMDC(Request request);
 
-    void cleanupMDC(ServletContext sc, ServletRequest request);
+    /**
+     * @since 4.0
+     */
+    void cleanupMDC(Request request);
 }

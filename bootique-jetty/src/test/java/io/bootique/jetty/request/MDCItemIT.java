@@ -23,20 +23,19 @@ import io.bootique.Bootique;
 import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
+import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @BQTest
 public class MDCItemIT {
@@ -64,12 +63,12 @@ public class MDCItemIT {
         static final AtomicInteger cleanupMDC = new AtomicInteger(0);
 
         @Override
-        public void initMDC(ServletContext sc, ServletRequest request) {
+        public void initMDC(Request request) {
             initMDC.getAndIncrement();
         }
 
         @Override
-        public void cleanupMDC(ServletContext sc, ServletRequest request) {
+        public void cleanupMDC(Request request) {
             cleanupMDC.getAndIncrement();
         }
     }
