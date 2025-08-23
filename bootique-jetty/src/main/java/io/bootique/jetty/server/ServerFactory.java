@@ -21,7 +21,6 @@ package io.bootique.jetty.server;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.jetty.JettyModuleExtender;
 import io.bootique.jetty.MappedFilter;
 import io.bootique.jetty.MappedListener;
 import io.bootique.jetty.MappedServlet;
@@ -30,6 +29,7 @@ import io.bootique.jetty.connector.HttpConnectorFactory;
 import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.resource.FolderResourceFactory;
 import io.bootique.shutdown.ShutdownManager;
+import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import org.eclipse.jetty.server.NetworkConnector;
@@ -44,8 +44,15 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EventListener;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
