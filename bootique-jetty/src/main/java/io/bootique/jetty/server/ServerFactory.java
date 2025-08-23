@@ -32,9 +32,12 @@ import io.bootique.shutdown.ShutdownManager;
 import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
+import org.eclipse.jetty.rewrite.handler.CompactPathRule;
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AllowSymLinkAliasChecker;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -138,7 +141,7 @@ public class ServerFactory {
                 resolveFilters(),
                 resolveListeners());
 
-        // TODO: Using deprecated noop symlink alias checker until we decide how to implement
+        // TODO: Using our own port of deprecated Jetty noop symlink alias checker until we decide how to implement
         //  https://github.com/bootique/bootique-jetty/issues/114
         contextHandler.setAliasChecks(List.of(new AllowSymLinkAliasChecker()));
 
@@ -150,7 +153,6 @@ public class ServerFactory {
         // This may actually be a bug in Jetty, as even when the timeout is 0, and Graceful is bypassed, it still
         // stops its components explicitly (e.g. servlets receive their "destroy" event). So for now leaving it at 0.
         server.setStopTimeout(0);
-        server.setHandler(contextHandler);
 
         // postconfig *after* the handler is associated with the Server. Some extensions like WebSocket require access
         // to the handler's Server
@@ -168,8 +170,9 @@ public class ServerFactory {
 
         createRequestLog(server);
 
-        Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
+        server.setHandler(addExtraRules(contextHandler));
 
+        Collection<ConnectorFactory> connectorFactories = connectorFactories(server);
         Collection<ConnectorHolder> connectorHolders = new ArrayList<>(2);
 
         if (connectorFactories.isEmpty()) {
@@ -192,6 +195,21 @@ public class ServerFactory {
         contextHandlerExtenders.forEach(c -> c.onHandlerInstalled(handler));
     }
 
+    protected Handler addExtraRules(ContextHandler handler) {
+
+        if (!compactPath) {
+            return handler;
+        }
+
+        RewriteHandler rewriteHandler = new RewriteHandler();
+
+        // TODO: no tests that this actually does something
+        rewriteHandler.addRule(new CompactPathRule());
+
+        rewriteHandler.setHandler(handler);
+        return rewriteHandler;
+    }
+
     protected ServletContextHandler createHandler(
             String context,
             Set<MappedServlet> servlets,
@@ -207,8 +225,6 @@ public class ServerFactory {
         ServletContextHandler handler = new ServletContextHandler(options);
         handler.setContextPath(context);
 
-        // TODO: deprecated. Recommended to use CompactPathRule with RewriteHandler instead
-        handler.setCompactPath(compactPath);
         if (params != null) {
             params.forEach(handler::setInitParameter);
         }
