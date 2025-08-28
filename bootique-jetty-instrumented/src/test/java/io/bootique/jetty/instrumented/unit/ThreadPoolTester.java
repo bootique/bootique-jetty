@@ -23,12 +23,12 @@ import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
 import io.bootique.junit5.BQTestFactory;
 import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
+
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -130,7 +130,7 @@ public class ThreadPoolTester {
         }
 
         @Override
-        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
             // handle locks...
 

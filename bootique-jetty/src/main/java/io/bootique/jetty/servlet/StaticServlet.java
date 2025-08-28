@@ -21,14 +21,14 @@ package io.bootique.jetty.servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.eclipse.jetty.ee10.servlet.DefaultServlet;
+import org.eclipse.jetty.ee10.servlet.ResourceServlet;
 
 import java.io.IOException;
 
 /**
  * @since 2.0
  */
-public class StaticServlet extends DefaultServlet {
+public class StaticServlet extends ResourceServlet {
 
     static final String PATH_INFO_ONLY_PARAMETER = "pathInfoOnly";
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";

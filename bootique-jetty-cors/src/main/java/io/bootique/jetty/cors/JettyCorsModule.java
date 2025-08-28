@@ -19,17 +19,16 @@
 
 package io.bootique.jetty.cors;
 
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
-import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Provides;
 import io.bootique.di.TypeLiteral;
 import io.bootique.jetty.JettyModule;
 import io.bootique.jetty.MappedFilter;
-import org.eclipse.jetty.servlets.CrossOriginFilter;
-
 import jakarta.inject.Singleton;
+import org.eclipse.jetty.ee10.servlets.CrossOriginFilter;
 
 public class JettyCorsModule implements BQModule {
 

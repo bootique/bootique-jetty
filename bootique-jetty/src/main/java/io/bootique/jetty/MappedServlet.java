@@ -78,6 +78,7 @@ public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
         private final Set<String> urlPatterns;
         private FolderResourceFactory resourceBase;
+
         // capturing this as a String instead of boolean to allow Jetty apply its own string to boolean parsing
         // later when our value is mixed with the servlet init params
         private String pathInfoOnly;
@@ -85,6 +86,10 @@ public class MappedServlet<T extends Servlet> extends MappedWebArtifact<T> {
 
         protected StaticMappedServletBuilder(Set<String> urlPatterns) {
             this.urlPatterns = Objects.requireNonNull(urlPatterns);
+
+            // must explicitly set the default to "false". Jetty superclass changed the default from "false" in v11
+            // to "true" in v12. We are trying to preserve the existing behavior
+            this.pathInfoOnly = "false";
         }
 
         public StaticMappedServletBuilder name(String name) {

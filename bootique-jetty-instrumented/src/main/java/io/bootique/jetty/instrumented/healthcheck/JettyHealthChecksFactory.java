@@ -103,9 +103,9 @@ public class JettyHealthChecksFactory {
 
     private HealthCheck createThreadPoolUtilizationCheck(MetricRegistry registry) {
         Supplier<Double> deferredGauge = valueFromGauge(registry, InstrumentedQueuedThreadPool.utilizationMetric());
-        Supplier<Percent> deferedPctGauge = () -> new Percent(deferredGauge.get());
+        Supplier<Percent> deferredPctGauge = () -> new Percent(deferredGauge.get());
         ValueRange<Percent> range = getPoolUtilizationThresholds();
-        return new ValueRangeCheck<>(range, deferedPctGauge);
+        return new ValueRangeCheck<>(range, deferredPctGauge);
     }
 
     private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {

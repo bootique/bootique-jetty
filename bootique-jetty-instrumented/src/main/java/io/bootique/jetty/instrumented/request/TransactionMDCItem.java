@@ -22,8 +22,7 @@ package io.bootique.jetty.instrumented.request;
 import io.bootique.jetty.request.RequestMDCItem;
 import io.bootique.metrics.mdc.TransactionIdGenerator;
 import io.bootique.metrics.mdc.TransactionIdMDC;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRequest;
+import org.eclipse.jetty.server.Request;
 
 public class TransactionMDCItem implements RequestMDCItem {
 
@@ -34,13 +33,13 @@ public class TransactionMDCItem implements RequestMDCItem {
     }
 
     @Override
-    public void initMDC(ServletContext sc, ServletRequest request) {
+    public void initMDC(Request request) {
         String id = idGenerator.nextId();
         TransactionIdMDC.setId(id);
     }
 
     @Override
-    public void cleanupMDC(ServletContext sc, ServletRequest request) {
+    public void cleanupMDC(Request request) {
         TransactionIdMDC.clearId();
     }
 }
