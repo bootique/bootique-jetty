@@ -1,3 +1,7 @@
+## 4.0-M2
+
+* #130 Stop using custom BlockingArrayQueue, deprecate "maxQueuedRequests"
+
 ## 4.0-M1
 
 * #127 Remove deprecated modules (javax flavor), and deprecated APIs

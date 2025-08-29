@@ -71,10 +71,6 @@ It supports the following properties:
 |`4`
 |Initial number of request processing threads in the pool.
 
-|`maxQueuedRequests`
-|`1024`
-|Maximum number of requests to queue if the thread pool is busy.
-
 |`params`
 |empty map
 |A map of arbitrary key/value parameters that are used as "init" parameters of the ServletContext.

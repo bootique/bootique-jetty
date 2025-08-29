@@ -41,7 +41,6 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @BQConfig("Configures embedded Jetty server, including servlet spec objects, web server root location, connectors, " +
@@ -81,6 +79,8 @@ public class ServerFactory {
     protected Map<String, FilterFactory> filters;
     protected int maxThreads;
     protected int minThreads;
+
+    @Deprecated(forRemoval = true)
     protected int maxQueuedRequests;
     protected Map<String, ServletFactory> servlets;
     protected boolean sessions;
@@ -324,15 +324,9 @@ public class ServerFactory {
     }
 
     protected QueuedThreadPool createThreadPool() {
-        BlockingQueue<Runnable> queue = new BlockingArrayQueue<>(minThreads, maxThreads, maxQueuedRequests);
-        QueuedThreadPool threadPool = createThreadPool(queue);
+        QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout);
         threadPool.setName("bootique-http");
-
         return threadPool;
-    }
-
-    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
-        return new QueuedThreadPool(maxThreads, minThreads, idleThreadTimeout, queue);
     }
 
     protected void createRequestLog(Server server) {
@@ -455,13 +449,20 @@ public class ServerFactory {
 
     /**
      * @return a maximum number of requests to queue if the thread pool is busy.
+     * @deprecated ignored, as bounded queue is no longer recommended by Jetty
      */
+    @Deprecated(forRemoval = true)
     public int getMaxQueuedRequests() {
         return maxQueuedRequests;
     }
 
-    @BQConfigProperty("Maximum number of requests to queue if the thread pool is busy. If this number is exceeded, " +
-            "the server will start dropping requests.")
+    /**
+     * @deprecated ignored, as bounded queue is no longer recommended by Jetty
+     */
+    @BQConfigProperty("""
+            ** Deprecated and ignored. Maximum number of requests to queue if the thread pool is busy. If this number
+            is exceeded, the server will start dropping requests.""")
+    @Deprecated(forRemoval = true)
     public void setMaxQueuedRequests(int maxQueuedRequests) {
         this.maxQueuedRequests = maxQueuedRequests;
     }

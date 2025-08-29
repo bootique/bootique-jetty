@@ -31,14 +31,13 @@ import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServerFactory;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import io.bootique.shutdown.ShutdownManager;
+import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import jakarta.inject.Inject;
 import java.util.EventListener;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 @BQConfig
 public class InstrumentedServerFactory extends ServerFactory {
@@ -80,12 +79,15 @@ public class InstrumentedServerFactory extends ServerFactory {
     }
 
     @Override
-    protected QueuedThreadPool createThreadPool(BlockingQueue<Runnable> queue) {
-        return new InstrumentedQueuedThreadPool(
+    protected QueuedThreadPool createThreadPool() {
+        QueuedThreadPool threadPool = new InstrumentedQueuedThreadPool(
                 maxThreads,
                 minThreads,
                 idleThreadTimeout,
                 metricRegistry);
+
+        threadPool.setName("bootique-http");
+        return threadPool;
     }
 
     public JettyHealthChecks createHealthChecks(MetricRegistry metricRegistry) {
