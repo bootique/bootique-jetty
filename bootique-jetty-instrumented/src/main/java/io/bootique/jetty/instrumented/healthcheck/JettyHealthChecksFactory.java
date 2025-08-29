@@ -124,13 +124,10 @@ public class JettyHealthChecksFactory {
     private <T> Gauge<T> findGauge(MetricRegistry registry, String name) {
 
         Collection<Gauge> gauges = registry.getGauges((n, m) -> name.equals(n)).values();
-        switch (gauges.size()) {
-            case 0:
-                throw new IllegalArgumentException("Gauge not found: " + name);
-            case 1:
-                return gauges.iterator().next();
-            default:
-                throw new IllegalArgumentException("More than one Gauge matching the name: " + name);
-        }
+        return switch (gauges.size()) {
+            case 0 -> throw new IllegalArgumentException("Gauge not found: " + name);
+            case 1 -> gauges.iterator().next();
+            default -> throw new IllegalArgumentException("More than one Gauge matching the name: " + name);
+        };
     }
 }
