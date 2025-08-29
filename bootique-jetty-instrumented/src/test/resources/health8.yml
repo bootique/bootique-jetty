@@ -1,12 +1,15 @@
 jetty:
   maxThreads: 8
   connectors:
+    # these are the "leased" threads subtracted from "maxThreads" when calculating
+    # utilization
     - acceptorThreads: 2
       selectorThreads: 2
   health:
+    poolUtilizationThresholds:
+      warning: 50%
+      critical: 75%
+    # the config below is deprecated and should be removed in 5.0
     queuedRequestsThresholds:
       warning: 2
       critical: 3
-    poolUtilizationThresholds:
-      warning: 60%
-      critical: 90%

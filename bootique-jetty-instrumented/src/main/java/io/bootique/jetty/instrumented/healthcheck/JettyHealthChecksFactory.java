@@ -1,20 +1,20 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty.instrumented.healthcheck;
@@ -26,11 +26,14 @@ import io.bootique.annotation.BQConfigProperty;
 import io.bootique.jetty.instrumented.JettyInstrumentedModule;
 import io.bootique.jetty.instrumented.server.InstrumentedQueuedThreadPool;
 import io.bootique.metrics.health.HealthCheck;
+import io.bootique.metrics.health.HealthCheckOutcome;
 import io.bootique.metrics.health.check.IntRangeFactory;
 import io.bootique.metrics.health.check.PercentRangeFactory;
 import io.bootique.metrics.health.check.ValueRange;
 import io.bootique.metrics.health.check.ValueRangeCheck;
 import io.bootique.value.Percent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,36 +42,24 @@ import java.util.function.Supplier;
 
 @BQConfig("Configures Jetty-related health checks.")
 public class JettyHealthChecksFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyHealthChecksFactory.class);
 
     static final String POOL_UTILIZATION_CHECK = JettyInstrumentedModule
             .METRIC_NAMING
             .name("ThreadPool", "Utilization");
-    
-    static final String QUEUED_REQUESTS_CHECK =  JettyInstrumentedModule
+
+    @Deprecated(since = "4.0.0", forRemoval = true)
+    static final String QUEUED_REQUESTS_CHECK = JettyInstrumentedModule
             .METRIC_NAMING
             .name("ThreadPool", "QueuedRequests");
 
     private PercentRangeFactory poolUtilizationThresholds;
-    private IntRangeFactory queuedRequestsThresholds;
 
-    protected ValueRange<Integer> getQueuedRequestsThresholds() {
-
-        // init min if it wasn't set...
-        if (queuedRequestsThresholds != null) {
-            if (queuedRequestsThresholds.getMin() == null) {
-                queuedRequestsThresholds.setMin(0);
-            }
-
-            return queuedRequestsThresholds.createRange();
-        }
-
-        // TODO: what is the default max queued requests for our Jetty?
-        return ValueRange.builder(Integer.class).min(0).warning(3).critical(15).build();
-    }
-
-    @BQConfigProperty
+    @BQConfigProperty("""
+            ** Deprecated and ignored. Monitoring queued requests no longer makes sense on Jetty""")
+    @Deprecated(since = "4.0.0", forRemoval = true)
     public void setQueuedRequestsThresholds(IntRangeFactory queuedRequestsThresholds) {
-        this.queuedRequestsThresholds = queuedRequestsThresholds;
+        LOGGER.warn("'jetty.queuedRequestsThresholds' configuration property is deprecated and ignored");
     }
 
     protected ValueRange<Percent> getPoolUtilizationThresholds() {
@@ -97,7 +88,10 @@ public class JettyHealthChecksFactory {
     protected Map<String, HealthCheck> createHealthChecksMap(MetricRegistry registry) {
         Map<String, HealthCheck> checks = new HashMap<>(3);
         checks.put(POOL_UTILIZATION_CHECK, createThreadPoolUtilizationCheck(registry));
-        checks.put(QUEUED_REQUESTS_CHECK, createQueuedRequestsCheck(registry));
+
+        // this check is deprecated and will always return success
+        checks.put(QUEUED_REQUESTS_CHECK, HealthCheckOutcome::ok);
+
         return checks;
     }
 
@@ -106,12 +100,6 @@ public class JettyHealthChecksFactory {
         Supplier<Percent> deferredPctGauge = () -> new Percent(deferredGauge.get());
         ValueRange<Percent> range = getPoolUtilizationThresholds();
         return new ValueRangeCheck<>(range, deferredPctGauge);
-    }
-
-    private HealthCheck createQueuedRequestsCheck(MetricRegistry registry) {
-        Supplier<Integer> deferredGauge = valueFromGauge(registry, InstrumentedQueuedThreadPool.queuedRequestsMetric());
-        ValueRange<Integer> range = getQueuedRequestsThresholds();
-        return new ValueRangeCheck<>(range, deferredGauge);
     }
 
     private <T> Supplier<T> valueFromGauge(MetricRegistry registry, String name) {

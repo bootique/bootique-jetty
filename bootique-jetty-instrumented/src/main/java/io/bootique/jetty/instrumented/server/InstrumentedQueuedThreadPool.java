@@ -21,7 +21,6 @@ package io.bootique.jetty.instrumented.server;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.RatioGauge;
 import io.bootique.jetty.instrumented.JettyInstrumentedModule;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
@@ -34,6 +33,7 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
             .METRIC_NAMING
             .name("ThreadPool", "Size");
 
+    @Deprecated(forRemoval = true)
     private static final String queuedRequestsMetric = JettyInstrumentedModule
             .METRIC_NAMING
             .name("ThreadPool", "QueuedRequests");
@@ -123,6 +123,10 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
         return sizeMetric;
     }
 
+    /**
+     * @deprecated as we are no longer measuring the actual queued jobs
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
     public static String queuedRequestsMetric() {
         return queuedRequestsMetric;
     }
@@ -135,22 +139,17 @@ public class InstrumentedQueuedThreadPool extends QueuedThreadPool {
     protected void doStart() throws Exception {
 
         super.doStart();
-
         metricRegistry.register(sizeMetric(), (Gauge<Integer>) this::getThreads);
-        metricRegistry.register(queuedRequestsMetric(), (Gauge<Integer>) this::getQueueSize);
-        metricRegistry.register(utilizationMetric(), (Gauge<Double>) this::getUtilization);
+
+        // this metric is deprecated and will always return zero until removed in the future
+        metricRegistry.register(queuedRequestsMetric(), (Gauge<Integer>) this::getQueueSizeZero);
+        metricRegistry.register(utilizationMetric(), (Gauge<Double>) this::getUtilizationRate);
     }
 
-    protected double getUtilization() {
-
-        // utilization is:
-        //     (all_acceptor_t + all_selector_t + active_request_t) / maxT
-
-        // This is not readily apparent from the Jetty API below. An explanation:
-        //     getThreads()                    == all_acceptor_t + all_selector_t + active_request_t + idle_request_t
-        // hence
-        //     getThreads() - getIdleThreads() == all_acceptor_t + all_selector_t + active_request_t
-
-        return RatioGauge.Ratio.of(getThreads() - getIdleThreads(), getMaxThreads()).getValue();
+    // Always return zero, as we are no longer measuring the actual queued jobs. "super.getQueueSize()" no longer
+    // matches the number of queued requests, and is often a larger number
+    @Deprecated(since = "4.0.0", forRemoval = true)
+    private int getQueueSizeZero() {
+        return 0;
     }
 }

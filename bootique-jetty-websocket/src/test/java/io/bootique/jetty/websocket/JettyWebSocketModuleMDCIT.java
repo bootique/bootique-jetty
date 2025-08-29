@@ -41,12 +41,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
 
+    private static final String MDC_KEY = "key";
+
     @Test
     public void contextPassed() throws IOException, DeploymentException, InterruptedException {
 
         testFactory.app("-s")
                 .module(jetty.moduleReplacingConnectors())
-                .module(b -> JettyModule.extend(b).addRequestMDCItem("x", new TestMDCItem()))
+                .module(b -> JettyModule.extend(b).addRequestMDCItem(MDC_KEY, new TestMDCItem()))
                 .module(b -> JettyWebSocketModule.extend(b).addEndpoint(WsServer.class))
                 .run();
 
@@ -71,7 +73,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         }
 
         Thread.sleep(500);
-        assertEquals("x:aa", WsServer.onClose);
+        assertEquals("x=aa", WsServer.onClose);
     }
 
     static class TestMDCItem implements RequestMDCItem {
@@ -79,12 +81,12 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         @Override
         public void initMDC(Request request) {
             String query = request.getHttpURI().getQuery();
-            MDC.put("x", query);
+            MDC.put(MDC_KEY, query);
         }
 
         @Override
         public void cleanupMDC(Request request) {
-            MDC.remove("x");
+            MDC.remove(MDC_KEY);
         }
     }
 
@@ -104,7 +106,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         public void onOpen(Session session) {
             mdc.run(session, () -> {
                 LOGGER.info("onOpen");
-                onOpen = MDC.get("x");
+                onOpen = MDC.get(MDC_KEY);
             });
         }
 
@@ -112,7 +114,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         public void onMessage(String message, Session session) {
             mdc.run(session, () -> {
                 LOGGER.info("onMessage");
-                onMessage = MDC.get("x");
+                onMessage = MDC.get(MDC_KEY);
             });
         }
 
@@ -120,7 +122,7 @@ public class JettyWebSocketModuleMDCIT extends JettyWebSocketTestBase {
         public void onClose(Session session) {
             mdc.run(session, () -> {
                 LOGGER.info("onClose");
-                onClose = MDC.get("x");
+                onClose = MDC.get(MDC_KEY);
             });
         }
 

@@ -20,7 +20,6 @@ package io.bootique.jetty.websocket;
 
 import io.bootique.di.Injector;
 import io.bootique.di.Key;
-import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.jetty.server.ServletContextHandlerExtender;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.HandshakeResponse;
@@ -49,18 +48,18 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketConfigurator.class);
 
-    private final RequestMDCManager mdcManager;
+    private final Set<String> mdcKeys;
     private final Set<EndpointKeyHolder> endpointDiKeys;
     private final Injector injector;
     private final Config config;
 
     public JettyWebSocketConfigurator(
-            RequestMDCManager mdcManager,
+            Set<String> mdcKeys,
             Set<EndpointKeyHolder> endpointDiKeys,
             Injector injector,
             Config config) {
 
-        this.mdcManager = mdcManager;
+        this.mdcKeys = mdcKeys;
         this.endpointDiKeys = endpointDiKeys;
         this.injector = injector;
         this.config = config;
@@ -109,7 +108,7 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
         String path = normalizePath(endpointAnnotation.value());
 
         // Ignore "configurator" annotation value (unless we uncover a valid use case for overriding the one supplied
-        // by Bootique below. Honor all other annotation parameters though
+        // by Bootique below). Honor all other annotation parameters though
         if (endpointAnnotation.configurator() != ServerEndpointConfig.Configurator.class) {
             LOGGER.warn("@ServerEndpoint.configurator is not null, but will be ignored");
         }
@@ -154,7 +153,7 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
         // with concurrent calling threads in mind, for example, if two different clients send a message at the same
         // time."
 
-        private Supplier<?> endpointSupplier;
+        private final Supplier<?> endpointSupplier;
 
         BQEndpointConfiguration(Supplier<?> endpointSupplier) {
             this.endpointSupplier = endpointSupplier;
@@ -169,11 +168,10 @@ public class JettyWebSocketConfigurator implements ServletContextHandlerExtender
         public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
 
             // clone MDC data into session
-            Set<String> keys = mdcManager.mdcKeys();
-            if (!keys.isEmpty()) {
+            if (!mdcKeys.isEmpty()) {
                 Map<String, String> mdcData = new HashMap<>(3);
 
-                for (String key : keys) {
+                for (String key : mdcKeys) {
                     String value = MDC.get(key);
                     if (value != null) {
                         mdcData.put(key, value);

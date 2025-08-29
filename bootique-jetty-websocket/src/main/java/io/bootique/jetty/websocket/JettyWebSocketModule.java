@@ -18,16 +18,17 @@
  */
 package io.bootique.jetty.websocket;
 
+import io.bootique.BQModule;
 import io.bootique.ModuleCrate;
 import io.bootique.config.ConfigurationFactory;
-import io.bootique.BQModule;
 import io.bootique.di.Binder;
 import io.bootique.di.Injector;
 import io.bootique.di.Provides;
 import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.request.RequestMDCManager;
-
+import io.bootique.jetty.request.RequestMDCItem;
 import jakarta.inject.Singleton;
+
+import java.util.Map;
 import java.util.Set;
 
 public class JettyWebSocketModule implements BQModule {
@@ -58,11 +59,11 @@ public class JettyWebSocketModule implements BQModule {
             ConfigurationFactory configFactory,
             Injector injector,
             Set<EndpointKeyHolder> endpointKeys,
-            RequestMDCManager mdcManager) {
+            Map<String, RequestMDCItem> mdcItems) {
 
         return configFactory
                 .config(JettyWebSocketConfiguratorFactory.class, CONFIG_PREFIX)
-                .createConfigurator(injector, endpointKeys, mdcManager);
+                .createConfigurator(injector, endpointKeys, mdcItems.keySet());
     }
 
     @Provides

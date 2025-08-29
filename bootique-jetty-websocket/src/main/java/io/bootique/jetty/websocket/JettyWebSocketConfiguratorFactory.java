@@ -21,7 +21,6 @@ package io.bootique.jetty.websocket;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.di.Injector;
-import io.bootique.jetty.request.RequestMDCManager;
 import io.bootique.value.Bytes;
 import io.bootique.value.Duration;
 
@@ -41,8 +40,8 @@ public class JettyWebSocketConfiguratorFactory {
     public JettyWebSocketConfigurator createConfigurator(
             Injector injector,
             Set<EndpointKeyHolder> endpointKeys,
-            RequestMDCManager mdcManager) {
-        return new JettyWebSocketConfigurator(mdcManager, endpointKeys, injector, createConfig());
+            Set<String> mdcKeys) {
+        return new JettyWebSocketConfigurator(mdcKeys, endpointKeys, injector, createConfig());
     }
 
     protected JettyWebSocketConfigurator.Config createConfig() {

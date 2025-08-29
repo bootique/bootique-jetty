@@ -61,17 +61,8 @@ public class ThreadPoolMetricsIT {
                 .run("classpath:threads20.yml");
     }
 
-    @Test
-    public void queuedRequests_1() throws InterruptedException {
 
-        new ThreadPoolTester(testFactory)
-                .sendRequests(4)
-                .unblockAfterInProgressRequests(3)
-                .afterStartup(r -> checkQueued(r, 0))
-                .afterRequestsFrozen(r -> checkQueued(r, 1))
-                .run("classpath:threads8.yml");
-    }
-
+    @Deprecated(forRemoval = true)
     @Test
     public void queuedRequests_4() throws InterruptedException {
 
@@ -79,10 +70,13 @@ public class ThreadPoolMetricsIT {
                 .sendRequests(7)
                 .unblockAfterInProgressRequests(3)
                 .afterStartup(r -> checkQueued(r, 0))
-                .afterRequestsFrozen(r -> checkQueued(r, 4))
+
+                // the check is deprecated, thresholds are ignored, and 0 is returned regardless of state
+                .afterRequestsFrozen(r -> checkQueued(r, 0))
                 .run("classpath:threads8.yml");
     }
 
+    @Deprecated(forRemoval = true)
     private void checkQueued(BQRuntime runtime, int frozenRequests) {
         Gauge<Integer> gauge = findQueuedRequestsGauge(runtime);
         AssertExtras.assertWithRetry(() -> assertEquals(Integer.valueOf(frozenRequests), gauge.getValue()));
@@ -91,20 +85,13 @@ public class ThreadPoolMetricsIT {
     private void checkUtilization(BQRuntime runtime, int frozenRequests) {
         Gauge<Double> gauge = findUtilizationGauge(runtime);
 
-        // utilization = (acceptorTh + selectorTh + active) / max
-        // see more detailed explanation in InstrumentedQueuedThreadPool
-
-        final int acceptors = 2;
-        final int selectors = 3;
-
-        // note that Jetty since 9.4 has a number of internal tasks that block threads, so getting an exact utilization
-        // number predictably is not possible... So using a huge delta so that plus or minus a busy thread does not
-        // fail the test.
+        // usable = total - acceptors - selectors
+        double usableThreads = 20 - 2 - 3;
 
         AssertExtras.assertWithRetry(() -> {
             double v = gauge.getValue();
-            assertEquals((acceptors + selectors + frozenRequests) / 20d, v, 0.1,
-                    "Actual frozen: " + (int) (v * 20d - acceptors - selectors) + " vs expected " + frozenRequests);
+            assertEquals(frozenRequests / usableThreads, v, 0.1,
+                    "Actual frozen: " + (int) (v * usableThreads) + " vs expected " + frozenRequests);
         });
     }
 
@@ -112,6 +99,7 @@ public class ThreadPoolMetricsIT {
         return findGauge(runtime, InstrumentedQueuedThreadPool.utilizationMetric());
     }
 
+    @Deprecated(forRemoval = true)
     private Gauge<Integer> findQueuedRequestsGauge(BQRuntime runtime) {
         return findGauge(runtime, InstrumentedQueuedThreadPool.queuedRequestsMetric());
     }

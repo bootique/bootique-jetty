@@ -54,6 +54,10 @@ public class RequestMDCManager extends EventsHandler {
         items.values().forEach(e -> e.cleanupMDC(request));
     }
 
+    /**
+     * @deprecated unused, now that a map of RequestMDCItem is directly injectable
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
     public Set<String> mdcKeys() {
         return items.keySet();
     }

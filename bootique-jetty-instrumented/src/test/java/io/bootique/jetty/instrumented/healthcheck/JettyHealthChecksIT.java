@@ -20,7 +20,6 @@
 package io.bootique.jetty.instrumented.healthcheck;
 
 import io.bootique.BQRuntime;
-import io.bootique.jetty.instrumented.healthcheck.JettyHealthChecksFactory;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
@@ -47,6 +46,8 @@ public class JettyHealthChecksIT {
         Map<String, HealthCheckOutcome> results = registry.runHealthChecks();
 
         assertTrue(results.containsKey(JettyHealthChecksFactory.POOL_UTILIZATION_CHECK));
+
+        // deprecated, will remove in 5.0
         assertTrue(results.containsKey(JettyHealthChecksFactory.QUEUED_REQUESTS_CHECK));
     }
 }
