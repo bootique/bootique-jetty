@@ -451,7 +451,7 @@ public class ServerFactory {
      * @return a maximum number of requests to queue if the thread pool is busy.
      * @deprecated ignored, as bounded queue is no longer recommended by Jetty
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "4.0.0", forRemoval = true)
     public int getMaxQueuedRequests() {
         return maxQueuedRequests;
     }
@@ -462,8 +462,9 @@ public class ServerFactory {
     @BQConfigProperty("""
             ** Deprecated and ignored. Maximum number of requests to queue if the thread pool is busy. If this number
             is exceeded, the server will start dropping requests.""")
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "4.0.0", forRemoval = true)
     public void setMaxQueuedRequests(int maxQueuedRequests) {
+        LOGGER.warn("'jetty.maxQueuedRequests' property is deprecated and ignored");
         this.maxQueuedRequests = maxQueuedRequests;
     }
 
