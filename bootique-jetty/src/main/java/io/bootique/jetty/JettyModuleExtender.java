@@ -211,11 +211,11 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * Registers an extender of the Jetty {@link org.eclipse.jetty.servlet.ServletContextHandler}. This is a low-level
+     * Registers an extender of the Jetty {@link org.eclipse.jetty.ee10.servlet.ServletContextHandler}. This is a low-level
      * extension point that allows to install some Jetty extensions like the WebSockets engine. This should be usually
      * of no interest to regular bootique-jetty users.
      *
-     * @param extender an "extender" object that can customize {@link org.eclipse.jetty.servlet.ServletContextHandler}.
+     * @param extender an "extender" object that can customize {@link org.eclipse.jetty.ee10.servlet.ServletContextHandler}.
      * @return this extender instance
      */
     public JettyModuleExtender addContextHandlerExtender(ServletContextHandlerExtender extender) {
@@ -224,12 +224,12 @@ public class JettyModuleExtender extends ModuleExtender<JettyModuleExtender> {
     }
 
     /**
-     * Registers an extender of the Jetty {@link org.eclipse.jetty.servlet.ServletContextHandler}. This is a low-level
+     * Registers an extender of the Jetty {@link org.eclipse.jetty.ee10.servlet.ServletContextHandler}. This is a low-level
      * extension point that allows to install some Jetty extensions like the WebSockets engine. This should be usually
      * of no interest to regular bootique-jetty users.
      *
      * @param type a class of an "extender" object that can customize
-     *             {@link org.eclipse.jetty.servlet.ServletContextHandler}.
+     *             {@link org.eclipse.jetty.ee10.servlet.ServletContextHandler}.
      * @return this extender instance
      */
     public JettyModuleExtender addContextHandlerExtender(Class<? extends ServletContextHandlerExtender> type) {
