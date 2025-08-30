@@ -1,6 +1,7 @@
 ## 4.0-M2
 
 * #130 Stop using custom BlockingArrayQueue, deprecate "maxQueuedRequests"
+* #131 Correct base for "ThreadPool.Utilization" metric
 
 ## 4.0-M1
 
