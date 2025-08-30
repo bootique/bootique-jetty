@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>io.bootique.modules.parent</groupId>
 		<artifactId>bootique-modules-parent</artifactId>
-		<version>4.0.1</version>
+		<version>4.0.2</version>
 	</parent>
 
 	<groupId>io.bootique.jetty</groupId>
@@ -46,10 +46,6 @@
     </modules>
 
     <properties>
-
-        <jetty.version>12.1.0</jetty.version>
-        <jersey.version>3.1.11</jersey.version>
-
         <!-- TODO: move websocket versions to bootique-modules-parent -->
         <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
     </properties>
