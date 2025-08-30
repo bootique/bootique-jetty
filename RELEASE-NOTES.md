@@ -1,5 +1,6 @@
 ## 4.0-M2
 
+* #129 Upgrade to Jetty 12.1.0
 * #130 Stop using custom BlockingArrayQueue, deprecate "maxQueuedRequests"
 * #131 Correct base for "ThreadPool.Utilization" metric
 
