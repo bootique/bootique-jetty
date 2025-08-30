@@ -48,12 +48,12 @@
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>${jersey3.version}</version>
+                <version>${jersey.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
-                <version>${jersey3.version}</version>
+                <version>${jersey.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
