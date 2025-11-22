@@ -20,7 +20,6 @@
 [![build test deploy](https://github.com/bootique/bootique-jetty/actions/workflows/maven.yml/badge.svg)](https://github.com/bootique/bootique-jetty/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.bootique.jetty/bootique-jetty.svg?colorB=brightgreen)](https://search.maven.org/artifact/io.bootique.jetty/bootique-jetty/)
 
-
 # bootique-jetty
 Provides Jetty integration with [Bootique](https://bootique.io). Documentation and configuration reference 
 is [available here](https://bootique.io/docs/3.x/bootique-jetty-docs/).
