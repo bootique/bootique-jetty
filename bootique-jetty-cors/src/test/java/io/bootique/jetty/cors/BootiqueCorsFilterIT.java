@@ -40,7 +40,6 @@ public class BootiqueCorsFilterIT {
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    @BQTestTool
     final JettyTester tester = JettyTester.create();
 
     @BeforeAll
