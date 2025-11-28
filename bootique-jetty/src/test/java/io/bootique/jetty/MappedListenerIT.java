@@ -1,39 +1,42 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty;
 
-import io.bootique.jetty.JettyModule;
-import io.bootique.jetty.MappedListener;
 import io.bootique.junit5.BQTest;
 import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
-import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.ServletRequestListener;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 @BQTest
 public class MappedListenerIT {
@@ -41,12 +44,9 @@ public class MappedListenerIT {
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
 
-    private Servlet mockServlet1;
-
     @BeforeEach
     public void before() {
         SharedState.reset();
-        this.mockServlet1 = mock(Servlet.class);
     }
 
     @Test
@@ -54,13 +54,16 @@ public class MappedListenerIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)
-                        .addServlet(mockServlet1, "s1", "/*")
+                        .addServlet(new TestServlet(), "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 1))
                         .addMappedListener(new MappedListener<>(new RL2(), 2)))
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-        assertEquals(200, base.path("/").request().get().getStatus());
+        try (Client client = ClientBuilder.newClient()) {
+            WebTarget base = client.target("http://localhost:8080");
+            assertEquals(200, base.path("/").request().get().getStatus());
+        }
+
         assertEquals("_RL1_init_RL2_init_RL2_destroy_RL1_destroy", SharedState.getAndReset());
     }
 
@@ -69,13 +72,15 @@ public class MappedListenerIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)
-                        .addServlet(mockServlet1, "s1", "/*")
+                        .addServlet(new TestServlet(), "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 2))
                         .addMappedListener(new MappedListener<>(new RL2(), 1)))
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-        assertEquals(200, base.path("/").request().get().getStatus());
+        try (Client client = ClientBuilder.newClient()) {
+            WebTarget base = client.target("http://localhost:8080");
+            assertEquals(200, base.path("/").request().get().getStatus());
+        }
         assertEquals("_RL2_init_RL1_init_RL1_destroy_RL2_destroy", SharedState.getAndReset());
     }
 
@@ -84,15 +89,17 @@ public class MappedListenerIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b)
-                        .addServlet(mockServlet1, "s1", "/*")
+                        .addServlet(new TestServlet(), "s1", "/*")
                         .addMappedListener(new MappedListener<>(new RL1(), 2))
                         .addListener(new RL3())
                         .addMappedListener(new MappedListener<>(new RL2(), 1))
                 )
                 .run();
 
-        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
-        assertEquals(200, base.path("/").request().get().getStatus());
+        try (Client client = ClientBuilder.newClient()) {
+            WebTarget base = client.target("http://localhost:8080");
+            assertEquals(200, base.path("/").request().get().getStatus());
+        }
         assertEquals("_RL2_init_RL1_init_RL3_init_RL3_destroy_RL1_destroy_RL2_destroy", SharedState.getAndReset());
     }
 
@@ -114,7 +121,14 @@ public class MappedListenerIT {
         }
     }
 
-    public static class RL1 implements ServletRequestListener {
+    static class TestServlet extends HttpServlet {
+
+        @Override
+        protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        }
+    }
+
+    static class RL1 implements ServletRequestListener {
 
         @Override
         public void requestInitialized(ServletRequestEvent sre) {
@@ -127,7 +141,7 @@ public class MappedListenerIT {
         }
     }
 
-    public static class RL2 implements ServletRequestListener {
+    static class RL2 implements ServletRequestListener {
 
         @Override
         public void requestInitialized(ServletRequestEvent sre) {
@@ -140,7 +154,7 @@ public class MappedListenerIT {
         }
     }
 
-    public static class RL3 implements ServletRequestListener {
+    static class RL3 implements ServletRequestListener {
 
         @Override
         public void requestInitialized(ServletRequestEvent sre) {

@@ -24,6 +24,7 @@ import io.bootique.Bootique;
 import io.bootique.junit5.BQApp;
 import io.bootique.junit5.BQTest;
 import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 @BQTest
 public class FilterInitParametersIT {
@@ -45,7 +45,7 @@ public class FilterInitParametersIT {
             .autoLoadModules()
             .module(b -> JettyModule.extend(b)
                     .addMappedFilter(new MappedFilter(new TestFilter(), Collections.singleton("/*"), "f1", 5))
-                    .addMappedServlet(new MappedServlet(mock(Servlet.class), new HashSet<>(Arrays.asList("/*")))))
+                    .addMappedServlet(new MappedServlet(new TestServlet(), new HashSet<>(Arrays.asList("/*")))))
             .createRuntime();
 
     @Test
@@ -61,6 +61,9 @@ public class FilterInitParametersIT {
         assertEquals(Status.OK.getStatusCode(), r1.getStatus());
 
         assertEquals("f1_af1_bf2", r1.readEntity(String.class));
+    }
+
+    static class TestServlet extends HttpServlet {
     }
 
     static class TestFilter implements Filter {

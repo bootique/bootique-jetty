@@ -18,14 +18,12 @@
  */
 package io.bootique.jetty.server;
 
-import io.bootique.shutdown.ShutdownManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class ServerFactoryTest {
 
@@ -33,7 +31,7 @@ public class ServerFactoryTest {
         return new ServerFactory(
                 Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(), Set.of(),
                 Map.of(),
-                mock(ShutdownManager.class)
+                null
         );
     }
 

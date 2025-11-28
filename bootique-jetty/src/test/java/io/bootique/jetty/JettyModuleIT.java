@@ -1,20 +1,20 @@
 /**
- *  Licensed to ObjectStyle LLC under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ObjectStyle LLC licenses
- *  this file to you under the Apache License, Version 2.0 (the
- *  “License”); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to ObjectStyle LLC under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ObjectStyle LLC licenses
+ * this file to you under the Apache License, Version 2.0 (the
+ * “License”); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.bootique.jetty;
@@ -27,53 +27,41 @@ import io.bootique.junit5.BQTestFactory;
 import io.bootique.junit5.BQTestTool;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.Servlet;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.ServletRequestListener;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @BQTest
 public class JettyModuleIT {
 
     @BQTestTool
     final BQTestFactory testFactory = new BQTestFactory().autoLoadModules();
-
-    private Servlet mockServlet1;
-    private Servlet mockServlet2;
-    private Filter mockFilter1;
-    private Filter mockFilter2;
-    private Filter mockFilter3;
-
-    @BeforeEach
-    public void before() {
-
-        this.mockServlet1 = mock(Servlet.class);
-        this.mockServlet2 = mock(Servlet.class);
-
-        this.mockFilter1 = mock(Filter.class);
-        this.mockFilter2 = mock(Filter.class);
-        this.mockFilter3 = mock(Filter.class);
-    }
 
     private BQRuntime startApp(BQModule module) {
         BQRuntime runtime = testFactory.app("-s")
@@ -84,16 +72,16 @@ public class JettyModuleIT {
     }
 
     @Test
-    public void contributeMappedServlets() throws Exception {
+    public void addMappedServlet() {
+        TestServlet s1 = new TestServlet();
+        TestServlet s2 = new TestServlet();
+        MappedServlet ms1 = new MappedServlet(s1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
+        MappedServlet ms2 = new MappedServlet(s2, new HashSet<>(Arrays.asList("/c/*")));
 
-        MappedServlet mappedServlet1 = new MappedServlet(mockServlet1, new HashSet<>(Arrays.asList("/a/*", "/b/*")));
-        MappedServlet mappedServlet2 = new MappedServlet(mockServlet2, new HashSet<>(Arrays.asList("/c/*")));
+        BQRuntime runtime = startApp(b -> JettyModule.extend(b).addMappedServlet(ms1).addMappedServlet(ms2));
 
-        BQRuntime runtime = startApp(b ->
-                JettyModule.extend(b).addMappedServlet(mappedServlet1).addMappedServlet(mappedServlet2));
-
-        verify(mockServlet1).init(any());
-        verify(mockServlet2).init(any());
+        assertTrue(s1.wasInit);
+        assertTrue(s2.wasInit);
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
@@ -109,195 +97,268 @@ public class JettyModuleIT {
         Response r4 = base.path("/d").request().get();
         assertEquals(Status.NOT_FOUND.getStatusCode(), r4.getStatus());
 
-        verify(mockServlet1, times(2)).service(any(), any());
-        verify(mockServlet2).service(any(), any());
+        assertEquals(2, s1.serviceCounter.get());
+        assertEquals(1, s2.serviceCounter.get());
 
         runtime.shutdown();
-        verify(mockServlet1).destroy();
-        verify(mockServlet2).destroy();
+        assertTrue(s1.wasDestroyed);
+        assertTrue(s2.wasDestroyed);
     }
 
     @Test
-    public void contributeFilters_InitDestroy() {
+    public void addMappedFilter_InitDestroy() {
 
-        MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
-        MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
-        MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
+        TestFilter f1 = new TestFilter(1);
+        TestFilter f2 = new TestFilter(2);
+
+        MappedFilter mf1 = new MappedFilter(f1, Collections.singleton("/a/*"), 10);
+        MappedFilter mf2 = new MappedFilter(f2, Collections.singleton("/a/*"), 0);
 
         BQRuntime runtime = startApp(b -> JettyModule.extend(b)
                 .addMappedFilter(mf1)
-                .addMappedFilter(mf2)
-                .addMappedFilter(mf3));
+                .addMappedFilter(mf2));
 
-        Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> {
-            try {
-                verify(f).init(any());
-            } catch (Exception e) {
-                fail("init failed");
-            }
-        });
+        Stream.of(f1, f2).forEach(f -> assertTrue(f.wasInit));
 
         runtime.shutdown();
-        Arrays.asList(mockFilter1, mockFilter2, mockFilter3).forEach(f -> verify(f).destroy());
+        Stream.of(f1, f2).forEach(f -> assertTrue(f.wasDestroyed));
     }
 
     @Test
-    public void contributeFilters_Ordering() throws Exception {
+    public void addMappedFilter_Ordering() {
 
-        Filter[] mockFilters = new Filter[]{mockFilter1, mockFilter2, mockFilter3};
+        TestFilter f1 = new TestFilter(1);
+        TestFilter f2 = new TestFilter(2);
+        TestFilter f3 = new TestFilter(3);
 
-        for (int i = 0; i < mockFilters.length; i++) {
-
-            String responseString = Integer.toString(i);
-            doAnswer(inv -> {
-
-                HttpServletRequest request = inv.getArgument(0);
-                HttpServletResponse response = inv.getArgument(1);
-                FilterChain chain = inv.getArgument(2);
-
-                response.setStatus(200);
-                response.getWriter().append(responseString);
-                chain.doFilter(request, response);
-
-                return null;
-            }).when(mockFilters[i]).doFilter(any(), any(), any());
-        }
-
-        MappedFilter mf1 = new MappedFilter(mockFilter1, Collections.singleton("/a/*"), 10);
-        MappedFilter mf2 = new MappedFilter(mockFilter2, Collections.singleton("/a/*"), 0);
-        MappedFilter mf3 = new MappedFilter(mockFilter3, Collections.singleton("/a/*"), 5);
+        MappedFilter mf1 = new MappedFilter(f1, Collections.singleton("/a/*"), 10);
+        MappedFilter mf2 = new MappedFilter(f2, Collections.singleton("/a/*"), 0);
+        MappedFilter mf3 = new MappedFilter(f3, Collections.singleton("/a/*"), 5);
 
         startApp(b -> JettyModule.extend(b)
                 .addMappedFilter(mf1)
                 .addMappedFilter(mf2)
                 .addMappedFilter(mf3)
                 // must have a servlet behind the filter chain...
-                .addServlet(mockServlet1, "last", "/a/*"));
+                .addServlet(new TestServlet(), "last", "/a/*"));
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         Response response = base.path("/a").request().get();
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
-        assertEquals("120", response.readEntity(String.class));
+        assertEquals("231", response.readEntity(String.class));
     }
 
     @Test
-    public void contributeListeners_ServletContextListener() {
+    public void addListener_ServletContextListener() {
 
-        ServletContextListener scListener = mock(ServletContextListener.class);
+        TestContextListener listener = new TestContextListener();
 
-        BQRuntime runtime = startApp(b -> JettyModule.extend(b).addListener(scListener));
-
-        verify(scListener).contextInitialized(any());
-        verify(scListener, times(0)).contextDestroyed(any());
+        BQRuntime runtime = startApp(b -> JettyModule.extend(b).addListener(listener));
+        assertTrue(listener.wasInitialized);
+        assertFalse(listener.wasDestroyed);
 
         runtime.shutdown();
-        verify(scListener).contextInitialized(any());
-        verify(scListener).contextDestroyed(any());
+        assertTrue(listener.wasDestroyed);
     }
 
     @Test
-    public void contributeListeners_ServletRequestListener() throws Exception {
+    public void addListener_ServletRequestListener() throws Exception {
 
-        ServletRequestListener srListener = mock(ServletRequestListener.class);
+        TestRequestListener listener = new TestRequestListener();
 
-        startApp(b -> JettyModule.extend(b).addListener(srListener));
-
-        verify(srListener, times(0)).requestInitialized(any());
-        verify(srListener, times(0)).requestDestroyed(any());
+        startApp(b -> JettyModule.extend(b).addListener(listener));
+        assertEquals(0, listener.initCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         base.path("/a").request().get();
         Thread.sleep(100);
-        verify(srListener, times(1)).requestInitialized(any());
-        verify(srListener, times(1)).requestDestroyed(any());
+        assertEquals(1, listener.initCounter.get());
+        assertEquals(1, listener.destroyCounter.get());
 
         base.path("/b").request().get();
         Thread.sleep(100);
-        verify(srListener, times(2)).requestInitialized(any());
-        verify(srListener, times(2)).requestDestroyed(any());
+        assertEquals(2, listener.initCounter.get());
+        assertEquals(2, listener.destroyCounter.get());
 
         // not_found request
         base.path("/c").request().get();
         Thread.sleep(100);
-        verify(srListener, times(3)).requestInitialized(any());
-        verify(srListener, times(3)).requestDestroyed(any());
+        assertEquals(3, listener.initCounter.get());
+        assertEquals(3, listener.destroyCounter.get());
     }
 
     @Test
-    public void contributeListeners_SessionListener() throws Exception {
+    public void addListener_SessionListener() throws Exception {
 
         // TODO: test session destroy event...
 
-        doAnswer(i -> {
-            HttpServletRequest request = i.getArgument(0);
-            request.getSession(true);
-            return null;
-        }).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));
+        HttpServlet s = new HttpServlet() {
+            @Override
+            protected void service(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+                request.getSession(true);
+            }
+        };
 
-        HttpSessionListener sessionListener = mock(HttpSessionListener.class);
+        TestSessionListener listener = new TestSessionListener();
 
         startApp(b -> JettyModule.extend(b)
-                .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
-                .addListener(sessionListener));
+                .addServlet(s, "s1", "/a/*", "/b/*")
+                .addListener(listener));
 
-        verify(sessionListener, times(0)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(0, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         base.path("/a").request().get();
         Thread.sleep(100);
-        verify(sessionListener, times(1)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(1, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
 
         base.path("/b").request().get();
         Thread.sleep(100);
-        verify(sessionListener, times(2)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(2, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
 
         // not_found request
         base.path("/c").request().get();
         Thread.sleep(100);
-        verify(sessionListener, times(2)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(2, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
     }
 
     @Test
-    public void contributeListeners_SessionListener_SessionsDisabled() throws Exception {
+    public void addListener_SessionListener_SessionsDisabled() throws Exception {
 
-        doAnswer(i -> {
-            HttpServletRequest request = (HttpServletRequest) i.getArgument(0);
-            try {
-                request.getSession(true);
-            } catch (IllegalStateException e) {
-                // expected, ignoring...
+        HttpServlet s = new HttpServlet() {
+            @Override
+            protected void service(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
+                try {
+                    request.getSession(true);
+                } catch (IllegalStateException e) {
+                    // expected, ignoring...
+                }
             }
-            return null;
-        }).when(mockServlet1).service(any(ServletRequest.class), any(ServletResponse.class));
+        };
 
-        HttpSessionListener sessionListener = mock(HttpSessionListener.class);
+        TestSessionListener listener = new TestSessionListener();
 
         startApp(b -> {
             JettyModule.extend(b)
-                    .addServlet(mockServlet1, "s1", "/a/*", "/b/*")
-                    .addListener(sessionListener);
+                    .addServlet(s, "s1", "/a/*", "/b/*")
+                    .addListener(listener);
             BQCoreModule.extend(b).setProperty("bq.jetty.sessions", "false");
         });
 
-        verify(sessionListener, times(0)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(0, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
 
         base.path("/a").request().get();
         Thread.sleep(100);
-        verify(sessionListener, times(0)).sessionCreated(any());
-        verify(sessionListener, times(0)).sessionDestroyed(any());
+        assertEquals(0, listener.createCounter.get());
+        assertEquals(0, listener.destroyCounter.get());
     }
 
     // TODO: tests for Attribute listeners
 
+    static class TestServlet extends HttpServlet {
+
+        boolean wasInit;
+        boolean wasDestroyed;
+        AtomicInteger serviceCounter = new AtomicInteger(0);
+
+        @Override
+        public void init(ServletConfig config) {
+            wasInit = true;
+        }
+
+        @Override
+        public void destroy() {
+            this.wasDestroyed = true;
+        }
+
+        @Override
+        protected void service(HttpServletRequest req, HttpServletResponse resp) {
+            serviceCounter.incrementAndGet();
+        }
+    }
+
+    static class TestFilter implements Filter {
+        final int id;
+        boolean wasInit;
+        boolean wasDestroyed;
+
+        public TestFilter(int id) {
+            this.id = id;
+        }
+
+        @Override
+        public void init(FilterConfig filterConfig) {
+            wasInit = true;
+        }
+
+        @Override
+        public void destroy() {
+            wasDestroyed = true;
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+            response.getWriter().append(String.valueOf(id));
+            chain.doFilter(request, response);
+        }
+    }
+
+    static class TestContextListener implements ServletContextListener {
+
+        boolean wasInitialized;
+        boolean wasDestroyed;
+
+        @Override
+        public void contextDestroyed(ServletContextEvent sce) {
+            wasDestroyed = true;
+        }
+
+        @Override
+        public void contextInitialized(ServletContextEvent sce) {
+            wasInitialized = true;
+        }
+    }
+
+    static class TestRequestListener implements ServletRequestListener {
+
+        AtomicInteger initCounter = new AtomicInteger(0);
+        AtomicInteger destroyCounter = new AtomicInteger(0);
+
+        @Override
+        public void requestDestroyed(ServletRequestEvent sre) {
+            destroyCounter.incrementAndGet();
+        }
+
+        @Override
+        public void requestInitialized(ServletRequestEvent sre) {
+            initCounter.incrementAndGet();
+        }
+    }
+
+    static class TestSessionListener implements HttpSessionListener {
+        AtomicInteger createCounter = new AtomicInteger(0);
+        AtomicInteger destroyCounter = new AtomicInteger(0);
+
+        @Override
+        public void sessionCreated(HttpSessionEvent se) {
+            createCounter.incrementAndGet();
+        }
+
+        @Override
+        public void sessionDestroyed(HttpSessionEvent se) {
+            destroyCounter.incrementAndGet();
+        }
+    }
 }
