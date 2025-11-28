@@ -18,6 +18,7 @@
  */
 package io.bootique.jetty.junit5;
 
+import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.jetty.JettyModule;
@@ -31,8 +32,11 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @BQTest
 public class JettyTester_2StacksIT {
@@ -53,7 +57,13 @@ public class JettyTester_2StacksIT {
             .autoLoadModules()
             .module(b -> JettyModule.extend(b).addServlet(S2.class))
             .module(tester2.moduleReplacingConnectors())
+            .module(b -> BQCoreModule.extend(b).setPropertyProvider("x", () -> tester1.getUrl()))
             .createRuntime();
+
+    @Test
+    public void peerTesterUrlAccessible() {
+        assertEquals(tester1.getUrl(), app2.getEnvironment().getProperty("x"));
+    }
 
     @RepeatedTest(2)
     public void getTarget(RepetitionInfo repetitionInfo) {
