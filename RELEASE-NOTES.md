@@ -4,6 +4,7 @@
 * #130 Stop using custom BlockingArrayQueue, deprecate "maxQueuedRequests"
 * #131 Correct base for "ThreadPool.Utilization" metric
 * #132 Can not use two JettyTesters in the same scope
+* #133 Upgrade to Jetty 12.1.5
 
 ## 4.0-M1
 
