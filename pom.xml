@@ -17,26 +17,27 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>io.bootique.modules.parent</groupId>
-		<artifactId>bootique-modules-parent</artifactId>
-		<version>4.0.3</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.bootique.modules.parent</groupId>
+        <artifactId>bootique-modules-parent</artifactId>
+        <version>4.0.3</version>
+    </parent>
 
-	<groupId>io.bootique.jetty</groupId>
-	<artifactId>bootique-jetty-parent</artifactId>
+    <groupId>io.bootique.jetty</groupId>
+    <artifactId>bootique-jetty-parent</artifactId>
     <version>4.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <packaging>pom</packaging>
 
-	<name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
-	<description>
-		Parent POM of Jetty and instrumented Jetty Bootique modules.
-	</description>
+    <name>bootique-jetty-parent: parent of Bootique/Jetty integration modules</name>
+    <description>
+        Parent POM of Jetty and instrumented Jetty Bootique modules.
+    </description>
 
-	<modules>
-		<module>bootique-jetty</module>
+    <modules>
+        <module>bootique-jetty</module>
         <module>bootique-jetty-cors</module>
         <module>bootique-jetty-instrumented</module>
         <module>bootique-jetty-websocket</module>
@@ -50,14 +51,14 @@
         <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
     </properties>
 
-	<scm>
+    <scm>
         <developerConnection>scm:git:ssh://git@github.com/bootique/bootique-jetty</developerConnection>
         <url>https://github.com/bootique/bootique-jetty</url>
         <tag>HEAD</tag>
     </scm>
 
-	<dependencyManagement>
-		<dependencies>
+    <dependencyManagement>
+        <dependencies>
             <dependency>
                 <groupId>io.bootique</groupId>
                 <artifactId>bootique</artifactId>
@@ -162,9 +163,17 @@
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey.version}</version>
+                <!-- In theory, Jersey doesn't use JAXB as of 4.0.0, but the dependency is still there.
+                TODO: Do we need to add it explicitly to ensure the version aligned with the rest of Bootique ? -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-		</dependencies>
-	</dependencyManagement>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
