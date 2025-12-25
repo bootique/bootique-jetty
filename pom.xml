@@ -127,6 +127,17 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-servlets</artifactId>
+                <version>${jetty.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.eclipse.jetty.ee10.websocket</groupId>
                 <artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
                 <version>${jetty.version}</version>

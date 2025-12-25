@@ -33,37 +33,13 @@
     <name>bootique-jetty-junit5: JUnit 5 utilities to start Jetty on a dynamic port </name>
     <description>JUnit 5 utilities to start Jetty on a dynamically determined port and provide a client that can be used by the tests</description>
 
-	<dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.bootique.jetty</groupId>
-                <artifactId>bootique-jetty</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.bootique</groupId>
-				<artifactId>bootique-junit5</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.inject</groupId>
-                <artifactId>jersey-hk2</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
 
         <!-- Compile dependencies -->
         <dependency>
             <groupId>io.bootique.jetty</groupId>
             <artifactId>bootique-jetty</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.bootique</groupId>
