@@ -31,6 +31,9 @@ import java.io.IOException;
 public class StaticServlet extends ResourceServlet {
 
     static final String PATH_INFO_ONLY_PARAMETER = "pathInfoOnly";
+
+    // TODO: "resourceBase" is deprecated in Jetty (though still supported as of 12.1), replaced with "baseResource"
+    //  We need to support "baseResource".
     static final String RESOURCE_BASE_PARAMETER = "resourceBase";
 
     private final String resourceBase;
