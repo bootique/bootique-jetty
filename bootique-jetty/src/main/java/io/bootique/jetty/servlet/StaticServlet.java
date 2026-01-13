@@ -49,14 +49,11 @@ public class StaticServlet extends ResourceServlet {
     public String getInitParameter(String name) {
 
         // special rules for Bootique-defined parameters
-        switch (name) {
-            case PATH_INFO_ONLY_PARAMETER:
-                return this.pathInfoOnly;
-            case RESOURCE_BASE_PARAMETER:
-                return this.resourceBase;
-            default:
-                return super.getInitParameter(name);
-        }
+        return switch (name) {
+            case PATH_INFO_ONLY_PARAMETER -> this.pathInfoOnly;
+            case RESOURCE_BASE_PARAMETER -> this.resourceBase;
+            default -> super.getInitParameter(name);
+        };
     }
 
     // making public, so we can call it from MultiBaseDefaultServlet
