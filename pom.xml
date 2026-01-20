@@ -114,4 +114,19 @@
 		</dependencies>
 	</dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>sonatype-central</publishingServerId>
+                    <excludeArtifacts>
+                        <excludeArtifact>bootique-jetty-docs</excludeArtifact>
+                    </excludeArtifacts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
