@@ -20,9 +20,9 @@ package io.bootique.jetty;
 
 import io.bootique.BQCoreModule;
 import io.bootique.command.CommandOutcome;
-import io.bootique.junit5.BQTest;
-import io.bootique.junit5.BQTestFactory;
-import io.bootique.junit5.BQTestTool;
+import io.bootique.junit.BQTest;
+import io.bootique.junit.BQTestFactory;
+import io.bootique.junit.BQTestTool;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;

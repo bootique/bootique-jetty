@@ -21,7 +21,7 @@ package io.bootique.jetty.instrumented.unit;
 
 import io.bootique.BQRuntime;
 import io.bootique.jetty.JettyModule;
-import io.bootique.junit5.BQTestFactory;
+import io.bootique.junit.BQTestFactory;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

@@ -19,10 +19,7 @@
 
 package io.bootique.jetty.connector;
 
-import io.bootique.jetty.connector.ConnectorFactory;
-import io.bootique.jetty.connector.HttpConnectorFactory;
-import io.bootique.jetty.connector.HttpsConnectorFactory;
-import io.bootique.junit5.PolymorphicConfigurationChecker;
+import io.bootique.junit.PolymorphicConfigurationChecker;
 import org.junit.jupiter.api.Test;
 
 public class ConnectorFactoryIT {

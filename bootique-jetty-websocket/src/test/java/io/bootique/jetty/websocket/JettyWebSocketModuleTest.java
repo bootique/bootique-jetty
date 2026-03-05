@@ -18,7 +18,7 @@
  */
 package io.bootique.jetty.websocket;
 
-import io.bootique.junit5.BQModuleTester;
+import io.bootique.junit.BQModuleTester;
 import org.junit.jupiter.api.Test;
 
 public class JettyWebSocketModuleTest {
