@@ -40,7 +40,7 @@
         <module>bootique-jetty-cors</module>
         <module>bootique-jetty-instrumented</module>
         <module>bootique-jetty-websocket</module>
-        <module>bootique-jetty-junit5</module>
+        <module>bootique-jetty-junit</module>
 
         <module>bootique-jetty-docs</module>
     </modules>

@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.bootique.jetty.docs;
+package io.bootique.jetty.junit;
 
+import io.bootique.BQCoreModule;
 import io.bootique.BQRuntime;
 import io.bootique.Bootique;
 import io.bootique.jetty.JettyModule;
@@ -28,43 +29,56 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// tag::declarations[]
 @BQTest
-public class JettyIT {
+public class JettyTester_DefaultConfigIT {
 
-    static final JettyTester jetty = JettyTester.create(); // <1>
+    private static final String OUT_CONTENT = "____content_stream____";
+
+    static final JettyTester jetty = JettyTester.create();
 
     @BQApp
     static final BQRuntime app = Bootique.app("-s")
             .autoLoadModules()
-            .module(jetty.moduleReplacingConnectors()) // <2>
-            // end::declarations[]
-            .module(b -> JettyModule.extend(b).addServlet(HWServlet.class))
-            // tag::declarations[]
+            .module(b -> JettyModule.extend(b).addServlet(ContentServlet.class))
+            .module(jetty.moduleReplacingConnectors())
+            // for predictable URL assertions
+            .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.connectors[0].host", "127.0.0.1"))
             .createRuntime();
-    // end::declarations[]
 
-    // tag::test[]
     @Test
-    public void test() {
-        Response ok = jetty.getTarget() // <1>
-                .path("helloworld").request().get();
-
-        JettyTester.assertOk(ok).assertContent("Hello, world!"); // <2>
+    public void getServerUrl() {
+        String url = jetty.getUrl();
+        Assertions.assertNotNull(url);
+        assertEquals("http://127.0.0.1:" + jetty.getPort(), url);
     }
-    // end::test[]
 
-    @WebServlet(urlPatterns = "/helloworld")
-    static class HWServlet extends HttpServlet {
+    @Test
+    public void getClient() {
+        WebTarget client = jetty.getTarget();
+        Assertions.assertNotNull(client);
+
+        assertEquals("http://127.0.0.1:" + jetty.getPort(), client.getUri().toString());
+
+        Response r = client.request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+        assertEquals(OUT_CONTENT, r.readEntity(String.class));
+    }
+
+    @WebServlet(urlPatterns = "/*")
+    static class ContentServlet extends HttpServlet {
+
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            resp.getWriter().print("Hello, world!");
+            resp.getWriter().append(OUT_CONTENT);
         }
     }
 }
-
