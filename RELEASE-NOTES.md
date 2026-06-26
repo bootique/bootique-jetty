@@ -1,6 +1,7 @@
 ## 4.0-M4
 
-* #135 Upgrade Jetty to 2.1.7
+* #135 Upgrade Jetty to 12.1.7
+* #136 Upgrade to Jetty 12.1.10
 
 ## 4.0-M2
 
