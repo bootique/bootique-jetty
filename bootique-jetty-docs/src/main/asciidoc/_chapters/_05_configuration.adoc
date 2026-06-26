@@ -295,26 +295,6 @@ jetty:
 |URL patterns CORS applies to. When unset, CORS applies to the entire context. When set, CORS is only applied to matching requests.
 |===
 
-[#jettycors]
-=== jettycors (deprecated)
-
-WARNING: "jettycors" and the `bootique-jetty-cors` module are deprecated. Use the <<jetty-cors,`jetty.cors`>> config of
-`bootique-jetty` instead, which requires no extra dependency.
-
-"jettycors" is a root element of the deprecated `bootique-jetty-cors` module configuration and is bound to a
-https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty-cors/src/main/java/io/bootique/jetty/cors/CrossOriginFilterFactory.java[`CrossOriginFilterFactory`]
-object. Example:
-
-[source,yaml]
-----
-jettycors:
-  urlPatterns:
-    - "/*"
-  allowedOrigins: "https://www1.example.org,https://www2.example.org"
-  allowedMethods: "GET,OPTIONS,HEAD"
-  allowedHeaders: "*"
-----
-
 [#jettywebsocket]
 === jettywebsocket
 
