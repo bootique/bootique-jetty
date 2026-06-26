@@ -97,6 +97,16 @@ public class JettyModuleProvider_MetadataIT {
                 "[compression:boolean]" +
                 "[list:connectors<io.bootique.jetty.connector.ConnectorFactory>]" +
                 "[context:java.lang.String]" +
+                "[cors" +
+                "[allowCredentials:boolean]" +
+                "[list:allowedHeaders<java.lang.String>]" +
+                "[list:allowedMethods<java.lang.String>]" +
+                "[list:allowedOrigins<java.lang.String>]" +
+                "[list:allowedTimingOrigins<java.lang.String>]" +
+                "[chainPreflight:boolean]" +
+                "[list:exposedHeaders<java.lang.String>]" +
+                "[preflightMaxAge:int]" +
+                "[list:urlPatterns<java.lang.String>]]" +
                 "[map:errorPages<java.lang.Integer,java.lang.String>]" +
                 "[map:filters<java.lang.String,io.bootique.jetty.server.FilterFactory>]" +
                 "[idleThreadTimeout:int]" +

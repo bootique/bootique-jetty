@@ -93,6 +93,10 @@ For security reasons this property has to be set explicitly. There's no default.
 |`compactPath`
 |`false`
 |True if URLs are compacted to replace multiple '/'s with a single '/'
+
+|`cors`
+|none
+|Enables and configures CORS support. See `jetty.cors` below.
 |===
 
 ==== jetty.connectors
@@ -229,10 +233,75 @@ jetty:
 
 TODO
 
-[#jettycors]
-=== jettycors
+[#jetty-cors]
+==== jetty.cors
 
-"jettycors" is a root element of the Jetty CORS module configuration and is bound to a
+"jetty.cors" configures CORS support. CORS is only installed when this element is present, so applications that don't use it incur no overhead. Example:
+
+[source,yaml]
+----
+jetty:
+  cors:
+    allowedOrigins:
+      - "https://www1.example.org"
+      - "https://www2.example.org"
+    allowedMethods:
+      - "GET"
+      - "OPTIONS"
+      - "HEAD"
+----
+
+."jetty.cors" Element Property Reference
+[cols=3*,options=header]
+|===
+|Property
+|Default
+|Description
+
+|`allowedOrigins`
+|`*` (any origin)
+|Origins allowed to make cross-origin requests, as a list of origin patterns (e.g. `https://example.com`). The default `*` allows any origin; note that combining `*` with `allowCredentials: true` is insecure.
+
+|`allowedTimingOrigins`
+|`*` (any origin)
+|Origins allowed to receive resource timing information via the `Timing-Allow-Origin` header.
+
+|`allowedMethods`
+|`GET`, `POST`, `HEAD`
+|HTTP methods allowed in cross-origin requests.
+
+|`allowedHeaders`
+|`X-Requested-With`, `Content-Type`, `Accept`, `Origin`
+|Request headers allowed in cross-origin requests.
+
+|`exposedHeaders`
+|empty
+|Response headers exposed to the client.
+
+|`preflightMaxAge`
+|`1800`
+|Number of seconds a preflight response may be cached by the client.
+
+|`allowCredentials`
+|`false`
+|Whether the client may send credentials with cross-origin requests. Note that `true` combined with the default `allowedOrigins` of `*` is insecure; narrow `allowedOrigins` when enabling credentials.
+
+|`chainPreflight`
+|`true`
+|Whether preflight (OPTIONS) requests are chained to the target resource for normal handling after the CORS headers are added. When `false`, the CORS handler fully handles the preflight request.
+
+|`urlPatterns`
+|empty (whole context)
+|URL patterns CORS applies to. When unset, CORS applies to the entire context. When set, CORS is only applied to matching requests.
+|===
+
+[#jettycors]
+=== jettycors (deprecated)
+
+WARNING: "jettycors" and the `bootique-jetty-cors` module are deprecated. Use the <<jetty-cors,`jetty.cors`>> config of
+`bootique-jetty` instead, which requires no extra dependency.
+
+"jettycors" is a root element of the deprecated `bootique-jetty-cors` module configuration and is bound to a
 https://github.com/bootique/bootique-jetty/blob/master/bootique-jetty-cors/src/main/java/io/bootique/jetty/cors/CrossOriginFilterFactory.java[`CrossOriginFilterFactory`]
 object. Example:
 

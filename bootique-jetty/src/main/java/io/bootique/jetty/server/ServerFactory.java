@@ -89,6 +89,7 @@ public class ServerFactory {
     private FolderResourceFactory staticResourceBase;
     private boolean compression;
     private boolean compactPath;
+    private CrossOriginHandlerFactory cors;
     // defined as "int" in Jetty, so we should not exceed max int
     private int maxFormContentSize;
     private int maxFormKeys;
@@ -237,6 +238,12 @@ public class ServerFactory {
 
     protected Handler wrapContextHandler(ContextHandler handler) {
         Handler h2 = compactPath ? createCompactPathHandler(handler) : handler;
+
+        // CORS is only inserted into the chain when configured, so applications that don't use it pay no overhead
+        if (cors != null) {
+            h2 = cors.createHandler(h2);
+        }
+
         return new RequestMDCManager(h2, mdcItems);
     }
 
@@ -581,6 +588,18 @@ public class ServerFactory {
     @BQConfigProperty("Replaces multiple '/'s with a single '/' in URL. Default value is 'false'.")
     public void setCompactPath(boolean compactPath) {
         this.compactPath = compactPath;
+    }
+
+    /**
+     * Configures CORS support via Jetty's {@code CrossOriginHandler}. The handler is only installed in the request
+     * handling chain when this property is set, so applications that don't use CORS incur no overhead.
+     *
+     * @since 4.0
+     */
+    @BQConfigProperty("Configures CORS support. When present, a Jetty CrossOriginHandler is installed in the request " +
+            "handling chain. When absent, no CORS handling is performed.")
+    public void setCors(CrossOriginHandlerFactory cors) {
+        this.cors = cors;
     }
 
     /**

@@ -28,6 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @deprecated CORS support is now built into {@code bootique-jetty}. Use {@code io.bootique.jetty.server.CrossOriginHandlerFactory}
+ * via the "jetty.cors" config block instead.
+ */
+@Deprecated(since = "4.0", forRemoval = true)
 @BQConfig
 public class CrossOriginFilterFactory {
 

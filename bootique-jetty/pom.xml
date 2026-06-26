@@ -79,6 +79,22 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!-- Allow tests to send the restricted "Origin" header (needed by CrossOriginHandlerIT). Must be
+                         set at JVM startup, as HttpURLConnection caches this flag on first use. -->
+                    <systemPropertyVariables>
+                        <sun.net.http.allowRestrictedHeaders>true</sun.net.http.allowRestrictedHeaders>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <!-- Optional profile used to sign artifacts -->
     <profiles>
         <profile>

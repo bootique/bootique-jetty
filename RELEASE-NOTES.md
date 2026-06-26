@@ -2,6 +2,7 @@
 
 * #135 Upgrade Jetty to 12.1.7
 * #136 Upgrade to Jetty 12.1.10
+* #137 Integrate CORS in bootique-jetty, deprecate bootique-jetty-cors
 
 ## 4.0-M2
 

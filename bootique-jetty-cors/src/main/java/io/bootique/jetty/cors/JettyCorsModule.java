@@ -30,6 +30,11 @@ import io.bootique.jetty.MappedFilter;
 import jakarta.inject.Singleton;
 import org.eclipse.jetty.ee10.servlets.CrossOriginFilter;
 
+/**
+ * @deprecated CORS support is now built into {@code bootique-jetty} via Jetty's {@code CrossOriginHandler}. Configure
+ * it under the "jetty.cors" config block instead of using this module and its "jettycors" config.
+ */
+@Deprecated(since = "4.0", forRemoval = true)
 public class JettyCorsModule implements BQModule {
 
     private static final String CONFIG_PREFIX = "jettycors";
@@ -37,8 +42,9 @@ public class JettyCorsModule implements BQModule {
     @Override
     public ModuleCrate crate() {
         return ModuleCrate.of(this)
-                .description("Integrates CORS filter in Jetty")
+                .description("Deprecated, use the \"jetty.cors\" config of bootique-jetty instead.")
                 .config(CONFIG_PREFIX, CrossOriginFilterFactory.class)
+                .deprecated(true)
                 .build();
     }
 
