@@ -30,11 +30,12 @@ import java.util.Set;
 
 /**
  * Configures Jetty's {@link CrossOriginHandler} for CORS support. CORS is only installed in the request handling chain
- * when a "cors" config block is present, so it adds no overhead to applications that don't use it.
+ * when at least one "urlPatterns" entry is configured, so it adds no overhead to applications that don't use it.
  *
  * @since 4.0
  */
-@BQConfig("Configures CORS support via Jetty's CrossOriginHandler. Only installed when present.")
+@BQConfig("""
+        Configures CORS support via Jetty's CrossOriginHandler. Only installed when at least one "urlPatterns" entry is configured.""")
 public class CrossOriginHandlerFactory {
 
     private Set<String> allowedOrigins;
@@ -57,9 +58,10 @@ public class CrossOriginHandlerFactory {
         this.chainPreflight = true;
     }
 
-    @BQConfigProperty("Origins allowed to make cross-origin requests, as a set of origin patterns (e.g. " +
-            "\"https://example.com\"). Default is \"*\" (any origin). Note that \"*\" combined with allowCredentials " +
-            "set to 'true' is insecure and should be avoided.")
+    @BQConfigProperty("""
+            Origins allowed to make cross-origin requests, as a set of origin patterns (e.g. "https://example.com"). \
+            Default is "*" (any origin). Note that "*" combined with allowCredentials set to 'true' is insecure and \
+            should be avoided.""")
     public void setAllowedOrigins(Set<String> allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
     }
@@ -74,8 +76,9 @@ public class CrossOriginHandlerFactory {
         this.allowedMethods = allowedMethods;
     }
 
-    @BQConfigProperty("Request headers allowed in cross-origin requests. Default is 'X-Requested-With', " +
-            "'Content-Type', 'Accept', 'Origin'.")
+    @BQConfigProperty("""
+            Request headers allowed in cross-origin requests. Default is 'X-Requested-With', 'Content-Type', 'Accept', \
+            'Origin'.""")
     public void setAllowedHeaders(Set<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
     }
@@ -90,32 +93,43 @@ public class CrossOriginHandlerFactory {
         this.preflightMaxAge = preflightMaxAge;
     }
 
-    @BQConfigProperty("Whether the client may send credentials (cookies, authorization headers) with cross-origin " +
-            "requests. Default is 'false'. Note that 'true' combined with the default allowedOrigins of '*' is " +
-            "insecure; when enabling credentials you should also narrow allowedOrigins to specific origins.")
+    @BQConfigProperty("""
+            Whether the client may send credentials (cookies, authorization headers) with cross-origin requests. \
+            Default is 'false'. Note that 'true' combined with the default allowedOrigins of '*' is insecure; when \
+            enabling credentials you should also narrow allowedOrigins to specific origins.""")
     public void setAllowCredentials(boolean allowCredentials) {
         this.allowCredentials = allowCredentials;
     }
 
-    @BQConfigProperty("Whether preflight (OPTIONS) requests are chained to the target resource for normal handling " +
-            "after the CORS headers are added. When 'false', the CORS handler fully handles the preflight request " +
-            "and does not pass it down. Default is 'true'.")
+    @BQConfigProperty("""
+            Whether preflight (OPTIONS) requests are chained to the target resource for normal handling after the CORS \
+            headers are added. When 'false', the CORS handler fully handles the preflight request and does not pass it \
+            down. Default is 'true'.""")
     public void setChainPreflight(boolean chainPreflight) {
         this.chainPreflight = chainPreflight;
     }
 
-    @BQConfigProperty("URL patterns that CORS applies to. When unset (the default), CORS applies to the entire " +
-            "context. When set, CORS is only applied to requests matching one of these patterns.")
+    @BQConfigProperty("""
+            URL patterns that CORS applies to. At least one pattern must be set for CORS to be activated; to apply \
+            CORS to the entire context use "/*". CORS is only applied to requests matching one of these patterns, and \
+            bypassed for all others.""")
     public void setUrlPatterns(Set<String> urlPatterns) {
         this.urlPatterns = urlPatterns;
     }
 
     /**
-     * Creates a {@link CrossOriginHandler} wrapping the provided downstream handler. If "urlPatterns" are configured,
-     * the CORS handler is in turn wrapped in a {@link ConditionalHandler.SkipNext} so that CORS is only applied to
+     * Creates a handler wrapping the provided downstream handler. CORS is only activated when at least one
+     * "urlPatterns" entry is configured; otherwise the downstream handler is returned unchanged. When activated, a
+     * {@link CrossOriginHandler} is wrapped in a {@link ConditionalHandler.SkipNext} so that CORS is only applied to
      * matching requests, and bypassed for all others.
      */
     public Handler createHandler(Handler downstream) {
+
+        // CORS is only activated when at least one URL pattern is configured. Without explicit patterns there is
+        // nothing for CORS to apply to, so the handler is left out of the chain entirely.
+        if (urlPatterns == null || urlPatterns.isEmpty()) {
+            return downstream;
+        }
 
         CrossOriginHandler corsHandler = new CrossOriginHandler();
 
@@ -139,10 +153,6 @@ public class CrossOriginHandlerFactory {
         corsHandler.setDeliverPreflightRequests(chainPreflight);
 
         corsHandler.setHandler(downstream);
-
-        if (urlPatterns == null || urlPatterns.isEmpty()) {
-            return corsHandler;
-        }
 
         // Scope CORS to the configured paths: a SkipNext wrapper bypasses the CORS handler (going straight to the
         // downstream handler) whenever its conditions are met. By excluding the CORS paths from those conditions, the

@@ -58,13 +58,28 @@ public class CrossOriginHandlerIT {
     }
 
     @Test
-    public void allOriginsByDefault() {
+    public void noCorsWithoutUrlPatterns() {
 
-        // "jetty.cors" present but with no meaningful overrides (preflightMaxAge is set to its own default value just
-        // to materialize the factory) => allowedOrigins defaults to * (reflecting the caller's Origin), no credentials
+        // "jetty.cors" present, but no "urlPatterns" => CORS is not activated, hence no CORS headers
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "test", "/*"))
-                .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.cors.preflightMaxAge", "1800"))
+                .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.cors.allowedOrigins[0]", "test"))
+                .run();
+
+        WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
+
+        Response r = base.path("api").request().header("Origin", "test").options();
+        assertNull(r.getHeaderString("Access-Control-Allow-Origin"));
+    }
+
+    @Test
+    public void allOriginsByDefault() {
+
+        // "jetty.cors" with "urlPatterns" set to the whole context ("/*"), but no other overrides => allowedOrigins
+        // defaults to * (reflecting the caller's Origin), no credentials
+        testFactory.app("-s")
+                .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "test", "/*"))
+                .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.cors.urlPatterns[0]", "/*"))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -83,7 +98,8 @@ public class CrossOriginHandlerIT {
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "test", "/*"))
                 .module(b -> BQCoreModule.extend(b)
                         .setProperty("bq.jetty.cors.allowedOrigins[0]", "test")
-                        .setProperty("bq.jetty.cors.allowCredentials", "true"))
+                        .setProperty("bq.jetty.cors.allowCredentials", "true")
+                        .setProperty("bq.jetty.cors.urlPatterns[0]", "/*"))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");
@@ -98,7 +114,9 @@ public class CrossOriginHandlerIT {
 
         testFactory.app("-s")
                 .module(b -> JettyModule.extend(b).addServlet(new TestServlet(), "test", "/*"))
-                .module(b -> BQCoreModule.extend(b).setProperty("bq.jetty.cors.allowedOrigins[0]", "test"))
+                .module(b -> BQCoreModule.extend(b)
+                        .setProperty("bq.jetty.cors.allowedOrigins[0]", "test")
+                        .setProperty("bq.jetty.cors.urlPatterns[0]", "/*"))
                 .run();
 
         WebTarget base = ClientBuilder.newClient().target("http://localhost:8080");

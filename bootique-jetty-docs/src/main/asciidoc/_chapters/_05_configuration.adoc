@@ -96,7 +96,7 @@ For security reasons this property has to be set explicitly. There's no default.
 
 |`cors`
 |none
-|Enables and configures CORS support. See `jetty.cors` below.
+|Configures CORS support. CORS is only activated when at least one `cors.urlPatterns` entry is set. See `jetty.cors` below.
 |===
 
 ==== jetty.connectors
@@ -236,12 +236,14 @@ TODO
 [#jetty-cors]
 ==== jetty.cors
 
-"jetty.cors" configures CORS support. CORS is only installed when this element is present, so applications that don't use it incur no overhead. Example:
+"jetty.cors" configures CORS support. CORS is only installed when at least one `urlPatterns` entry is present, so applications that don't use it incur no overhead. To apply CORS to the entire context, set `urlPatterns` to `/*`. Example:
 
 [source,yaml]
 ----
 jetty:
   cors:
+    urlPatterns:
+      - "/*"
     allowedOrigins:
       - "https://www1.example.org"
       - "https://www2.example.org"
@@ -291,8 +293,8 @@ jetty:
 |Whether preflight (OPTIONS) requests are chained to the target resource for normal handling after the CORS headers are added. When `false`, the CORS handler fully handles the preflight request.
 
 |`urlPatterns`
-|empty (whole context)
-|URL patterns CORS applies to. When unset, CORS applies to the entire context. When set, CORS is only applied to matching requests.
+|empty (CORS disabled)
+|URL patterns CORS applies to. At least one pattern must be set for CORS to be activated; use `/*` to apply CORS to the entire context. CORS is only applied to matching requests, and bypassed for all others.
 |===
 
 [#jettywebsocket]

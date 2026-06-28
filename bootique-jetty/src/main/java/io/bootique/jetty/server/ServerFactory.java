@@ -239,7 +239,8 @@ public class ServerFactory {
     protected Handler wrapContextHandler(ContextHandler handler) {
         Handler h2 = compactPath ? createCompactPathHandler(handler) : handler;
 
-        // CORS is only inserted into the chain when configured, so applications that don't use it pay no overhead
+        // CORS is only inserted into the chain when at least one "cors.urlPatterns" entry is configured, so
+        // applications that don't use it pay no overhead
         if (cors != null) {
             h2 = cors.createHandler(h2);
         }
@@ -592,12 +593,14 @@ public class ServerFactory {
 
     /**
      * Configures CORS support via Jetty's {@code CrossOriginHandler}. The handler is only installed in the request
-     * handling chain when this property is set, so applications that don't use CORS incur no overhead.
+     * handling chain when at least one "cors.urlPatterns" entry is configured, so applications that don't use CORS
+     * incur no overhead.
      *
      * @since 4.0
      */
-    @BQConfigProperty("Configures CORS support. When present, a Jetty CrossOriginHandler is installed in the request " +
-            "handling chain. When absent, no CORS handling is performed.")
+    @BQConfigProperty("""
+            Configures CORS support. A Jetty CrossOriginHandler is installed in the request handling chain only when \
+            at least one "cors.urlPatterns" entry is configured. Otherwise no CORS handling is performed.""")
     public void setCors(CrossOriginHandlerFactory cors) {
         this.cors = cors;
     }
