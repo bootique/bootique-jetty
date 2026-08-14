@@ -34,8 +34,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -48,13 +51,13 @@ import java.util.zip.GZIPOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @BQTest
 public class CompressionIT {
 
     private static final String content = readContent();
     private static final String contentLength_Uncompressed = String.valueOf(content.length());
-    private static final String contentLength_Compressed = String.valueOf(compressedSize(content));
 
     static String readContent() {
 
@@ -69,19 +72,17 @@ public class CompressionIT {
         }
     }
 
-    static int compressedSize(String content) {
+    static byte[] gzip(String content) {
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
-        try {
-            GZIPOutputStream zipper = new GZIPOutputStream(bytes);
+        try (GZIPOutputStream zipper = new GZIPOutputStream(bytes)) {
             zipper.write(content.getBytes(StandardCharsets.UTF_8));
-            zipper.close();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected exception compressing content", e);
         }
 
-        return bytes.size();
+        return bytes.toByteArray();
     }
 
     @BQTestTool
@@ -90,6 +91,11 @@ public class CompressionIT {
     private final WebTarget target = ClientBuilder
             .newClient()
             .register(GZipEncoder.class)
+            .target("http://localhost:8080/");
+
+    // a client that does not decode compressed responses, so that the compressed bytes can be inspected directly
+    private final WebTarget rawTarget = ClientBuilder
+            .newClient()
             .target("http://localhost:8080/");
 
     @Test
@@ -116,7 +122,6 @@ public class CompressionIT {
         assertEquals(Response.Status.OK.getStatusCode(), gzipDeflateResponse.getStatus());
         assertEquals(content, gzipDeflateResponse.readEntity(String.class));
         assertEquals("gzip", gzipDeflateResponse.getHeaderString("Content-Encoding"));
-        assertEquals(contentLength_Compressed, gzipDeflateResponse.getHeaderString("Content-Length"));
     }
 
     @Test
@@ -129,7 +134,57 @@ public class CompressionIT {
         assertEquals(Response.Status.OK.getStatusCode(), gzipResponse.getStatus());
         assertEquals(content, gzipResponse.readEntity(String.class));
         assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
-        assertEquals(contentLength_Compressed, gzipResponse.getHeaderString("Content-Length"));
+    }
+
+    @Test
+    public void compression_Gzip_RawBytes() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .run();
+
+        // checking the raw bytes on the wire, as CompressionHandler streams compressed responses without
+        // a "Content-Length" header
+        Response gzipResponse = rawTarget.path("cs").request().acceptEncoding("gzip").get();
+        assertEquals(Response.Status.OK.getStatusCode(), gzipResponse.getStatus());
+        assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
+
+        byte[] compressed = gzipResponse.readEntity(byte[].class);
+        assertTrue(compressed.length < content.length(), "Compressed response is not smaller than the raw content");
+        assertEquals((byte) 0x1f, compressed[0], "Not a gzip stream");
+        assertEquals((byte) 0x8b, compressed[1], "Not a gzip stream");
+    }
+
+    @Test
+    public void noRequestDecompression() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .run();
+
+        byte[] compressedRequest = gzip(content);
+
+        // "Content-Encoding" must be passed via the Entity's Variant. Also must use "rawTarget".
+        Response response = rawTarget.path("cs").request()
+                .post(Entity.entity(compressedRequest,
+                        new Variant(MediaType.APPLICATION_OCTET_STREAM_TYPE, (String) null, "gzip")));
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // the deprecated GzipHandler did not inflate request bodies unless explicitly configured to do so, and
+        // the CompressionHandler that replaced it is configured to preserve that behavior. So the servlet must
+        // see the still-compressed bytes
+        assertEquals(String.valueOf(compressedRequest.length), response.readEntity(String.class));
+    }
+
+    @Test
+    public void compression_UnsupportedEncoding() {
+        testFactory.app("-s")
+                .module(new ServletModule())
+                .run();
+
+        // only "gzip" is registered with the CompressionHandler, so "br" must fall back to an uncompressed response
+        Response brResponse = target.path("cs").request().acceptEncoding("br").get();
+        assertEquals(Response.Status.OK.getStatusCode(), brResponse.getStatus());
+        assertEquals(content, brResponse.readEntity(String.class));
+        assertNull(brResponse.getHeaderString("Content-Encoding"));
     }
 
     @Test
@@ -160,8 +215,6 @@ public class CompressionIT {
         assertEquals(Response.Status.OK.getStatusCode(), gzipResponse.getStatus());
         assertEquals(content, gzipResponse.readEntity(String.class));
         assertEquals("gzip", gzipResponse.getHeaderString("Content-Encoding"));
-        // "Content-Length" is no longer passed by the default servlet after an upgrade from 12.1.0 to 12.1.5
-        // assertEquals(contentLength_Compressed, gzipResponse.getHeaderString("Content-Length"));
     }
 
 
@@ -190,6 +243,12 @@ public class CompressionIT {
             @Override
             protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
                 resp.getWriter().append(content);
+            }
+
+            @Override
+            protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+                // reporting the size of the body as seen by the servlet, to detect whether Jetty inflated it
+                resp.getWriter().append(String.valueOf(req.getInputStream().readAllBytes().length));
             }
         }
     }

@@ -33,6 +33,9 @@ import io.bootique.shutdown.ShutdownManager;
 import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
+import org.eclipse.jetty.compression.gzip.GzipCompression;
+import org.eclipse.jetty.compression.server.CompressionConfig;
+import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.rewrite.handler.CompactPathRule;
@@ -41,7 +44,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
@@ -220,7 +222,7 @@ public class ServerFactory {
         }
 
         if (compression) {
-            handler.insertHandler(createGzipHandler());
+            handler.insertHandler(createCompressionHandler());
         }
 
         if (errorPages != null) {
@@ -259,8 +261,26 @@ public class ServerFactory {
     }
 
 
-    protected GzipHandler createGzipHandler() {
-        return new GzipHandler();
+    /**
+     * @since 4.0
+     */
+    protected CompressionHandler createCompressionHandler() {
+
+        CompressionHandler handler = new CompressionHandler();
+
+        // registering "gzip" explicitly instead of relying on Jetty's ServiceLoader discovery, so that the set of
+        // supported encodings is a function of Bootique config, and not of what happens to be on the classpath
+        handler.putCompression(new GzipCompression());
+
+        // Jetty's default config would also inflate compressed request bodies. The deprecated GzipHandler that
+        // this replaces never inflated requests unless explicitly configured, so turning decompression off for
+        // all paths keeps the upgrade behavior-neutral
+        handler.putConfiguration("/", CompressionConfig.builder()
+                .defaults()
+                .decompressExcludePath("/")
+                .build());
+
+        return handler;
     }
 
     protected void installServlets(ServletContextHandler handler, Set<MappedServlet> servlets) {
@@ -568,9 +588,9 @@ public class ServerFactory {
     }
 
     /**
-     * Sets whether compression whether gzip compression should be supported.
-     * When true, responses will be compressed if a client requests it via
-     * "Accept-Encoding:" header. Default is true.
+     * Sets whether gzip compression should be supported. When true, responses
+     * will be compressed if a client requests it via "Accept-Encoding:" header.
+     * Default is true.
      *
      * @param compression whether gzip compression should be supported.
      */
