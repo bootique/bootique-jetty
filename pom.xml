@@ -46,8 +46,9 @@
     </modules>
 
     <properties>
-        <!-- TODO: move websocket versions to bootique-modules-parent -->
-        <jakarta.websocket.version>2.0.0</jakarta.websocket.version>
+        <!-- TODO: move the websocket version to bootique-modules-parent -->
+        <!-- Must match "ee10.jakarta.websocket.api.version" of the Jetty -->
+        <jakarta.websocket.version>2.1.1</jakarta.websocket.version>
     </properties>
 
     <scm>

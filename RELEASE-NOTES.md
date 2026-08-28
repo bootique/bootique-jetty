@@ -1,6 +1,7 @@
 ## 4.0-M6
 
 * #139 ServerFactory uses deprecated GzipHandler
+* #141 Upgrade Websocket API lib to 2.1.1
 
 ## 4.0-M5
 
