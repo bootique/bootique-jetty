@@ -48,6 +48,10 @@
             <groupId>org.eclipse.jetty.ee10.websocket</groupId>
             <artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
         </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
 
         <!-- Unit test dependencies -->
         <!-- Using logback instead of SLF4J for tests to have access to a real MDC implementation -->

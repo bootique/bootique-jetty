@@ -47,8 +47,8 @@
 
     <properties>
         <!-- TODO: move the websocket version to bootique-modules-parent -->
-        <!-- Must match "ee10.jakarta.websocket.api.version" of the Jetty -->
         <jakarta.websocket.version>2.1.1</jakarta.websocket.version>
+        <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
     </properties>
 
     <scm>
@@ -169,7 +169,17 @@
                         <groupId>org.slf4j</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
+                    <!-- Re-declared in bootique-jetty-websocket at the version Jersey resolves -->
+                    <exclusion>
+                        <groupId>jakarta.annotation</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${jakarta.annotation.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.websocket</groupId>
