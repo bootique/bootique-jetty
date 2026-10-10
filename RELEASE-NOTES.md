@@ -1,3 +1,7 @@
+## 4.0-M7
+
+* #142 Upgrade Jetty to 12.1.14
+
 ## 4.0-M6
 
 * #139 ServerFactory uses deprecated GzipHandler
