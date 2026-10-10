@@ -1,6 +1,7 @@
 ## 4.0-M7
 
 * #142 Upgrade Jetty to 12.1.14
+* #143 Static content is not gzip-compressed with Jetty 12.1.14
 
 ## 4.0-M6
 

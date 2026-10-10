@@ -221,10 +221,6 @@ public class ServerFactory {
             handler.setBaseResourceAsString(staticResourceBase.getUrl().toExternalForm());
         }
 
-        if (compression) {
-            handler.insertHandler(createCompressionHandler());
-        }
-
         if (errorPages != null) {
             ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
             errorPages.forEach(errorHandler::addErrorPage);
@@ -240,6 +236,16 @@ public class ServerFactory {
 
     protected Handler wrapContextHandler(ContextHandler handler) {
         Handler h2 = compactPath ? createCompactPathHandler(handler) : handler;
+
+        // Compression wraps the context instead of being inserted inside it. Starting with Jetty 12.1.14,
+        // ResourceServlet (and hence the static content DefaultServlet) writes via a fast path that bypasses the
+        // handlers inserted into the ServletContextHandler, so an inner CompressionHandler never sees static
+        // responses. An outer handler is on the path of all writes.
+        if (compression) {
+            CompressionHandler compressionHandler = createCompressionHandler();
+            compressionHandler.setHandler(h2);
+            h2 = compressionHandler;
+        }
 
         // CORS is only inserted into the chain when at least one "cors.urlPatterns" entry is configured, so
         // applications that don't use it pay no overhead
